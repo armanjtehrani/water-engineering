@@ -39,6 +39,8 @@ class MapLoader:
             map.matrix.append(line_list)
         return map
 
-t = MapLoader()
-m = t.load_map(ElevationMap, 'elevation.asc')
-# print('m', m)
+class MapLoaderTester:
+    def basic_test(self):
+        t = MapLoader()
+        m = t.load_map(ElevationMap, 'elevation.asc')
+        # print('m', m)
