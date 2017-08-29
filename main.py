@@ -1,1 +1,1 @@
-print('hello World taha ...!')
+import map_loader
