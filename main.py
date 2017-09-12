@@ -1,1 +1,1 @@
-import map_loader
+import algorithms

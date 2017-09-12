@@ -6,9 +6,21 @@ class Map:
         self.yll_corner = 0
         self.cell_size = 0
         self.no_data_value = -9999
-        self.matrix = [[]]
+        self.matrix = []
 
-    def __str__(self):
+    def set_config(self, another_map):
+        """
+
+        :type another_map: Map
+        """
+        self.n_cols = another_map.n_cols
+        self.n_rows = another_map.n_rows
+        self.xll_corner = another_map.xll_corner
+        self.yll_corner = another_map.yll_corner
+        self.cell_size = another_map.cell_size
+        self.no_data_value = another_map.no_data_value
+
+    def get_config_string(self):
         str_data = ""
         str_data += "row nums:" + str(self.n_rows) + '\n'
         str_data += "col nums:" + str(self.n_cols) + '\n'
@@ -16,10 +28,39 @@ class Map:
         str_data += "yll_corner:" + str(self.yll_corner) + '\n'
         str_data += "cell_size:" + str(self.cell_size) + '\n'
         str_data += "no_data_value:" + str(self.no_data_value) + '\n'
-        str_data += '\n\nmap:\n'
-        for i in range(len(self.matrix)):
-            str_data += str(self.matrix[i])
         return str_data
+
+    def get_matrix_string(self):
+        str_data = ""
+        for row in self.matrix:
+            for pixel in row:
+                str_data += str(pixel) + ' '
+            str_data += '\n'
+        return str_data
+
+    def __str__(self):
+        str_data = self.get_config_string()
+        str_data += "\n\n\nmap:\n"
+        for i in range(len(self.matrix)):
+            for j in range(len(self.matrix[i])):
+                str_data += str(self.matrix[i][j])
+            str_data += '\n'
+        return str_data
+
+    def to_file(self, file_name):
+        file = open('maps/' + file_name, 'w+')
+        str_data = ""
+        str_data += self.get_config_string()
+        str_data += self.get_matrix_string()
+        file.write(str_data)
+
+
+class GWMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('ground water map:\n' + str(self.map))
 
 
 class SoilMap:

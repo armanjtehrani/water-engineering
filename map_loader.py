@@ -9,7 +9,7 @@ class MapLoader:
         map = self.build_map_from_ascii(map_file)
         my_map = map_class()
         my_map.map = map
-        return map
+        return my_map
 
     def load_file(self, map_name):
         return open('maps/' + map_name, 'r')
