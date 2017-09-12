@@ -4,12 +4,12 @@ from maps import Map, SoilMap, LandUseMap, ElevationMap
 
 
 class MapLoader:
-    def load_map(self, map_class,map_name):
+    def load_ascii_map(self, map_class, map_name):
         map_file = self.load_file(map_name)
         map = self.build_map_from_ascii(map_file)
         my_map = map_class()
         my_map.map = map
-        return map
+        return my_map
 
     def load_file(self, map_name):
         return open('maps/' + map_name, 'r')
@@ -38,9 +38,10 @@ class MapLoader:
                     line_list.append(map.no_data_value)
             map.matrix.append(line_list)
         return map
+    
 
 class MapLoaderTester:
     def basic_test(self):
         t = MapLoader()
-        m = t.load_map(ElevationMap, 'elevation.asc')
+        m = t.load_ascii_map(ElevationMap, 'elevation.asc')
         # print('m', m)
