@@ -40,7 +40,3 @@ class Map2Asc:
         a.write("ncols         1852\nnrows         1613\nxllcorner     150257.4383344\nyllcorner     164583\ncellsize      2\nNODATA_value  -9999\n")
         a.write(s)
         a.close()
-
-e = Map2Asc()
-
-e.build_ascii_map("maps\\" , "slope.map" , "tt.asc")
