@@ -1,3 +1,5 @@
+import time
+
 from map_loader import MapLoader
 from maps import Map
 from maps import GWMap
@@ -17,19 +19,19 @@ class SuitableAreaBasedOnGW:
         for i in range(len(self.gw_map.map.matrix)):
             self.output.matrix.append([])
             for pixel in self.gw_map.map.matrix[i]:
-                if pixel > user_limit:
-                    self.output.matrix[i].append(0)
-                elif pixel == self.gw_map.map.no_data_value:
+                if pixel == self.gw_map.map.no_data_value:
                     self.output.matrix[i].append(self.output.no_data_value)
+                elif pixel > user_limit:
+                    self.output.matrix[i].append(0)
                 else:
                     self.output.matrix[i].append(1)
         return self.output
 
 
 class SuitableSoilArea:
-    def get_suitable_areas(self, soil_ascii_map_name, landuse_ascii_map_name, user_soil_number):
+    def get_suitable_areas(self, soil_ascii_map_name, land_use_ascii_map_name, user_soil_number):
         self.soil_map = map_loader.load_map(SoilMap, soil_ascii_map_name)
-        self.landuse_map = map_loader.load_map(LandUseMap, landuse_ascii_map_name)
+        self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
         self.output = Map()
         self.output.set_config(self.soil_map.map)
         for i in range(len(self.soil_map.map.matrix)):
@@ -38,12 +40,96 @@ class SuitableSoilArea:
                 if self.soil_map.map.matrix[i][j] == self.soil_map.map.no_data_value:
                     self.output.matrix[i].append(self.output.no_data_value)
                 elif self.soil_map.map.matrix[i][j] != user_soil_number:
-                    # print('yes baby')
                     self.output.matrix[i].append(0)
-                elif self.landuse_map.map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
-                        self.landuse_map.map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES:
-                    # print('i\'ll cum in ur face')
+                elif self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
+                        self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES:
                     self.output.matrix[i].append(0)
                 else:
                     self.output.matrix[i].append(1)
         return self.output
+
+
+class FindingRiperianZone:
+    def __init__(self):
+        self.land_use_map = LandUseMap()
+        self.pixel_distance = 0
+        self.output= Map()
+        self.land_use_tuple = Map()
+
+    def get_riperian_zone(self, land_use_ascii_map_name, user_distance):
+        self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
+        self.pixel_distance = user_distance / self.land_use_map.map.cell_size
+        if int(self.pixel_distance) != self.pixel_distance:
+            self.pixel_distance = int(self.pixel_distance) + 1
+        self.pixel_distance = int(self.pixel_distance)
+        self.output = Map()
+        self.output.set_config(self.land_use_map.map)
+        self.build_basic_output_matrix()
+        landuse_map = self.land_use_map.map
+        # t0 = time.time()
+        for i in range(len(landuse_map.matrix)):
+            for j in range(len(landuse_map.matrix[i])):
+                if landuse_map.matrix[i][j] != landuse_map.no_data_value:
+                    self.output.matrix[i][j] = 0
+        for i in range(len(landuse_map.matrix)):
+            for j in range(len(landuse_map.matrix[i])):
+                if landuse_map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES:
+                    self.highlight_nearby_pixels(i, j)
+        # print('done:', time.time() - t0)
+        return self.output
+
+    def build_basic_output_matrix(self):
+        self.output.matrix = [[self.output.no_data_value]*self.output.n_cols]*self.output.n_rows
+
+    def highlight_nearby_pixels(self, i, j):
+        landuse_map = self.land_use_map.map
+        for x in range(i - self.pixel_distance, i + self.pixel_distance):
+            for y in range(j - self.pixel_distance, j + self.pixel_distance):
+                if landuse_map.matrix[x][y] != LandUseMap.VALUES.WATER_BODIES and \
+                    landuse_map.matrix[x][y] != LandUseMap.VALUES.URBON_AND_BUILT_UP and \
+                        landuse_map.matrix[x][y] != landuse_map.no_data_value:
+                    self.output.matrix[x][y] = 1
+
+    def get_riperian_zone2(self, land_use_ascii_map_name, user_distance):
+        self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
+        self.pixel_distance = user_distance / self.land_use_map.map.cell_size
+        if int(self.pixel_distance) != self.pixel_distance:
+            self.pixel_distance = int(self.pixel_distance) + 1
+        self.pixel_distance = int(self.pixel_distance)
+        self.output = Map()
+        self.output.set_config(self.land_use_map.map)
+        self.build_basic_output_matrix()
+        landuse_map = self.land_use_map.map
+        # t0 = time.time()
+        for i in range(len(landuse_map.matrix)):
+            for j in range(len(landuse_map.matrix[i])):
+                if landuse_map.matrix[i][j] == landuse_map.no_data_value:
+                    continue
+                elif landuse_map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES or \
+                    landuse_map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP:
+                    self.output.matrix[i][j] = 0
+                elif self.pixel_has_water_next_to_it(i, j):
+                    self.output.matrix[i][j] = 1
+                else:
+                    self.output.matrix[i][j] = 0
+        # print('done:', time.time() - t0)
+        return self.output
+
+    def build_basic_output_2(self):
+        for i in range(len(self.land_use_map.map.matrix)):
+            self.output.matrix.append([])
+            for j in range(len(self.land_use_map.map.matrix[i])):
+                self.output.matrix[i].append(self.output.no_data_value)
+
+    def pixel_has_water_next_to_it(self, i, j):
+        landuse_map = self.land_use_map.map
+        for x in range(i - self.pixel_distance, i + self.pixel_distance):
+            for y in range(j - self.pixel_distance, j + self.pixel_distance):
+                if x == i and y == j:
+                    continue
+                if landuse_map.matrix[x][y] == LandUseMap.VALUES.WATER_BODIES:
+                    return True
+        return False
+
+output = FindingRiperianZone().get_riperian_zone('landuse.asc', 100)
+output.to_file('tahtahtah')
