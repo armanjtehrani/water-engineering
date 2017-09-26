@@ -5,6 +5,7 @@ from maps import Map
 from maps import GWMap
 from maps import SoilMap
 from maps import LandUseMap
+from maps import ParcelMap
 
 
 map_loader = MapLoader()
@@ -75,7 +76,6 @@ class FindingRiperianZone:
             for j in range(len(landuse_map.matrix[i])):
                 if landuse_map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES:
                     self.highlight_nearby_pixels(i, j)
-        # print('done:', time.time() - t0)
         return self.output
 
     def build_basic_output_matrix(self):
@@ -112,7 +112,6 @@ class FindingRiperianZone:
                     self.output.matrix[i][j] = 1
                 else:
                     self.output.matrix[i][j] = 0
-        # print('done:', time.time() - t0)
         return self.output
 
     def build_basic_output_2(self):
@@ -131,5 +130,41 @@ class FindingRiperianZone:
                     return True
         return False
 
-output = FindingRiperianZone().get_riperian_zone('landuse.asc', 100)
-output.to_file('tahtahtah')
+
+class RoofAreaCalculator:
+    def __init__(self):
+        self.land_use_map = LandUseMap()
+        self.parcel_map = ParcelMap()
+        self.output = {}
+        self.roof_pixels = {}
+
+    def get_roof_areas(self, land_use_ascii_map_name, parcel_ascii_map_name):
+        self.init_maps(land_use_ascii_map_name, parcel_ascii_map_name)
+        for i in range(len(self.parcel_map.map.matrix)):
+            for j in range(len(self.parcel_map.map.matrix[i])):
+                if self.coordination_is_roof(i, j):
+                    self.increase_roof_pixels(i, j)
+        for key in self.roof_pixels.keys():
+            self.output[key] = self.roof_pixels[key] * self.parcel_map.map.cell_size
+        return self.output
+
+    def init_maps(self, land_use_ascii_map_name, parcel_ascii_map_name):
+        self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
+        self.parcel_map = map_loader.load_map(ParcelMap, parcel_ascii_map_name)
+        self.output = {}
+        self.roof_pixels = {}
+
+    def coordination_is_roof(self, i, j):\
+        return self.parcel_map.map.matrix[i][j] != self.parcel_map.map.no_data_value
+
+    def increase_roof_pixels(self, i, j):
+        roof_number = self.parcel_map.map.matrix[i][j]
+        num_of_pixels = self.roof_pixels.get(roof_number, 0)
+        self.roof_pixels[roof_number] = num_of_pixels + 1
+
+    def build_map_for_output(self, file_name):
+        file = open('maps/' + file_name, 'w+')
+        str_data = ""
+        str_data += self.parcel_map.map.get_config_string()
+        str_data += str(self.output)
+        file.write(str_data)
