@@ -4,7 +4,10 @@ from maps import Map, SoilMap, LandUseMap, ElevationMap
 
 
 class MapLoader:
-    def load_ascii_map(self, map_class, map_name):
+    def load_dot_map(self, map_class, map_name):
+
+
+    def load_map(self, map_class, map_name):
         map_file = self.load_file(map_name)
         map = self.build_map_from_ascii(map_file)
         my_map = map_class()
@@ -26,6 +29,7 @@ class MapLoader:
         map.matrix = []
         for i in range(map.n_rows):
             line_str = ascii_file.readline()
+            line_str = line_str.replace('\t', '')
             line_list = line_str.split(' ')
             line_list = line_list[:len(line_list) - 1]
 
@@ -43,5 +47,5 @@ class MapLoader:
 class MapLoaderTester:
     def basic_test(self):
         t = MapLoader()
-        m = t.load_ascii_map(ElevationMap, 'elevation.asc')
+        m = t.load_map(ElevationMap, 'elevation.asc')
         # print('m', m)
