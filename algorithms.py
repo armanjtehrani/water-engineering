@@ -133,7 +133,7 @@ class FindingRiperianZone:
         return False
 
 
-class RoofAreaFinder:
+class RoofAreaCalculator:
     def __init__(self):
         self.land_use_map = LandUseMap()
         self.parcel_map = ParcelMap()
@@ -149,11 +149,7 @@ class RoofAreaFinder:
                     self.increase_roof_pixels(i, j)
         for key in self.roof_pixels.keys():
             self.output[key] = self.roof_pixels[key] * self.parcel_map.map.cell_size
-        print(time.time() - t0)
-
-        print('final data:', self.roof_pixels)
-        print('final data:', self.output)
-
+        return self.output
 
     def init_maps(self, land_use_ascii_map_name, parcel_ascii_map_name):
         self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
@@ -176,4 +172,9 @@ class RoofAreaFinder:
         self.roof_pixels[roof_number] = num_of_pixels + 1
         # print('num of pixels:', num_of_pixels + 1)
 
-# RoofAreaFinder().get_roof_areas('landuse.asc', 'roofs30.asc')
+    def build_map_for_output(self, file_name):
+        file = open('maps/' + file_name, 'w+')
+        str_data = ""
+        str_data += self.parcel_map.map.get_config_string()
+        str_data += str(self.output)
+        file.write(str_data)
