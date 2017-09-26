@@ -5,6 +5,7 @@ from maps import Map
 from maps import GWMap
 from maps import SoilMap
 from maps import LandUseMap
+from maps import ParcelMap
 
 
 map_loader = MapLoader()
@@ -131,5 +132,48 @@ class FindingRiperianZone:
                     return True
         return False
 
-output = FindingRiperianZone().get_riperian_zone('landuse.asc', 100)
-output.to_file('tahtahtah')
+
+class RoofAreaFinder:
+    def __init__(self):
+        self.land_use_map = LandUseMap()
+        self.parcel_map = ParcelMap()
+        self.output = {}
+        self.roof_pixels = {}
+
+    def get_roof_areas(self, land_use_ascii_map_name, parcel_ascii_map_name):
+        t0 = time.time()
+        self.init_maps(land_use_ascii_map_name, parcel_ascii_map_name)
+        for i in range(len(self.parcel_map.map.matrix)):
+            for j in range(len(self.parcel_map.map.matrix[i])):
+                if self.coordination_is_roof(i, j):
+                    self.increase_roof_pixels(i, j)
+        for key in self.roof_pixels.keys():
+            self.output[key] = self.roof_pixels[key] * self.parcel_map.map.cell_size
+        print(time.time() - t0)
+
+        print('final data:', self.roof_pixels)
+        print('final data:', self.output)
+
+
+    def init_maps(self, land_use_ascii_map_name, parcel_ascii_map_name):
+        self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
+        self.parcel_map = map_loader.load_map(ParcelMap, parcel_ascii_map_name)
+        self.output = {}
+        self.roof_pixels = {}
+
+    def coordination_is_roof(self, i, j):
+        # try:
+            # return self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP and \
+               return self.parcel_map.map.matrix[i][j] != self.parcel_map.map.no_data_value
+        # except:
+        #     print('fuck')
+        #     return False
+
+    def increase_roof_pixels(self, i, j):
+        roof_number = self.parcel_map.map.matrix[i][j]
+        # print('roof number:', roof_number)
+        num_of_pixels = self.roof_pixels.get(roof_number, 0)
+        self.roof_pixels[roof_number] = num_of_pixels + 1
+        # print('num of pixels:', num_of_pixels + 1)
+
+# RoofAreaFinder().get_roof_areas('landuse.asc', 'roofs30.asc')
