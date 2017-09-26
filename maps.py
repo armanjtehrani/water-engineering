@@ -118,3 +118,11 @@ class ElevationMap:
 
     def __str__(self):
         return str('elevation map:\n' + str(self.map))
+
+
+class ParcelMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('parcel map:\n' + str(self.map))
