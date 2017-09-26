@@ -76,7 +76,6 @@ class FindingRiperianZone:
             for j in range(len(landuse_map.matrix[i])):
                 if landuse_map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES:
                     self.highlight_nearby_pixels(i, j)
-        # print('done:', time.time() - t0)
         return self.output
 
     def build_basic_output_matrix(self):
@@ -113,7 +112,6 @@ class FindingRiperianZone:
                     self.output.matrix[i][j] = 1
                 else:
                     self.output.matrix[i][j] = 0
-        # print('done:', time.time() - t0)
         return self.output
 
     def build_basic_output_2(self):
@@ -141,7 +139,6 @@ class RoofAreaCalculator:
         self.roof_pixels = {}
 
     def get_roof_areas(self, land_use_ascii_map_name, parcel_ascii_map_name):
-        t0 = time.time()
         self.init_maps(land_use_ascii_map_name, parcel_ascii_map_name)
         for i in range(len(self.parcel_map.map.matrix)):
             for j in range(len(self.parcel_map.map.matrix[i])):
@@ -157,20 +154,13 @@ class RoofAreaCalculator:
         self.output = {}
         self.roof_pixels = {}
 
-    def coordination_is_roof(self, i, j):
-        # try:
-            # return self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP and \
-               return self.parcel_map.map.matrix[i][j] != self.parcel_map.map.no_data_value
-        # except:
-        #     print('fuck')
-        #     return False
+    def coordination_is_roof(self, i, j):\
+        return self.parcel_map.map.matrix[i][j] != self.parcel_map.map.no_data_value
 
     def increase_roof_pixels(self, i, j):
         roof_number = self.parcel_map.map.matrix[i][j]
-        # print('roof number:', roof_number)
         num_of_pixels = self.roof_pixels.get(roof_number, 0)
         self.roof_pixels[roof_number] = num_of_pixels + 1
-        # print('num of pixels:', num_of_pixels + 1)
 
     def build_map_for_output(self, file_name):
         file = open('maps/' + file_name, 'w+')
