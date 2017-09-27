@@ -1,15 +1,33 @@
 import copy
+import os
 
+import pcraster
 from maps import Map, SoilMap, LandUseMap, ElevationMap
 
 
 class MapLoader:
+    def __init__(self):
+        self.my_map2asc_convertor = pcraster.Map2Asc()
+        self.configs = {
+            'ncols': 1852,
+            'nrows': 1613,
+            'xllcorner': 150257.4383344,
+            'yllcorner': 164583,
+            'cellsize': 2,
+            'NODATA_value': -9999
+        }
     def load_dot_map(self, map_class, map_name):
-
+        map_dir = "maps/"
+        ascii_name = map_name.split('.map')[0] + 'Cr.asc'
+        print('asc name:', ascii_name)
+        self.my_map2asc_convertor.set_map_variables(self.configs)
+        self.my_map2asc_convertor.build_ascii_map(map_dir, map_name, ascii_name)
+        return self.load_map(map_class, ascii_name)
 
     def load_map(self, map_class, map_name):
         map_file = self.load_file(map_name)
         map = self.build_map_from_ascii(map_file)
+        self.set_my_map_config_by_map(map)
         my_map = map_class()
         my_map.map = map
         return my_map
@@ -42,10 +60,23 @@ class MapLoader:
                     line_list.append(map.no_data_value)
             map.matrix.append(line_list)
         return map
-    
+
+    def set_my_map_config_by_map(self, map: Map):
+        self.configs['ncols'] = map.n_cols
+        self.configs['nrows'] = map.n_rows
+        self.configs['xllcorner'] = map.xll_corner
+        self.configs['yllcorner'] = map.yll_corner
+        self.configs['cellsize'] = map.cell_size
+        self.configs['NODATA_value'] = map.no_data_value
+
 
 class MapLoaderTester:
     def basic_test(self):
         t = MapLoader()
         m = t.load_map(ElevationMap, 'elevation.asc')
-        # print('m', m)
+        print('m', m)
+
+    def load_dot_map_test(self):
+        a = MapLoader()
+        t = a.load_dot_map(SoilMap, 'slope.map')
+        print('tt: ', t)
