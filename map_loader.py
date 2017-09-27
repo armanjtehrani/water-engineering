@@ -1,6 +1,3 @@
-import copy
-import os
-
 import pcraster
 from maps import Map, SoilMap, LandUseMap, ElevationMap
 
@@ -47,7 +44,6 @@ class MapLoader:
         map.matrix = []
         for i in range(map.n_rows):
             line_str = ascii_file.readline()
-            line_str = line_str.replace('\t', '')
             line_list = line_str.split(' ')
             line_list = line_list[:len(line_list) - 1]
 

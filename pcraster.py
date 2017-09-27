@@ -30,17 +30,16 @@ class Map2Asc:
     def build_ascii_map(self, map_dir , map_name , ascii_name):
         os.chdir(map_dir)
         os.system("map2asc -m -9999 " +  map_name+" " +ascii_name)
-        a = open(ascii_name , "r")
-        s = a.read()
-        s = s.replace(7*" ", " ")
-        a.close()
-        a = open(ascii_name  , "w")
+        old_file = open(ascii_name , "r")
+        map_data = old_file.read()
+        map_data = map_data.replace(7*" ", " ")
+        old_file.close()
+        old_file = open(ascii_name  , "w")
         str_configs = self.get_config_in_str()
-        s = str_configs + s
-        s = s.replace("\n ", "\n")
-        # a.write(str_configs)
-        a.write(s)
-        a.close()
+        asci_data = str_configs + map_data
+        asci_data = asci_data.replace("\n ", "\n")
+        old_file.write(asci_data)
+        old_file.close()
         os.chdir("..")
 
     def get_config_in_str(self):
