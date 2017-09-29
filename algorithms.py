@@ -192,13 +192,19 @@ class FlatRoofFinder:
                                         dem_ascii_map_name,
                                         minimum_valuable_area,
                                         maximum_possible_slope):
+        # t1 = time.time()
         self.init_variables_by_elevation_map(land_use_ascii_map_name,
                                              parcel_ascii_map_name,
                                              dem_ascii_map_name,
                                              minimum_valuable_area,
                                              maximum_possible_slope)
+        # print('init:', time.time() - t1)
+        # t2 = time.time()
         self.build_flat_roofs_map()
+        # print('build:', time.time() - t2)
+        # t3 = time.time()
         self.calculate_valuable_flat_roofs_by_area()
+        # print('calculate:', time.time() - t3)
         return self.output
 
     def init_variables_by_elevation_map(self, land_use_ascii_map_name,
@@ -235,15 +241,15 @@ class FlatRoofFinder:
             for j in range(len(self.flat_roofs.matrix[i])):
                 if landuse.matrix[i][j] != LandUseMap.VALUES.URBON_AND_BUILT_UP or \
                         parcel.matrix[i][j] == parcel.no_data_value:
-                    if landuse.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
-                            parcel.matrix[i][j] != parcel.no_data_value:
-                        print('fuck fuck fuck')
+                    # if landuse.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
+                    #         parcel.matrix[i][j] != parcel.no_data_value:
+                        # print('fuck fuck fuck')
                     continue
                 # pixel[i][j] is a roof
-                #print('roof:)')
-                #print('i:', i, 'j:', j)
+                # print('roof:)')
+                # print('i:', i, 'j:', j)
                 if self.flat_roofs.matrix[i][j] == self.flat_roofs.no_data_value:
-                    #print('i am virgin:D')
+                    # print('i am virgin:D')
                     self.set_new_number_for_roof(i, j)
                 # else:
                 #     print(self.flat_roofs.matrix[i][j])
@@ -254,29 +260,29 @@ class FlatRoofFinder:
                         # except:
                         #     print('x o y out of index:D')
                         if x == i and y == j:
-                            #print('khodam:D')
+                            # print('khodam:D')
                             continue
                         if x < 0 or y < 0 or x >= self.flat_roofs.n_rows or y >= self.flat_roofs.n_cols:
-                            #print('roof on gooshe:D')
+                            # print('roof on gooshe:D')
                             continue
                         # now pixel[x][y] exist!
                         if landuse.matrix[x][y] != LandUseMap.VALUES.URBON_AND_BUILT_UP or \
                                 parcel.matrix[x][y] == parcel.no_data_value:
-                            #print('edge roof:D')
+                            # print('edge roof:D')
                             continue
                         # now pixel[x][y] is a roof
                         if not self.pixels_are_in_the_same_range(i, j, x, y):
-                            #print('near roof not in same range')
+                            # print('near roof not in same range')
                             continue
                         # now pixel[i][j] and pixel[x][y] are next to each other and are flat
                         if self.flat_roofs.matrix[x][y] == self.flat_roofs.matrix[i][j]:
-                            #print('all the same bitch:D')
+                            # print('all the same bitch:D')
                             continue
                         if self.flat_roofs.matrix[x][y] == self.flat_roofs.no_data_value:
-                            #print('new near virgin roof:D')
+                            # print('new near virgin roof:D')
                             self.set_new_pixel_with_new_range(x, y, i, j)
                         else:
-                            #print('bitch roof:D')
+                            # print('bitch roof:D')
                             self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
                 # os.system('pause')
 
@@ -292,31 +298,55 @@ class FlatRoofFinder:
         return False
 
     def set_new_pixel_with_new_range(self, x, y, i, j):
-        #print('old virgin:', self.flat_roofs.matrix[x][y])
+        # print('old virgin:', self.flat_roofs.matrix[x][y])
         self.flat_roofs.matrix[x][y] = self.flat_roofs.matrix[i][j]
-        #print('new bitch:D:', self.flat_roofs.matrix[x][y])
-        #print('old roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
+        # print('new bitch:D:', self.flat_roofs.matrix[x][y])
+        # print('old roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
         self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]].append({'x': x, 'y': y})
-        #print('new roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
+        # print('new roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
 
     def set_all_pixels_in_new_range_with_ones_in_old_range(self, i, j, x, y):
         roof_number_that_should_be_deleted = self.flat_roofs.matrix[i][j]
-        #print('deleted roof number:', roof_number_that_should_be_deleted)
+        # print('deleted roof number:', roof_number_that_should_be_deleted)
         main_roof_number = self.flat_roofs.matrix[x][y]
-        #print('main roof number:', main_roof_number)
+        # print('main roof number:', main_roof_number)
         roofs_that_shoud_go_to_main_roof_number = self.roof_number_to_roofs[roof_number_that_should_be_deleted]
-        #print('fucked up roofs:', roofs_that_shoud_go_to_main_roof_number)
-        #print('main roofs before:', self.roof_number_to_roofs[main_roof_number])
+        # print('fucked up roofs:', roofs_that_shoud_go_to_main_roof_number)
+        # print('main roofs before:', self.roof_number_to_roofs[main_roof_number])
         for roof in roofs_that_shoud_go_to_main_roof_number:
             self.flat_roofs.matrix[roof['x']][roof['y']] = main_roof_number
             self.roof_number_to_roofs[main_roof_number].append(roof)
-        #print('main roofs after:', self.roof_number_to_roofs[main_roof_number])
+        # print('main roofs after:', self.roof_number_to_roofs[main_roof_number])
         self.roof_number_to_roofs[roof_number_that_should_be_deleted] = []
-        #print('fucked up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
+        # print('fucked up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
 
     def calculate_valuable_flat_roofs_by_area(self):
-        pass
+        minimum_pixels_to_be_useful = self.minimum_valuable_area / self.output.cell_size
+        # print('num:', minimum_pixels_to_be_useful)
+        # t = 0
+        # i = 0
+        # for key in self.roof_number_to_roofs:
+        #     # print(len(self.roof_number_to_roofs[key]))
+        #     if len(self.roof_number_to_roofs[key]) > 0:
+        #         # print('t yes')
+        #         t += 1
+        #     if len(self.roof_number_to_roofs[key]) >= minimum_pixels_to_be_useful:
+        #         # print('i yes')
+        #         i += 1
+        # print('t:', t)
+        # print('i:', i)
+        for key in self.roof_number_to_roofs:
+            # print('flat roof number', key, ':')
+            # print(self.roof_number_to_roofs[key])
+            # print('len is:', len(self.roof_number_to_roofs[key]))
+            if len(self.roof_number_to_roofs[key]) < minimum_pixels_to_be_useful:
+                continue
+            # flat roof size is good
+            # print(key, 'added:)')
+            for roof in self.roof_number_to_roofs[key]:
+                # print('before output number i:', roof['x'], 'j:', roof['y'], 'was: ', self.output.matrix[roof['x']][roof['y']])
+                self.output.matrix[roof['x']][roof['y']] = key
+                # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
+            # os.system('pause')
 
-
-t = FlatRoofFinder()
-a = t.get_flat_roofs_by_elevation_map('landuse.asc', 'roof30true.asc', 'elevation.asc', 10, 10)
+FlatRoofFinder().get_flat_roofs_by_elevation_map('landuse.asc', 'roof30true.asc', 'elevation.asc', 10, 0.3)
