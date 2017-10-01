@@ -19,7 +19,7 @@ class Map2Asc:
         self.cellsize     = 2
         self.NODATA_VALUE = -9999
 
-    def set_map_variables(self, vars: dict):
+    def set_map_variables(self, vars):
         self.ncols = vars.get('ncols', 1852)
         self.nrows = vars.get('nrows', 1613)
         self.xllcorner = vars.get('xllcorner', 150257.4383344)
