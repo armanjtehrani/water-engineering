@@ -126,3 +126,11 @@ class ParcelMap:
 
     def __str__(self):
         return str('parcel map:\n' + str(self.map))
+
+
+class SlopeMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('slope map:\n' + str(self.map))
