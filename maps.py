@@ -22,12 +22,12 @@ class Map:
 
     def get_config_string(self):
         str_data = ""
-        str_data += "row nums:" + str(self.n_rows) + '\n'
-        str_data += "col nums:" + str(self.n_cols) + '\n'
-        str_data += "xll_corner:" + str(self.xll_corner) + '\n'
-        str_data += "yll_corner:" + str(self.yll_corner) + '\n'
-        str_data += "cell_size:" + str(self.cell_size) + '\n'
-        str_data += "no_data_value:" + str(self.no_data_value) + '\n'
+        str_data += "ncols:" + str(self.n_cols) + '\n'
+        str_data += "nrows:" + str(self.n_rows) + '\n'
+        str_data += "xllcorner:" + str(self.xll_corner) + '\n'
+        str_data += "yllcorner:" + str(self.yll_corner) + '\n'
+        str_data += "cellsize:" + str(self.cell_size) + '\n'
+        str_data += "NODATA_value:" + str(self.no_data_value) + '\n'
         return str_data
 
     def get_matrix_string(self):
