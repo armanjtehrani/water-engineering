@@ -1,6 +1,7 @@
 import os
 import time
 
+import maps
 from map_loader import MapLoader
 from maps import Map
 from maps import GWMap
@@ -8,6 +9,8 @@ from maps import SoilMap
 from maps import LandUseMap
 from maps import ParcelMap
 from maps import ElevationMap
+from maps import DetailedLanduseMap
+from maps import RunoffCoMap
 
 
 map_loader = MapLoader()
@@ -349,4 +352,48 @@ class FlatRoofFinder:
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
             # os.system('pause')
 
-FlatRoofFinder().get_flat_roofs_by_elevation_map('landuse.asc', 'roof30true.asc', 'elevation.asc', 10, 0.3)
+#FlatRoofFinder().get_flat_roofs_by_elevation_map('landuse.asc', 'roof30true.asc', 'elevation.asc', 10, 0.3)
+
+
+class RoadFinder :
+    def __init__(self):
+        self.detailed_landuse_map = DetailedLanduseMap()
+        self.output= Map()
+
+    def get_detailed_landuse_map(self, detailed_landuse_map_ascci):
+        self.detailed_landuse_map = map_loader.load_map(DetailedLanduseMap, detailed_landuse_map_ascci)
+        detailed_landuse_map = self.detailed_landuse_map.map
+        for i in range(len(detailed_landuse_map.matrix)):
+            for j in range(len(detailed_landuse_map.matrix[i])):
+                if detailed_landuse_map.matrix[i][j] == detailed_landuse_map.no_data_value:
+                    self.output.matrix[i][j] = -9999
+                elif detailed_landuse_map.matrix[i][j] == DetailedLanduseMap.VALUES.Asfalt:
+                    self.output.matrix[i][j] = 1
+                else :
+                    self.output.matrix[i][j] = 0
+
+
+class RunoffCoefficient:
+    def __init__(self):
+        self.runoff_coefficient_map = RunoffCoMap()
+        self.output = Map()
+
+    def get_runoff_coefficient_map(self, runoff_coefficient_map_ascci, user_input):
+        self.runoff_coefficient_map = map_loader.load_map(RunoffCoefficient, runoff_coefficient_map_ascci)
+        runoff_coefficient_map = self.runoff_coefficient_map.map
+        for i in range(len(runoff_coefficient_map.matrix)):
+            for j in range(len(runoff_coefficient_map.matrix[i])):
+                if runoff_coefficient_map.matrix[i][j] != runoff_coefficient_map.no_data_value:
+                    if runoff_coefficient_map.matrix[i][j] >= user_input:
+                        self.output.matrix[i][j] = 1
+                    else :
+                        self.output.matrix[i][j] = 0
+
+
+
+
+
+
+
+
+

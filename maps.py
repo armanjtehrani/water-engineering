@@ -134,3 +134,27 @@ class SlopeMap:
 
     def __str__(self):
         return str('slope map:\n' + str(self.map))
+
+
+class DetailedLanduseMap:
+    class VALUES:
+        Asfalt = 80
+
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('detailed landuse map:\n' + str(self.map))
+
+
+class RunoffCoMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('runoff coefficient map:\n' + str(self.map))
+
+
+
+
+
