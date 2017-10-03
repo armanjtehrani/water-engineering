@@ -126,3 +126,35 @@ class ParcelMap:
 
     def __str__(self):
         return str('parcel map:\n' + str(self.map))
+
+
+class SlopeMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('slope map:\n' + str(self.map))
+
+
+class DetailedLandUseMap:
+    class VALUES:
+        Asphalt = 80
+
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('detailed landuse map:\n' + str(self.map))
+
+
+class RunoffCoMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('runoff coefficient map:\n' + str(self.map))
+
+
+
+
+

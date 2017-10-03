@@ -57,7 +57,7 @@ class MapLoader:
             map.matrix.append(line_list)
         return map
 
-    def set_my_map_config_by_map(self, map: Map):
+    def set_my_map_config_by_map(self, map):
         self.configs['ncols'] = map.n_cols
         self.configs['nrows'] = map.n_rows
         self.configs['xllcorner'] = map.xll_corner
