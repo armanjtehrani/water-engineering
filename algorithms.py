@@ -9,7 +9,7 @@ from maps import SoilMap
 from maps import LandUseMap
 from maps import ParcelMap
 from maps import ElevationMap
-from maps import DetailedLanduseMap
+from maps import DetailedLandUseMap
 from maps import RunoffCoMap
 
 
@@ -352,25 +352,31 @@ class FlatRoofFinder:
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
             # os.system('pause')
 
-#FlatRoofFinder().get_flat_roofs_by_elevation_map('landuse.asc', 'roof30true.asc', 'elevation.asc', 10, 0.3)
-
 
 class RoadFinder :
     def __init__(self):
-        self.detailed_landuse_map = DetailedLanduseMap()
-        self.output= Map()
+        self.detailed_landuse_map = DetailedLandUseMap()
+        self.output = Map()
 
-    def get_detailed_landuse_map(self, detailed_landuse_map_ascci):
-        self.detailed_landuse_map = map_loader.load_map(DetailedLanduseMap, detailed_landuse_map_ascci)
+    def get_detailed_landuse_map(self, detailed_landuse_map_ascii):
+        self.detailed_landuse_map = map_loader.load_map(DetailedLandUseMap, detailed_landuse_map_ascii)
         detailed_landuse_map = self.detailed_landuse_map.map
+        self.build_basic_output()
         for i in range(len(detailed_landuse_map.matrix)):
             for j in range(len(detailed_landuse_map.matrix[i])):
                 if detailed_landuse_map.matrix[i][j] == detailed_landuse_map.no_data_value:
-                    self.output.matrix[i][j] = -9999
-                elif detailed_landuse_map.matrix[i][j] == DetailedLanduseMap.VALUES.Asfalt:
+                    continue
+                if detailed_landuse_map.matrix[i][j] == DetailedLandUseMap.VALUES.Asphalt:
                     self.output.matrix[i][j] = 1
-                else :
+                else:
                     self.output.matrix[i][j] = 0
+        return self.output
+
+    def build_basic_output(self):
+        for i in range(len(self.detailed_landuse_map.map.matrix)):
+            self.output.matrix.append([])
+            for j in range(len(self.detailed_landuse_map.map.matrix[i])):
+                self.output.matrix[i].append(self.output.no_data_value)
 
 
 class RunoffCoefficient:
@@ -378,18 +384,27 @@ class RunoffCoefficient:
         self.runoff_coefficient_map = RunoffCoMap()
         self.output = Map()
 
-    def get_runoff_coefficient_map(self, runoff_coefficient_map_ascci, user_input):
-        self.runoff_coefficient_map = map_loader.load_map(RunoffCoefficient, runoff_coefficient_map_ascci)
+    def get_runoff_coefficient_map(self, runoff_coefficient_map_ascii, user_limit):
+        self.runoff_coefficient_map = map_loader.load_map(RunoffCoefficient, runoff_coefficient_map_ascii)
         runoff_coefficient_map = self.runoff_coefficient_map.map
+        self.build_basic_output()
         for i in range(len(runoff_coefficient_map.matrix)):
             for j in range(len(runoff_coefficient_map.matrix[i])):
-                if runoff_coefficient_map.matrix[i][j] != runoff_coefficient_map.no_data_value:
-                    if runoff_coefficient_map.matrix[i][j] >= user_input:
+                if runoff_coefficient_map.matrix[i][j] == runoff_coefficient_map.no_data_value:
+                    if runoff_coefficient_map.matrix[i][j] >= user_limit:
                         self.output.matrix[i][j] = 1
-                    else :
+                    else:
                         self.output.matrix[i][j] = 0
+        return self.output
+
+    def build_basic_output(self):
+        for i in range(len(self.runoff_coefficient_map.map.matrix)):
+            self.output.matrix.append([])
+            for j in range(len(self.runoff_coefficient_map.map.matrix[i])):
+                self.output.matrix[i].append(self.output.no_data_value)
 
 
+t = RoadFinder().get_detailed_landuse_map('landuse.asc')
 
 
 

@@ -136,9 +136,9 @@ class SlopeMap:
         return str('slope map:\n' + str(self.map))
 
 
-class DetailedLanduseMap:
+class DetailedLandUseMap:
     class VALUES:
-        Asfalt = 80
+        Asphalt = 80
 
     def __init__(self):
         self.map = Map()
