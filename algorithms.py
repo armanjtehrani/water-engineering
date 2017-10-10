@@ -313,10 +313,10 @@ class FlatRoofFinder:
         # print('deleted roof number:', roof_number_that_should_be_deleted)
         main_roof_number = self.flat_roofs.matrix[x][y]
         # print('main roof number:', main_roof_number)
-        roofs_that_shoud_go_to_main_roof_number = self.roof_number_to_roofs[roof_number_that_should_be_deleted]
+        roofs_that_should_go_to_main_roof_number = self.roof_number_to_roofs[roof_number_that_should_be_deleted]
         # print('fucked up roofs:', roofs_that_shoud_go_to_main_roof_number)
         # print('main roofs before:', self.roof_number_to_roofs[main_roof_number])
-        for roof in roofs_that_shoud_go_to_main_roof_number:
+        for roof in roofs_that_should_go_to_main_roof_number:
             self.flat_roofs.matrix[roof['x']][roof['y']] = main_roof_number
             self.roof_number_to_roofs[main_roof_number].append(roof)
         # print('main roofs after:', self.roof_number_to_roofs[main_roof_number])
