@@ -404,7 +404,158 @@ class RunoffCoefficient:
                 self.output.matrix[i].append(self.output.no_data_value)
 
 
-t = RoadFinder().get_detailed_landuse_map('landuse.asc')
+class RainGardenFinder:
+    def __init__(self):
+        self.list_of_acceptable_land_use_parts = [
+            LandUseMap.VALUES.URBON_AND_BUILT_UP,
+            LandUseMap.VALUES.WATER_BODIES
+        ]
+
+        self.max_rain_garden_id = 0
+        self.rain_gardens = Map()
+        self.output = Map()
+        self.land_use_map = LandUseMap()
+        self.minimum_valuable_area = 10
+        self.rain_garden_ids_to_pixels = {}
+
+    def get_rain_gardens(self, land_use_ascii_map_name, minimum_valuable_area):
+        # t1 = time.time()
+        self.init_variables(land_use_ascii_map_name, minimum_valuable_area)
+        # print('init:', time.time() - t1)
+        # t2 = time.time()
+        self.build_rain_garden_map()
+        # print('build:', time.time() - t2)
+        # t3 = time.time()
+        self.calculate_valuable_rain_gardens_by_area()
+        # print('calculate:', time.time() - t3)
+        return self.output
+
+    def init_variables(self, land_use_ascii_map_name, minimum_valuable_area):
+        self.max_rain_garden_id = 0
+
+        self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
+        self.rain_gardens = Map()
+        self.output = Map()
+        self.rain_gardens.set_config(self.land_use_map.map)
+        self.output.set_config(self.rain_gardens)
+        for i in range(len(self.land_use_map.map.matrix)):
+            self.rain_gardens.matrix.append([])
+            self.output.matrix.append([])
+            for j in range(len(self.land_use_map.map.matrix[i])):
+                self.rain_gardens.matrix[i].append(self.rain_gardens.no_data_value)
+                self.output.matrix[i].append(self.output.no_data_value)
+
+        self.minimum_valuable_area = minimum_valuable_area
+
+        self.rain_garden_ids_to_pixels = {}
+
+    def build_rain_garden_map(self):
+        landuse = self.land_use_map.map
+        for i in range(len(self.rain_gardens.matrix)):
+            for j in range(len(self.rain_gardens.matrix[i])):
+                if landuse.matrix[i][j] == landuse.no_data_value:
+                    continue
+                if landuse.matrix[i][j] not in self.list_of_acceptable_land_use_parts:
+                    self.rain_gardens[i][j] = 0
+                    # if landuse.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
+                    #         parcel.matrix[i][j] != parcel.no_data_value:
+                        # print('fuck fuck fuck')
+                    continue
+                # pixel[i][j] is a roof
+                # print('roof:)')
+                # print('i:', i, 'j:', j)
+                if self.rain_gardens.matrix[i][j] == self.rain_gardens.no_data_value:
+                    # print('i am virgin:D')
+                    self.set_new_number_for_garden(i, j)
+                # else:
+                #     print(self.flat_roofs.matrix[i][j])
+                for x in range(i - 1, i + 2):
+                    for y in range(j - 1, j + 2):
+                        # try:
+                        #     print('x:', x, 'y:', y)
+                        # except:
+                        #     print('x o y out of index:D')
+                        if x == i and y == j:
+                            # print('khodam:D')
+                            continue
+                        if x < 0 or y < 0 or x >= self.rain_gardens.n_rows or y >= self.rain_gardens.n_cols:
+                            # print('roof on gooshe:D')
+                            continue
+                        # now pixel[x][y] exist!
+                        if landuse.matrix[x][y] not in self.list_of_acceptable_land_use_parts:
+                            # print('edge roof:D')
+                            continue
+                        # now pixel[x][y] is a rain garden
+                        if self.rain_gardens.matrix[x][y] == self.rain_gardens.matrix[i][j]:
+                            # print('all the same bitch:D')
+                            continue
+                        if self.rain_gardens.matrix[x][y] == self.rain_gardens.no_data_value:
+                            # print('new near virgin roof:D')
+                            self.set_new_pixel_with_new_range(x, y, i, j)
+                        else:
+                            # print('bitch roof:D')
+                            self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
+                # os.system('pause')
+
+    def set_new_number_for_garden(self, i, j):
+        self.max_rain_garden_id += 1
+        self.rain_garden_ids_to_pixels[self.max_rain_garden_id] = []
+        self.rain_garden_ids_to_pixels[self.max_rain_garden_id].append({'x': i, 'y': j})
+        self.rain_gardens.matrix[i][j] = self.max_rain_garden_id
+
+    def set_new_pixel_with_new_range(self, x, y, i, j):
+        # print('old virgin:', self.flat_roofs.matrix[x][y])
+        self.rain_gardens.matrix[x][y] = self.rain_gardens.matrix[i][j]
+        # print('new bitch:D:', self.flat_roofs.matrix[x][y])
+        # print('old roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
+        self.rain_garden_ids_to_pixels[self.rain_gardens.matrix[x][y]].append({'x': x, 'y': y})
+        # print('new roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
+
+    def set_all_pixels_in_new_range_with_ones_in_old_range(self, i, j, x, y):
+        rain_garden_number_that_should_be_deleted = self.rain_gardens.matrix[i][j]
+        # print('deleted roof number:', roof_number_that_should_be_deleted)
+        main_rain_garden_number = self.rain_gardens.matrix[x][y]
+        # print('main roof number:', main_roof_number)
+        rain_gardens_that_should_go_to_main_roof_number = \
+            self.rain_garden_ids_to_pixels[rain_garden_number_that_should_be_deleted]
+        # print('fucked up roofs:', roofs_that_shoud_go_to_main_roof_number)
+        # print('main roofs before:', self.roof_number_to_roofs[main_roof_number])
+        for rain_garden in rain_gardens_that_should_go_to_main_roof_number:
+            self.rain_gardens.matrix[rain_garden['x']][rain_garden['y']] = main_rain_garden_number
+            self.rain_garden_ids_to_pixels[main_rain_garden_number].append(rain_garden)
+        # print('main roofs after:', self.roof_number_to_roofs[main_roof_number])
+        self.rain_garden_ids_to_pixels[rain_garden_number_that_should_be_deleted] = []
+        # print('fucked up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
+
+    def calculate_valuable_rain_gardens_by_area(self):
+        minimum_pixels_to_be_useful = self.minimum_valuable_area / self.output.cell_size
+        # print('num:', minimum_pixels_to_be_useful)
+        # t = 0
+        # i = 0
+        # for key in self.roof_number_to_roofs:
+        #     # print(len(self.roof_number_to_roofs[key]))
+        #     if len(self.roof_number_to_roofs[key]) > 0:
+        #         # print('t yes')
+        #         t += 1
+        #     if len(self.roof_number_to_roofs[key]) >= minimum_pixels_to_be_useful:
+        #         # print('i yes')
+        #         i += 1
+        # print('t:', t)
+        # print('i:', i)
+        for key in self.rain_garden_ids_to_pixels:
+            # print('flat roof number', key, ':')
+            # print(self.roof_number_to_roofs[key])
+            # print('len is:', len(self.roof_number_to_roofs[key]))
+            if len(self.rain_garden_ids_to_pixels[key]) < minimum_pixels_to_be_useful:
+                continue
+            # flat roof size is good
+            # print(key, 'added:)')
+            for rain_garden in self.rain_garden_ids_to_pixels[key]:
+                # print('before output number i:', roof['x'], 'j:', roof['y'], 'was: ', self.output.matrix[roof['x']][roof['y']])
+                self.output.matrix[rain_garden['x']][rain_garden['y']] = key
+                # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
+            # os.system('pause')
+
 
 
 
