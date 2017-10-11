@@ -324,7 +324,7 @@ class FlatRoofFinder:
         # print('fucked up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
 
     def calculate_valuable_flat_roofs_by_area(self):
-        minimum_pixels_to_be_useful = self.minimum_valuable_area / self.output.cell_size
+        minimum_pixels_to_be_useful = self.minimum_valuable_area / (self.output.cell_size ** 2)
         # print('num:', minimum_pixels_to_be_useful)
         # t = 0
         # i = 0
@@ -457,16 +457,13 @@ class RainGardenFinder:
                     continue
                 if landuse.matrix[i][j] not in self.list_of_acceptable_land_use_parts:
                     self.rain_gardens[i][j] = 0
-                    # if landuse.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
-                    #         parcel.matrix[i][j] != parcel.no_data_value:
-                        # print('fuck fuck fuck')
                     continue
                 # pixel[i][j] is a roof
                 # print('roof:)')
                 # print('i:', i, 'j:', j)
                 if self.rain_gardens.matrix[i][j] == self.rain_gardens.no_data_value:
                     # print('i am virgin:D')
-                    self.set_new_number_for_garden(i, j)
+                    self.set_new_id_for_garden(i, j)
                 # else:
                 #     print(self.flat_roofs.matrix[i][j])
                 for x in range(i - 1, i + 2):
@@ -497,11 +494,11 @@ class RainGardenFinder:
                             self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
                 # os.system('pause')
 
-    def set_new_number_for_garden(self, i, j):
+    def set_new_id_for_garden(self, i, j):
         self.max_rain_garden_id += 1
+        self.rain_gardens.matrix[i][j] = self.max_rain_garden_id
         self.rain_garden_ids_to_pixels[self.max_rain_garden_id] = []
         self.rain_garden_ids_to_pixels[self.max_rain_garden_id].append({'x': i, 'y': j})
-        self.rain_gardens.matrix[i][j] = self.max_rain_garden_id
 
     def set_new_pixel_with_new_range(self, x, y, i, j):
         # print('old virgin:', self.flat_roofs.matrix[x][y])
@@ -516,11 +513,11 @@ class RainGardenFinder:
         # print('deleted roof number:', roof_number_that_should_be_deleted)
         main_rain_garden_number = self.rain_gardens.matrix[x][y]
         # print('main roof number:', main_roof_number)
-        rain_gardens_that_should_go_to_main_roof_number = \
+        rain_gardens_that_should_go_to_main_rain_garden_id = \
             self.rain_garden_ids_to_pixels[rain_garden_number_that_should_be_deleted]
         # print('fucked up roofs:', roofs_that_shoud_go_to_main_roof_number)
         # print('main roofs before:', self.roof_number_to_roofs[main_roof_number])
-        for rain_garden in rain_gardens_that_should_go_to_main_roof_number:
+        for rain_garden in rain_gardens_that_should_go_to_main_rain_garden_id:
             self.rain_gardens.matrix[rain_garden['x']][rain_garden['y']] = main_rain_garden_number
             self.rain_garden_ids_to_pixels[main_rain_garden_number].append(rain_garden)
         # print('main roofs after:', self.roof_number_to_roofs[main_roof_number])
@@ -528,7 +525,7 @@ class RainGardenFinder:
         # print('fucked up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
 
     def calculate_valuable_rain_gardens_by_area(self):
-        minimum_pixels_to_be_useful = self.minimum_valuable_area / self.output.cell_size
+        minimum_pixels_to_be_useful = self.minimum_valuable_area / (self.output.cell_size ** 2)
         # print('num:', minimum_pixels_to_be_useful)
         # t = 0
         # i = 0
