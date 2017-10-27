@@ -155,6 +155,16 @@ class RunoffCoMap:
         return str('runoff coefficient map:\n' + str(self.map))
 
 
+class FlowAccMap:
+    def __init__(self):
+        self.map = Map()
 
+    def __str__(self):
+        return str('flow accumulator map:\n' + str(self.map))
 
+class ConductivityMap:
+    def __init__(self):
+        self.map = Map()
 
+    def __str__(self):
+        return str('conductivity map:\n' + str(self.map))

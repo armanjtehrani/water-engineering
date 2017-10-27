@@ -1,9 +1,10 @@
 import os
 import time
 
-import maps
+from math import *
+
 from map_loader import MapLoader
-from maps import Map
+from maps import Map, LandaMap
 from maps import GWMap
 from maps import SoilMap
 from maps import LandUseMap
@@ -11,6 +12,9 @@ from maps import ParcelMap
 from maps import ElevationMap
 from maps import DetailedLandUseMap
 from maps import RunoffCoMap
+from maps import FlowAccMap
+from maps import SlopeMap
+from maps import Conductivity
 
 
 map_loader = MapLoader()
@@ -390,7 +394,7 @@ class RunoffCoefficient:
         self.build_basic_output()
         for i in range(len(runoff_coefficient_map.matrix)):
             for j in range(len(runoff_coefficient_map.matrix[i])):
-                if runoff_coefficient_map.matrix[i][j] == runoff_coefficient_map.no_data_value:
+                if runoff_coefficient_map.matrix[i][j] != runoff_coefficient_map.no_data_value:
                     if runoff_coefficient_map.matrix[i][j] >= user_limit:
                         self.output.matrix[i][j] = 1
                     else:
@@ -555,8 +559,65 @@ class RainGardenFinder:
 
 
 
+class LandaEq:
+    def __init__(self):
+
+        self.output_alpha = Map()
+        self.output_tan_B   = Map()
+        self.output_Ks      = Map()
+        self.D              = 2
+        self.output         = Map()
 
 
+    def calculate_alpha(self, flow_acc_map_ascii):
+        self.flow_acc_map = map_loader.load_map(FlowAccMap, flow_acc_map_ascii)
+
+        for i in range(len(self.flow_acc_map.map.matrix)):
+            for j in range(len(self.flow_acc_map.map.matrix[i])):
+                self.output_alpha.matrix.append([])
+                if(self.flow_acc_map.map.matrix[i][j] == self.flow_acc_map.map.no_data_value):
+                    self.output_alpha.matrix[i].append(self.output_alpha.no_data_value)
+                else :
+                    self.output_alpha.matrix[i].append(self.flow_acc_map.map.matrix[i][j]* self.flow_acc_map.map.cell_size)
+
+    def calculate_tan_B(self, slope_map_ascii):
+        self.slope_map = map_loader.load_map(SlopeMap, slope_map_ascii)
+        for i in range(len(self.slope_map.map.matrix)):
+            self.output_tan_B.matrix.append([])
+            for j in range(len(self.slope_map.map.matrix[i])):
+                if(self.slope_map.map.matrix[i][j] == self.slope_map.map.no_data_value):
+                    self.output_tan_B.matrix[i].append(self.output_tan_B.no_data_value)
+                else :
+                    self.output_tan_B.matrix[i].append(self.slope_map.map.matrix[i][j]/ self.slope_map.map.cell_size)
+
+    def calcutale_Ks(self, conductivity_map_ascii):
+        self.conductivity_map = map_loader.load_map(Conductivity, conductivity_map_ascii)
+
+        for i in range(len(self.conductivity_map.map.matrix)):
+            self.output_Ks.matrix.append([])
+            for j in range(len(self.conductivity_map.map.matrix[i])):
+                if(self.conductivity_map.map.matrix[i][j] == self.conductivity_map.map.no_data_value):
+                    self.output_Ks.matrix[i].append(self.output_Ks.no_data_value)
+                else :
+                    self.output_Ks.matrix[i].append(self.conductivity_map.map.matrix[i][j]/ self.conductivity_map.map.cell_size)
+
+
+
+    def get_output(self):
+        self.calculate_alpha()
+        self.calculate_tan_B()
+        self.calcutale_Ks()
+
+        for i in range(len(self.output_alpha.matrix)):
+            self.output.matrix.append([])
+            for j in range(len(self.output_alpha.matrix[i]))
+                if (self.output_alpha.matrix[i][j] == self.output_alpha.map.no_data_value):
+                    self.output.matrix[i].append(self.output.no_data_value)
+                else :
+                    temp = self.output_alpha.matrix[i][j] / (self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D )
+                    self.output.matrix[i].append(log(temp))
+
+        return self.output
 
 
 
