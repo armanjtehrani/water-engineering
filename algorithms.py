@@ -1,10 +1,7 @@
-import os
-import time
-
 from math import *
 
 from map_loader import MapLoader
-from maps import Map, LandaMap
+from maps import Map
 from maps import GWMap
 from maps import SoilMap
 from maps import LandUseMap
@@ -14,8 +11,7 @@ from maps import DetailedLandUseMap
 from maps import RunoffCoMap
 from maps import FlowAccMap
 from maps import SlopeMap
-from maps import Conductivity
-
+from maps import ConductivityMap
 
 map_loader = MapLoader()
 
@@ -52,7 +48,7 @@ class SuitableSoilArea:
                 elif self.soil_map.map.matrix[i][j] != user_soil_number:
                     self.output.matrix[i].append(0)
                 elif self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
-                        self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES:
+                                self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES:
                     self.output.matrix[i].append(0)
                 else:
                     self.output.matrix[i].append(1)
@@ -63,7 +59,7 @@ class FindingRiperianZone:
     def __init__(self):
         self.land_use_map = LandUseMap()
         self.pixel_distance = 0
-        self.output= Map()
+        self.output = Map()
         self.land_use_tuple = Map()
 
     def get_riperian_zone(self, land_use_ascii_map_name, user_distance):
@@ -88,15 +84,15 @@ class FindingRiperianZone:
         return self.output
 
     def build_basic_output_matrix(self):
-        self.output.matrix = [[self.output.no_data_value]*self.output.n_cols]*self.output.n_rows
+        self.output.matrix = [[self.output.no_data_value] * self.output.n_cols] * self.output.n_rows
 
     def highlight_nearby_pixels(self, i, j):
         landuse_map = self.land_use_map.map
         for x in range(i - self.pixel_distance, i + self.pixel_distance):
             for y in range(j - self.pixel_distance, j + self.pixel_distance):
                 if landuse_map.matrix[x][y] != LandUseMap.VALUES.WATER_BODIES and \
-                    landuse_map.matrix[x][y] != LandUseMap.VALUES.URBON_AND_BUILT_UP and \
-                        landuse_map.matrix[x][y] != landuse_map.no_data_value:
+                                landuse_map.matrix[x][y] != LandUseMap.VALUES.URBON_AND_BUILT_UP and \
+                                landuse_map.matrix[x][y] != landuse_map.no_data_value:
                     self.output.matrix[x][y] = 1
 
     def get_riperian_zone2(self, land_use_ascii_map_name, user_distance):
@@ -115,7 +111,7 @@ class FindingRiperianZone:
                 if landuse_map.matrix[i][j] == landuse_map.no_data_value:
                     continue
                 elif landuse_map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES or \
-                    landuse_map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP:
+                                landuse_map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP:
                     self.output.matrix[i][j] = 0
                 elif self.pixel_has_water_next_to_it(i, j):
                     self.output.matrix[i][j] = 1
@@ -163,8 +159,8 @@ class RoofAreaCalculator:
         self.output = {}
         self.roof_pixels = {}
 
-    def coordination_is_roof(self, i, j):\
-        return self.parcel_map.map.matrix[i][j] != self.parcel_map.map.no_data_value
+    def coordination_is_roof(self, i, j): \
+            return self.parcel_map.map.matrix[i][j] != self.parcel_map.map.no_data_value
 
     def increase_roof_pixels(self, i, j):
         roof_number = self.parcel_map.map.matrix[i][j]
@@ -222,7 +218,7 @@ class FlatRoofFinder:
         self.max_flat_roof_number = 0
 
         self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
-        self.parcel_map= map_loader.load_map(ParcelMap, parcel_ascii_map_name)
+        self.parcel_map = map_loader.load_map(ParcelMap, parcel_ascii_map_name)
         self.dem_map = map_loader.load_map(ElevationMap, dem_ascii_map_name)
 
         self.flat_roofs = Map()
@@ -247,10 +243,10 @@ class FlatRoofFinder:
         for i in range(len(self.flat_roofs.matrix)):
             for j in range(len(self.flat_roofs.matrix[i])):
                 if landuse.matrix[i][j] != LandUseMap.VALUES.URBON_AND_BUILT_UP or \
-                        parcel.matrix[i][j] == parcel.no_data_value:
+                                parcel.matrix[i][j] == parcel.no_data_value:
                     # if landuse.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
                     #         parcel.matrix[i][j] != parcel.no_data_value:
-                        # print('fuck fuck fuck')
+                    # print('fuck fuck fuck')
                     continue
                 # pixel[i][j] is a roof
                 # print('roof:)')
@@ -274,7 +270,7 @@ class FlatRoofFinder:
                             continue
                         # now pixel[x][y] exist!
                         if landuse.matrix[x][y] != LandUseMap.VALUES.URBON_AND_BUILT_UP or \
-                                parcel.matrix[x][y] == parcel.no_data_value:
+                                        parcel.matrix[x][y] == parcel.no_data_value:
                             # print('edge roof:D')
                             continue
                         # now pixel[x][y] is a roof
@@ -291,7 +287,7 @@ class FlatRoofFinder:
                         else:
                             # print('bitch roof:D')
                             self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
-                # os.system('pause')
+                            # os.system('pause')
 
     def set_new_number_for_roof(self, i, j):
         self.max_flat_roof_number += 1
@@ -354,10 +350,10 @@ class FlatRoofFinder:
                 # print('before output number i:', roof['x'], 'j:', roof['y'], 'was: ', self.output.matrix[roof['x']][roof['y']])
                 self.output.matrix[roof['x']][roof['y']] = key
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
-            # os.system('pause')
+                # os.system('pause')
 
 
-class RoadFinder :
+class RoadFinder:
     def __init__(self):
         self.detailed_landuse_map = DetailedLandUseMap()
         self.output = Map()
@@ -496,7 +492,7 @@ class RainGardenFinder:
                         else:
                             # print('bitch roof:D')
                             self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
-                # os.system('pause')
+                            # os.system('pause')
 
     def set_new_id_for_garden(self, i, j):
         self.max_rain_garden_id += 1
@@ -555,19 +551,18 @@ class RainGardenFinder:
                 # print('before output number i:', roof['x'], 'j:', roof['y'], 'was: ', self.output.matrix[roof['x']][roof['y']])
                 self.output.matrix[rain_garden['x']][rain_garden['y']] = key
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
-            # os.system('pause')
-
+                # os.system('pause')
 
 
 class LandaEq:
     def __init__(self):
 
+        self.flow_acc_map = FlowAccMap()
         self.output_alpha = Map()
-        self.output_tan_B   = Map()
-        self.output_Ks      = Map()
-        self.D              = 2
-        self.output         = Map()
-
+        self.output_tan_B = Map()
+        self.output_Ks = Map()
+        self.D = 2
+        self.output = Map()
 
     def calculate_alpha(self, flow_acc_map_ascii):
         self.flow_acc_map = map_loader.load_map(FlowAccMap, flow_acc_map_ascii)
@@ -575,49 +570,48 @@ class LandaEq:
         for i in range(len(self.flow_acc_map.map.matrix)):
             for j in range(len(self.flow_acc_map.map.matrix[i])):
                 self.output_alpha.matrix.append([])
-                if(self.flow_acc_map.map.matrix[i][j] == self.flow_acc_map.map.no_data_value):
+                if self.flow_acc_map.map.matrix[i][j] == self.flow_acc_map.map.no_data_value:
                     self.output_alpha.matrix[i].append(self.output_alpha.no_data_value)
-                else :
-                    self.output_alpha.matrix[i].append(self.flow_acc_map.map.matrix[i][j]* self.flow_acc_map.map.cell_size)
+                else:
+                    self.output_alpha.matrix[i].append(
+                        self.flow_acc_map.map.matrix[i][j] * self.flow_acc_map.map.cell_size)
 
     def calculate_tan_B(self, slope_map_ascii):
         self.slope_map = map_loader.load_map(SlopeMap, slope_map_ascii)
         for i in range(len(self.slope_map.map.matrix)):
             self.output_tan_B.matrix.append([])
             for j in range(len(self.slope_map.map.matrix[i])):
-                if(self.slope_map.map.matrix[i][j] == self.slope_map.map.no_data_value):
+                if self.slope_map.map.matrix[i][j] == self.slope_map.map.no_data_value:
                     self.output_tan_B.matrix[i].append(self.output_tan_B.no_data_value)
-                else :
-                    self.output_tan_B.matrix[i].append(self.slope_map.map.matrix[i][j]/ self.slope_map.map.cell_size)
+                else:
+                    self.output_tan_B.matrix[i].append(self.slope_map.map.matrix[i][j] / self.slope_map.map.cell_size)
 
-    def calcutale_Ks(self, conductivity_map_ascii):
-        self.conductivity_map = map_loader.load_map(Conductivity, conductivity_map_ascii)
+    def calculate_Ks(self, conductivity_map_ascii):
+        self.conductivity_map = map_loader.load_map(ConductivityMap, conductivity_map_ascii)
 
         for i in range(len(self.conductivity_map.map.matrix)):
             self.output_Ks.matrix.append([])
             for j in range(len(self.conductivity_map.map.matrix[i])):
-                if(self.conductivity_map.map.matrix[i][j] == self.conductivity_map.map.no_data_value):
+                if self.conductivity_map.map.matrix[i][j] == self.conductivity_map.map.no_data_value:
                     self.output_Ks.matrix[i].append(self.output_Ks.no_data_value)
-                else :
-                    self.output_Ks.matrix[i].append(self.conductivity_map.map.matrix[i][j]/ self.conductivity_map.map.cell_size)
+                else:
+                    self.output_Ks.matrix[i].append(
+                        self.conductivity_map.map.matrix[i][j] / self.conductivity_map.map.cell_size)
 
-
-
-    def get_output(self):
-        self.calculate_alpha()
-        self.calculate_tan_B()
-        self.calcutale_Ks()
+    def get_output(self, flow_acc_map_ascii, slope_map_ascii, conductivity_map_ascii):
+        self.calculate_alpha(flow_acc_map_ascii)
+        self.calculate_tan_B(slope_map_ascii)
+        self.calculate_Ks(conductivity_map_ascii)
 
         for i in range(len(self.output_alpha.matrix)):
             self.output.matrix.append([])
-            for j in range(len(self.output_alpha.matrix[i]))
-                if (self.output_alpha.matrix[i][j] == self.output_alpha.map.no_data_value):
+            for j in range(len(self.output_alpha.matrix[i])):
+                if self.output_alpha.matrix[i][j] == self.output_alpha.map.no_data_value:
                     self.output.matrix[i].append(self.output.no_data_value)
-                else :
-                    temp = self.output_alpha.matrix[i][j] / (self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D )
+                else:
+
+                    temp = self.output_alpha.matrix[i][j] / (
+                    self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D)
                     self.output.matrix[i].append(log(temp))
 
         return self.output
-
-
-
