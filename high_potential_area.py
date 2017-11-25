@@ -22,7 +22,7 @@ class HighPotentialArea:
             print("you have to give at least 1 map from runoff or landa !")
         else:
             if (runoff_landa.get("runoff_co_map", default=None) is not None) and (
-                runoff_landa.get("landa_map", default=None) is not None):
+                        runoff_landa.get("landa_map", default=None) is not None):
                 runoff_coefficient_map_ascii = runoff_landa.get("runoff_co_map")
                 self.landa_map = runoff_landa.get("landa_map")
 
@@ -32,7 +32,7 @@ class HighPotentialArea:
                 for i in range(len(self.runoff_coefficient_map.matrix)):
                     self.output_hyrology.matrix.append([])
                     for j in range(len(self.runoff_coefficient_map.matrix[i])):
-                        if (self.runoff_coefficient_map.matrix[i][j] != runoff_coefficient_map.no_data_value):
+                        if self.runoff_coefficient_map.matrix[i][j] != runoff_coefficient_map.no_data_value:
                             self.output_hyrology.matrix[i].append(
                                 self.runoff_coefficient_map.matrix[i][j] + self.landa_map.matrix[i][j])
                         else:
@@ -46,59 +46,116 @@ class HighPotentialArea:
 
         return self.output_hyrology
 
-    def hydrolic(self, rpt_file , col_name , limit):
+    def hydrolic(self, rpt_file, link_col_name, limit_node, limit=1, sub_dic=None):
+        # sub_dic format : { 'region':[sub1_id , sub2_id , ... ] , 'region2' : [sub1_id , sub2_id , ... ] , ...  }
+        """
+        :type sub_dic: dict
+        """
+        result = []
+
+        if sub_dic is None:
+            sub_dic = {}
 
         rpt = open(rpt_file, "r")
-        mem = []
 
+        # ---- Find Node Flooding Summary -----
         check = True
-        while(check):
-            l = rpt.readline()
-            if ("Link Flow Summary" in l):
+        while check:
+            line1 = rpt.readline()
+            if "Node Flooding Summary" in line1:
                 check2 = True
-                while(check2):
+                while check2:
+
+                    line1 = rpt.readline()
+                    if "Node" in line1:
+                        line1 = rpt.readline()
+                        line1 = rpt.readline()
+
+                        check3 = True
+                        while check3:
+                            if "*" in line1:
+                                check3 = False
+
+                            line1 += rpt.readline()
+
+                        check = False
+                        check2 = False
+
+        Node_FS = []
+        a = line1.split("\n")
+
+        for i in range(len(a)):
+            Node_FS.append([])
+            line1 = str(a[i])
+            a[i] = line1.split(" ")
+            for j in a[i]:
+                if j != '':
+                    Node_FS[i].append(j)
+
+        for i in range(5):
+            Node_FS.pop()
+
+        Nodes = []
+        for i in range(len(Node_FS)):
+            if int(Node_FS[i][0]) <= int(limit_node):
+                Nodes.append(Node_FS[i][0])
+
+        for i in sub_dic.keys():
+            if not (i in Nodes):
+                for j in sub_dic.get(i):
+                    for k in range(len(Node_FS)):
+                        if j == Node_FS[k][0]:
+                            result.append(j)
+
+        for i in Nodes:
+            result.append(i)
+
+            # ---- Find Link Flow Summary ------
+        check = True
+        while check:
+            l = rpt.readline()
+            if "Link Flow Summary" in l:
+                check2 = True
+                while check2:
                     l = rpt.readline()
-                    if("Link" in l):
+                    if "Link" in l:
                         l = rpt.readline()
                         l = rpt.readline()
 
                         check3 = True
-                        while (check3):
-                            if("*" in l):
+                        while check3:
+                            if "*" in l:
                                 check3 = False
 
-                            #mem.append(l)
+                            # mem.append(l)
                             l += rpt.readline()
 
                         check = False
-                        check2= False
+                        check2 = False
 
         rpt.close()
 
-        table=[]
+        Link_FS = []
         a = l.split("\n")
         for i in range(len(a)):
-            table.append([])
+            Link_FS.append([])
             l = str(a[i])
             a[i] = l.split(" ")
             for j in a[i]:
-                if j !='':
-                    table[i].append(j)
+                if j != '':
+                    Link_FS[i].append(j)
 
         for i in range(5):
-            table.pop()
-        
-        links = []
-        
-        if (col_name == "MAX/FULL FLOW"):
-            for  i in range(len(table)):
-                if (len(table[i])==8):
-                    if float(table[i][6])>= float(limit):
-                        #print (float(table[i][6]))
-                        links.append(table[i][0])
+            Link_FS.pop()
 
-        return links
+        if link_col_name == "MAX/FULL FLOW":
+            for i in range(len(Link_FS)):
+                if len(Link_FS[i]) == 8:
+                    if float(Link_FS[i][6]) >= float(limit):
+                        # print (float(Link_FS[i][6]))
+                        result.append(Link_FS[i][0])
+
+        return result
 
 
-a = HighPotentialArea(hydrolic=True).hydrolic("report.rpt","MAX/FULL FLOW","0.2")
-
+print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "0.2", {'10': ['43544', '43546']}))
