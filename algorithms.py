@@ -17,6 +17,8 @@ map_loader = MapLoader()
 
 
 class SuitableAreaBasedOnGW:
+    tag = '1'
+
     def get_suitable_areas(self, GW_ascii_map_name, user_limit):
         self.gw_map = map_loader.load_map(GWMap, GW_ascii_map_name)
         self.output = Map()
@@ -33,8 +35,13 @@ class SuitableAreaBasedOnGW:
                     self.output.matrix[i].append(1)
         return self.output
 
+    def __str__(self):
+        return "SuitableAreaBasedOnGW"
+
 
 class SuitableSoilArea:
+    tag = '2'
+
     def get_suitable_areas(self, soil_ascii_map_name, land_use_ascii_map_name, user_soil_number):
         self.soil_map = map_loader.load_map(SoilMap, soil_ascii_map_name)
         self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
@@ -54,8 +61,13 @@ class SuitableSoilArea:
                     self.output.matrix[i].append(1)
         return self.output
 
+    def __str__(self):
+        return "SuitableSoilArea"
+
 
 class FindingRiperianZone:
+    tag = '3'
+
     def __init__(self):
         self.land_use_map = LandUseMap()
         self.pixel_distance = 0
@@ -135,8 +147,13 @@ class FindingRiperianZone:
                     return True
         return False
 
+    def __str__(self):
+        return "FindingRiperianZone"
+
 
 class RoofAreaCalculator:
+    tag = '4'
+
     def __init__(self):
         self.land_use_map = LandUseMap()
         self.parcel_map = ParcelMap()
@@ -174,8 +191,13 @@ class RoofAreaCalculator:
         str_data += str(self.output)
         file.write(str_data)
 
+    def __str__(self):
+        return "RoofAreaCalculator"
+
 
 class FlatRoofFinder:
+    tag = '5'
+
     def __init__(self):
         self.max_flat_roof_number = 0
         self.flat_roofs = Map()
@@ -352,8 +374,13 @@ class FlatRoofFinder:
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
                 # os.system('pause')
 
+    def __str__(self):
+        return "FlatRoofFinder"
+
 
 class RoadFinder:
+    tag = '6'
+
     def __init__(self):
         self.detailed_landuse_map = DetailedLandUseMap()
         self.output = Map()
@@ -378,8 +405,12 @@ class RoadFinder:
             for j in range(len(self.detailed_landuse_map.map.matrix[i])):
                 self.output.matrix[i].append(self.output.no_data_value)
 
+    def __str__(self):
+        return "RoadFinder"
+
 
 class RunoffCoefficient:
+    tag = '7'
     def __init__(self):
         self.runoff_coefficient_map = RunoffCoMap()
         self.output = Map()
@@ -403,8 +434,13 @@ class RunoffCoefficient:
             for j in range(len(self.runoff_coefficient_map.map.matrix[i])):
                 self.output.matrix[i].append(self.output.no_data_value)
 
+    def __str__(self):
+        return "RunoffCoefficient"
+
 
 class RainGardenFinder:
+    tag = '8'
+
     def __init__(self):
         self.list_of_acceptable_land_use_parts = [
             LandUseMap.VALUES.URBON_AND_BUILT_UP,
@@ -553,8 +589,12 @@ class RainGardenFinder:
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
                 # os.system('pause')
 
+    def __str__(self):
+        return "RainGardenFinder"
+
 
 class LandaEq:
+    tag = '9'
     def __init__(self):
 
         self.flow_acc_map = FlowAccMap()
@@ -611,7 +651,10 @@ class LandaEq:
                 else:
 
                     temp = self.output_alpha.matrix[i][j] / (
-                    self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D)
+                        self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D)
                     self.output.matrix[i].append(log(temp))
 
         return self.output
+
+    def __str__(self):
+        return "LandaEq"

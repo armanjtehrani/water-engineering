@@ -5,11 +5,11 @@ from maps import Map
 class HighPotentialArea:
     def __init__(self, hydrology=False, hydrolic=False, **runoff_landa):
 
-        if (hydrology == True):
+        if hydrology:
             hydrology(self, **runoff_landa)
-        if (hydrolic == True):
+        if hydrolic:
             pass
-        if (hydrolic and hydrology):
+        if hydrolic and hydrology:
             pass
         if not (hydrolic or hydrology):
             print("You have to give hyldrology or hydrolic !")
@@ -39,9 +39,9 @@ class HighPotentialArea:
                             self.output_hyrology.matrix[i].append(runoff_coefficient_map.no_data_value)
 
             else:
-                if (runoff_landa.get("runoff_co_map", default=None) is not None):
+                if runoff_landa.get("runoff_co_map", default=None) is not None:
                     self.output_hyrology = self.runoff_coefficient_map
-                if ((runoff_landa.get("landa_map", default=None) is not None)):
+                if runoff_landa.get("landa_map", default=None) is not None:
                     self.output_hyrology = self.landa_map
 
         return self.output_hyrology
@@ -158,4 +158,4 @@ class HighPotentialArea:
         return result
 
 
-print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "0.2", {'10': ['43544', '43546']}))
+#print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "0.2", {'10': ['43544', '43546']}))
