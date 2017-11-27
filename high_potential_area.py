@@ -105,7 +105,7 @@ class HighPotentialArea:
                 for j in sub_dic.get(i):
                     for k in range(len(Node_FS)):
                         if j == Node_FS[k][0]:
-                            result.append(j)
+                            result.append(i)
 
         for i in Nodes:
             result.append(i)
@@ -158,4 +158,4 @@ class HighPotentialArea:
         return result
 
 
-#print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "0.2", {'10': ['43544', '43546']}))
+print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "1.6", {'10': ['43544', '43546']}))

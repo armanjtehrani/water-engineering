@@ -25,7 +25,4 @@ class Suitable:
                     if alg[i][j] == 1:
                         res.matrix[i][j] += alg.tag
 
-
-
-
-
+        return res

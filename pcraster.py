@@ -1,22 +1,13 @@
 import os
 
-# pre =
-# ncols         1852
-# nrows         1613
-# xllcorner     150257.4383344
-# yllcorner     164583
-# cellsize      2
-# NODATA_value  -9999
-from lib2to3.pgen2.grammar import line
-
 
 class Map2Asc:
     def  __init__(self):
-        self.ncols        = 1852
-        self.nrows        = 1613
-        self.xllcorner    = 150257.4383344
-        self.yllcorner    = 164583
-        self.cellsize     = 2
+        self.ncols = 1852
+        self.nrows = 1613
+        self.xllcorner = 150257.4383344
+        self.yllcorner = 164583
+        self.cellsize = 2
         self.NODATA_VALUE = -9999
 
     def set_map_variables(self, vars):
@@ -50,3 +41,7 @@ class Map2Asc:
         str_data += "cellsize      "+ str(self.cellsize) + '\n'
         str_data +=  "NODATA_value  " + str(self.NODATA_VALUE) + '\n'
         return str_data
+
+
+a = Map2Asc()
+a.build_ascii_map("maps",'slope.map',"slopeCr.asc")

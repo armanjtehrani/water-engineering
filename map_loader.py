@@ -13,6 +13,7 @@ class MapLoader:
             'cellsize': 2,
             'NODATA_value': -9999
         }
+
     def load_dot_map(self, map_class, map_name):
         map_dir = "maps/"
         ascii_name = map_name.split('.map')[0] + 'Cr.asc'
@@ -48,13 +49,17 @@ class MapLoader:
             line_list = line_list[:len(line_list) - 1]
 
             for j in range(len(line_list)):
-                line_list[j] = float(line_list[j])
+                if(i>500 and j > 400):
+                    print(i,j)
+                temp = float(line_list[j])
+                line_list[j] = None
             if len(line_list) > map.n_cols:
                 line_list = line_list[:map.n_cols]
             elif len(line_list) < map.n_cols:
                 for j in range(map.n_cols - len(line_list)):
                     line_list.append(map.no_data_value)
             map.matrix.append(line_list)
+        print("hello!")
         return map
 
     def set_my_map_config_by_map(self, map):
@@ -74,5 +79,7 @@ class MapLoaderTester:
 
     def load_dot_map_test(self):
         a = MapLoader()
-        t = a.load_dot_map(SoilMap, 'slope.map')
+        t = a.load_dot_map(SoilMap, )
         print('tt: ', t)
+
+

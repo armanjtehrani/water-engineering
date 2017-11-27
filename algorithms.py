@@ -415,7 +415,7 @@ class RunoffCoefficient:
         self.runoff_coefficient_map = RunoffCoMap()
         self.output = Map()
 
-    def get_runoff_coefficient_map(self, runoff_coefficient_map_ascii, user_limit):
+    def get_runoff_coefficient_map(self, runoff_coefficient_map_ascii, user_limit=0.7):
         self.runoff_coefficient_map = map_loader.load_map(RunoffCoefficient, runoff_coefficient_map_ascii)
         runoff_coefficient_map = self.runoff_coefficient_map.map
         self.build_basic_output()
@@ -613,8 +613,7 @@ class LandaEq:
                 if self.flow_acc_map.map.matrix[i][j] == self.flow_acc_map.map.no_data_value:
                     self.output_alpha.matrix[i].append(self.output_alpha.no_data_value)
                 else:
-                    self.output_alpha.matrix[i].append(
-                        self.flow_acc_map.map.matrix[i][j] * self.flow_acc_map.map.cell_size)
+                    self.output_alpha.matrix[i].append(self.flow_acc_map.map.matrix[i][j] * self.flow_acc_map.map.cell_size)
 
     def calculate_tan_B(self, slope_map_ascii):
         self.slope_map = map_loader.load_map(SlopeMap, slope_map_ascii)
@@ -635,8 +634,7 @@ class LandaEq:
                 if self.conductivity_map.map.matrix[i][j] == self.conductivity_map.map.no_data_value:
                     self.output_Ks.matrix[i].append(self.output_Ks.no_data_value)
                 else:
-                    self.output_Ks.matrix[i].append(
-                        self.conductivity_map.map.matrix[i][j] / self.conductivity_map.map.cell_size)
+                    self.output_Ks.matrix[i].append(self.conductivity_map.map.matrix[i][j])
 
     def get_output(self, flow_acc_map_ascii, slope_map_ascii, conductivity_map_ascii):
         self.calculate_alpha(flow_acc_map_ascii)
@@ -658,3 +656,6 @@ class LandaEq:
 
     def __str__(self):
         return "LandaEq"
+
+
+#a = LandaEq().get_output("flowaccCr.asc","slopeCr.asc","conductivityCr.asc")
