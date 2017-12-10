@@ -112,6 +112,18 @@ class LandUseMap:
         return str('land use map:\n' + str(self.map))
 
 
+class AdvancedLandUseMap:
+    class VALUES:
+        GREEN_ROOF = 1
+        RAIN_GARDEN = 2
+
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('advanced land use map:\n' + str(self.map))
+
+
 class ElevationMap:
     def __init__(self):
         self.map = Map()
@@ -153,8 +165,3 @@ class RunoffCoMap:
 
     def __str__(self):
         return str('runoff coefficient map:\n' + str(self.map))
-
-
-
-
-
