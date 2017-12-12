@@ -158,4 +158,4 @@ class HighPotentialArea:
         return result
 
 
-print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "1.6", {'10': ['43544', '43546']}))
+#print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "1.6", {'10': ['43544', '43546']}))

@@ -44,22 +44,29 @@ class MapLoader:
         #
         map.matrix = []
         for i in range(map.n_rows):
-            line_str = ascii_file.readline()
+            line_str = ascii_file.readline().replace('\n','')
             line_list = line_str.split(' ')
+            while ('' in line_list):
+                line_list.remove('')
             line_list = line_list[:len(line_list) - 1]
 
             for j in range(len(line_list)):
-                if(i>500 and j > 400):
-                    print(i,j)
-                temp = float(line_list[j])
-                line_list[j] = None
+
+                temp = line_list[j]
+                ans = 0
+
+
+                ans = float(line_list[j])
+
+                line_list[j] = ans
+
             if len(line_list) > map.n_cols:
                 line_list = line_list[:map.n_cols]
             elif len(line_list) < map.n_cols:
                 for j in range(map.n_cols - len(line_list)):
                     line_list.append(map.no_data_value)
             map.matrix.append(line_list)
-        print("hello!")
+
         return map
 
     def set_my_map_config_by_map(self, map):

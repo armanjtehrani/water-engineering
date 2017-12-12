@@ -411,6 +411,7 @@ class RoadFinder:
 
 class RunoffCoefficient:
     tag = '7'
+
     def __init__(self):
         self.runoff_coefficient_map = RunoffCoMap()
         self.output = Map()
@@ -595,6 +596,7 @@ class RainGardenFinder:
 
 class LandaEq:
     tag = '9'
+
     def __init__(self):
 
         self.flow_acc_map = FlowAccMap()
@@ -613,7 +615,9 @@ class LandaEq:
                 if self.flow_acc_map.map.matrix[i][j] == self.flow_acc_map.map.no_data_value:
                     self.output_alpha.matrix[i].append(self.output_alpha.no_data_value)
                 else:
-                    self.output_alpha.matrix[i].append(self.flow_acc_map.map.matrix[i][j] * self.flow_acc_map.map.cell_size)
+                    self.output_alpha.matrix[i].append(
+                        self.flow_acc_map.map.matrix[i][j] * self.flow_acc_map.map.cell_size)
+        print('alpha done !')
 
     def calculate_tan_B(self, slope_map_ascii):
         self.slope_map = map_loader.load_map(SlopeMap, slope_map_ascii)
@@ -623,7 +627,8 @@ class LandaEq:
                 if self.slope_map.map.matrix[i][j] == self.slope_map.map.no_data_value:
                     self.output_tan_B.matrix[i].append(self.output_tan_B.no_data_value)
                 else:
-                    self.output_tan_B.matrix[i].append(self.slope_map.map.matrix[i][j] / self.slope_map.map.cell_size)
+                    self.output_tan_B.matrix[i].append(int(self.slope_map.map.matrix[i][j]) / self.slope_map.map.cell_size)
+        print('tan_B done !')
 
     def calculate_Ks(self, conductivity_map_ascii):
         self.conductivity_map = map_loader.load_map(ConductivityMap, conductivity_map_ascii)
@@ -635,6 +640,7 @@ class LandaEq:
                     self.output_Ks.matrix[i].append(self.output_Ks.no_data_value)
                 else:
                     self.output_Ks.matrix[i].append(self.conductivity_map.map.matrix[i][j])
+        print('Ks done !')
 
     def get_output(self, flow_acc_map_ascii, slope_map_ascii, conductivity_map_ascii):
         self.calculate_alpha(flow_acc_map_ascii)
@@ -644,18 +650,33 @@ class LandaEq:
         for i in range(len(self.output_alpha.matrix)):
             self.output.matrix.append([])
             for j in range(len(self.output_alpha.matrix[i])):
-                if self.output_alpha.matrix[i][j] == self.output_alpha.map.no_data_value:
+                if self.output_alpha.matrix[i][j] == self.output_alpha.no_data_value or self.output_tan_B.matrix[i][j] == self.output_tan_B.no_data_value or self.output_Ks.matrix[i][j] == self.output_Ks.no_data_value:
                     self.output.matrix[i].append(self.output.no_data_value)
                 else:
+                    if(self.output_tan_B.matrix[i][j] == 0):
+                        temp = float(self.output_alpha.matrix[i][j]) / (0.0001 * self.output_Ks.matrix[i][j] * self.D)
 
-                    temp = self.output_alpha.matrix[i][j] / (
-                        self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D)
+                    else :
+                        temp = float(self.output_alpha.matrix[i][j]) / (self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D)
                     self.output.matrix[i].append(log(temp))
 
-        return self.output
+        return self.output.matrix
 
     def __str__(self):
         return "LandaEq"
 
 
-#a = LandaEq().get_output("flowaccCr.asc","slopeCr.asc","conductivityCr.asc")
+a = LandaEq().get_output("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc")
+c = 0
+g_c = 0
+for i in range (len(a)):
+    for j in range (len(a[i])):
+        if a[i][j]>0:
+
+            if a[i][j]<18:
+                c += 1
+            else :
+                g_c += 1
+
+print(c)
+print(g_c)

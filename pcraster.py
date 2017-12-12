@@ -43,5 +43,12 @@ class Map2Asc:
         return str_data
 
 
-a = Map2Asc()
-a.build_ascii_map("maps",'slope.map',"slopeCr.asc")
+# a = Map2Asc()
+# a.build_ascii_map("maps",'conductivity.map',"conductivityCr.asc")
+#
+# b = Map2Asc()
+# b.build_ascii_map("maps",'flowacc.map',"flowaccCr.asc")
+#
+# c = Map2Asc()
+# c.build_ascii_map("maps",'slope.map',"slopeCr.asc")
+
