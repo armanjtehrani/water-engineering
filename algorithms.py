@@ -660,23 +660,11 @@ class LandaEq:
                         temp = float(self.output_alpha.matrix[i][j]) / (self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D)
                     self.output.matrix[i].append(log(temp))
 
-        return self.output.matrix
+        return self.output
 
     def __str__(self):
         return "LandaEq"
 
 
 a = LandaEq().get_output("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc")
-c = 0
-g_c = 0
-for i in range (len(a)):
-    for j in range (len(a[i])):
-        if a[i][j]>0:
-
-            if a[i][j]<18:
-                c += 1
-            else :
-                g_c += 1
-
-print(c)
-print(g_c)
+a.to_file("new")
