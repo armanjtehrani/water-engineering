@@ -368,7 +368,7 @@ class RoadFinder :
             for j in range(len(detailed_landuse_map.matrix[i])):
                 if detailed_landuse_map.matrix[i][j] == detailed_landuse_map.no_data_value:
                     continue
-                if detailed_landuse_map.matrix[i][j] == DetailedLandUseMap.VALUES.Asphalt:
+                if detailed_landuse_map.mطططططططatrix[i][j] == DetailedLandUseMap.VALUES.Asphalt:
                     self.output.matrix[i][j] = 1
                 else:
                     self.output.matrix[i][j] = 0
@@ -458,7 +458,7 @@ class RainGardenFinder:
                 if landuse.matrix[i][j] == landuse.no_data_value:
                     continue
                 if landuse.matrix[i][j] not in self.list_of_acceptable_land_use_parts:
-                    self.rain_gardens[i][j] = 0
+                    self.rain_gardens.matrix[i][j] = 0
                     continue
                 # pixel[i][j] is a roof
                 # print('roof:)')
@@ -558,20 +558,33 @@ class RainGardenFinder:
 
 class UserMergeForAlgorithms:
     def __init__(self):
+        self.user_limit_on_max_maps_per_percent = 0
         self.priority_list = None
+        self.num_of_pixels_of_priority = None
         self.priority_index = 0
         self.priority_item = None
         self.basic_landuse_map = None
         self.taha_map = None
         self.my_map = None
-        self.flat_roof_map = None
+        self.parcel_map = None
+        self.dem_map = None
         self.priority_maps = None
 
-    def init(self, priority_list, basic_landuse_map, taha_map, flat_roof_map):
+    def init(self, priority_list, basic_landuse_map, taha_map, parcel_map, dem_map, user_limit_on_max_maps_per_percent):
+        self.user_limit_on_max_maps_per_percent = user_limit_on_max_maps_per_percent
         self.priority_list = priority_list
+        self.num_of_pixels_of_priority = {}
         self.priority_maps = {}
-        for i in priority_list:
-            self.priority_maps[i] = {'maps': {}, 'final': None}
+        for priority_name in priority_list:
+            self.num_of_pixels_of_priority[priority_name] = 0
+            self.priority_maps[priority_name] = {'maps': {}, 'final': None}
+        matrix = taha_map.map.matrix
+        for i in range(len(matrix)):
+            for j in range(len(matrix)):
+                data = int(matrix[i][j])
+                if data in priority_list:
+                    self.num_of_pixels_of_priority[data] += 1
+        print('final pixel nums:', self.num_of_pixels_of_priority)
             # priority maps:{
             #     priority item: {
             #     'final': Map(),
@@ -586,59 +599,147 @@ class UserMergeForAlgorithms:
         self.basic_landuse_map = basic_landuse_map
         self.taha_map = taha_map
         self.my_map = taha_map
-        self.flat_roof_map = flat_roof_map
+        self.parcel_map = parcel_map
+        self.dem_map = dem_map
 
-    def get_priorities(self, priority_list, basic_landuse_map, taha_map, flat_roof_map):
-        self.init(priority_list, basic_landuse_map, taha_map, flat_roof_map)
-        for priority_index in range(1, len(priority_list)):
+    def get_priorities(self, priority_list, basic_landuse_map, taha_map, parcel_map, dem_map,
+                       user_limit_on_max_maps_per_percent):    # main method
+        print('first. priority list:', priority_list)
+        self.init(priority_list, basic_landuse_map, taha_map, parcel_map, dem_map, user_limit_on_max_maps_per_percent)
+        print('after basic init')
+        self.print()
+        for priority_index in range(len(priority_list)):
+            print('on priority index:', priority_index)
             self.priority_index = priority_index
             self.priority_item = priority_list[priority_index]
-            if self.priority_item == AdvancedLandUseMap.VALUES.GREEN_ROOF:
-                self.build_green_roof_maps()
-            elif self.priority_item == AdvancedLandUseMap.VALUES.RAIN_GARDEN:
-                self.build_rain_garden_maps()
-            else:
-                self.build_continuous_maps_for_priority_item()
+            print('on priority item:', self.priority_item)
+            self.build_maps_for_priority_item()
 
-    def build_green_roof_maps(self):
-        pass
+    def print(self):
+        print('****************inside print***************')
+        print('priority list:', self.priority_list)
+        print('priority maps:', self.priority_maps)
+            # priority maps:{
+            #     priority item: {
+            #     'final': Map(),
+            #     'maps': {
+            #         5:[Map1, Map2, ...],
+            #         10:[Map1, Map2, ...],
+            #         ...,
+            #         100:[Map1]
+            #     }
+            # }
+            # }
 
-    def build_rain_garden_maps(self):
-        pass
-
-    def build_continuous_maps_for_priority_item(self):
+    def build_maps_for_priority_item(self):
         step = 5
         maps_for_priority = {'maps': {}, 'final': None}
-        for i in range(100/step):
-            perc = step * i
-            maps = self.build_maps_for_priority_item_with_percentage(perc)
-            maps_for_priority['maps'][perc] = maps
-            if perc == 100:
-                maps_for_priority['final'] = maps[0]
+        print('start:')
+        if self.priority_item == AdvancedLandUseMap.VALUES.GREEN_ROOF:
+            print('green roof')
+            method_to_call_for_priority_item = self.build_green_roof_maps_for_priority_item_with_percentage
+        elif self.priority_item == AdvancedLandUseMap.VALUES.RAIN_GARDEN:
+            print('rain garden')
+            method_to_call_for_priority_item = self.build_rain_garden_maps_for_priority_item_with_percentage
+        else:
+            print('continuous')
+            method_to_call_for_priority_item = self.build_continuous_maps_for_priority_item_with_percentage
+        all_priority_pixels = self.num_of_pixels_of_priority[self.priority_item]
+        for i in range(1, int(100 / step) + 1):
+            print('i:', i)
+            percent = step * i
+            print('%:', percent)
+            num_of_pixels = int(all_priority_pixels * (percent/100))
+            print('alllll of pixels:', all_priority_pixels)
+            print('num of pixels:', num_of_pixels)
+            maps = [[]]
+            maps = method_to_call_for_priority_item(num_of_pixels)
+            print('maps len:', len(maps))
+            maps_for_priority['maps'][percent] = maps
+            if percent == 100:
+                maps_for_priority['final'] = maps[0]  # should not be empty!!
+            # print('maps for priority:', maps_for_priority)
         self.priority_maps[self.priority_item] = maps_for_priority
+        print('final priority maps:', len(self.priority_maps[self.priority_item]))
 
-    def build_maps_for_priority_item_with_percentage(self, perc):
+    def build_green_roof_maps_for_priority_item_with_percentage(self, num_of_pixels):
+        print('green roof2')
+        return [[]]
+
+    def build_rain_garden_maps_for_priority_item_with_percentage(self, num_of_pixels):
+        print('rain garden2')
+        return [[]]
+
+    # def build_continuous_maps_for_priority_item(self):
+    #     step = 5
+    #     maps_for_priority = {'maps': {}, 'final': None}
+    #     print('start:')
+    #     for i in range(1, int(100/step) + 1):
+    #         print('i:', i)
+    #         percent = step * i
+    #         print('%:', percent)
+    #         maps = [[]]
+    #         # maps = self.build_maps_for_priority_item_with_percentage(percent)
+    #         print('maps len:', len(maps))
+    #         maps_for_priority['maps'][percent] = maps
+    #         if percent == 100:
+    #             maps_for_priority['final'] = maps[0]    # should not be empty!!
+    #         print('maps for priority:', maps_for_priority)
+    #     self.priority_maps[self.priority_item] = maps_for_priority
+    #     print('final priority maps:', self.priority_maps)
+
+    def build_continuous_maps_for_priority_item_with_percentage(self, num_of_pixels):
+        print('continuous2')
         maps = []
         priority_item = self.priority_item
-        main_map = self.my_map.map
+        print('priority item:', priority_item)
+        main_map = copy.deepcopy(self.my_map.map)
         matrix = main_map.matrix
-        num_of_pixels = main_map.n_cols * self.my_map.n_rows * (perc / 100)
-        while True:
-            map = copy.deepcopy(self.basic_landuse_map)
+        for map_no in range(self.user_limit_on_max_maps_per_percent):
+            new_map_to_append = copy.deepcopy(self.basic_landuse_map.map.matrix)
             seen_pixels = 0
             for i in range(len(matrix)):
+                # print('i:', i)
+                # print('seen pixels:', seen_pixels)
+                # print('num of pixels:', num_of_pixels)
+                # print('seen pixels > num of pixels:', seen_pixels > num_of_pixels)
                 if seen_pixels > num_of_pixels:
+                    # print('seen pixels > num_of_pixels111:', seen_pixels)
                     break
                 col = matrix[i]
                 for j in range(len(col)):
+                    # print('j:', j)
                     if seen_pixels > num_of_pixels:
+                        # print('seen pixels > num_of_pixels222:', seen_pixels)
                         break
-                    it = col[j]
+                    it = matrix[i][j]
+                    # print('matrix[i][j]:', matrix[i][j])
                     if it == priority_item:
+                        matrix[i][j] = main_map.no_data_value
+                        # print('it = priority item = ', it)
+                        # print('i:', i, ', j:', j)
                         seen_pixels += 1
-                        map[i][j] = it
-                        main_map[i][j] = self.basic_landuse_map[i][j]
+                        # print('seen_pixels:', seen_pixels)
+                        new_map_to_append[i][j] = it
+                        # main_map.matrix[i][j] = self.basic_landuse_map.map.matrix[i][j]
             else:
-                maps.append({'map': map, 'num_of_pixels:': seen_pixels})
+                # print('seen pixels > num_of_pixels333:', seen_pixels)
+                maps.append({'map': new_map_to_append, 'num_of_pixels:': seen_pixels})
+                # print('maps len111:', len(maps))
                 break
-            maps.append({'map': map, 'num_of_pixels:': seen_pixels})
+            maps.append({'map': new_map_to_append, 'num_of_pixels:': seen_pixels})
+            print('maps len222:', len(maps))
+        return maps
+
+
+class UserMergeForAlgorithmsTest:
+    def test_get_priorities(self):
+        basic_landuse_map = map_loader.load_map(LandUseMap, "landuse.asc")
+        taha_map = map_loader.load_map(DetailedLandUseMap, "landuse.asc")
+        parcel_map = map_loader.load_map(ParcelMap, 'roofs30.asc')
+        dem_map = map_loader.load_map(ElevationMap, 'elevation.asc')
+
+        print('taha map:', taha_map.map.get_config_string())
+        print('landuse map:', basic_landuse_map.map.get_config_string())
+        a = UserMergeForAlgorithms().get_priorities([5], basic_landuse_map, taha_map, ParcelMap, dem_map, 5)
+UserMergeForAlgorithmsTest().test_get_priorities()
