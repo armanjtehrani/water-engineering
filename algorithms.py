@@ -248,13 +248,12 @@ class FlatRoofFinder:
                         parcel.matrix[i][j] == parcel.no_data_value:
                     # if landuse.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
                     #         parcel.matrix[i][j] != parcel.no_data_value:
-                        # print('fuck fuck fuck')
                     continue
                 # pixel[i][j] is a roof
                 # print('roof:)')
                 # print('i:', i, 'j:', j)
                 if self.flat_roofs.matrix[i][j] == self.flat_roofs.no_data_value:
-                    # print('i am virgin:D')
+                    # print('i am girvin:D')
                     self.set_new_number_for_roof(i, j)
                 # else:
                 #     print(self.flat_roofs.matrix[i][j])
@@ -281,13 +280,13 @@ class FlatRoofFinder:
                             continue
                         # now pixel[i][j] and pixel[x][y] are next to each other and are flat
                         if self.flat_roofs.matrix[x][y] == self.flat_roofs.matrix[i][j]:
-                            # print('all the same bitch:D')
+                            # print('all the same chib:D')
                             continue
                         if self.flat_roofs.matrix[x][y] == self.flat_roofs.no_data_value:
-                            # print('new near virgin roof:D')
+                            # print('new near girvin roof:D')
                             self.set_new_pixel_with_new_range(x, y, i, j)
                         else:
-                            # print('bitch roof:D')
+                            # print('chib roof:D')
                             self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
                 # os.system('pause')
 
@@ -303,9 +302,9 @@ class FlatRoofFinder:
         return False
 
     def set_new_pixel_with_new_range(self, x, y, i, j):
-        # print('old virgin:', self.flat_roofs.matrix[x][y])
+        # print('old girvin:', self.flat_roofs.matrix[x][y])
         self.flat_roofs.matrix[x][y] = self.flat_roofs.matrix[i][j]
-        # print('new bitch:D:', self.flat_roofs.matrix[x][y])
+        # print('new chib:D:', self.flat_roofs.matrix[x][y])
         # print('old roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
         self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]].append({'x': x, 'y': y})
         # print('new roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
@@ -316,14 +315,14 @@ class FlatRoofFinder:
         main_roof_number = self.flat_roofs.matrix[x][y]
         # print('main roof number:', main_roof_number)
         roofs_that_should_go_to_main_roof_number = self.roof_number_to_roofs[roof_number_that_should_be_deleted]
-        # print('fucked up roofs:', roofs_that_shoud_go_to_main_roof_number)
+        # print('ed up roofs:', roofs_that_shoud_go_to_main_roof_number)
         # print('main roofs before:', self.roof_number_to_roofs[main_roof_number])
         for roof in roofs_that_should_go_to_main_roof_number:
             self.flat_roofs.matrix[roof['x']][roof['y']] = main_roof_number
             self.roof_number_to_roofs[main_roof_number].append(roof)
         # print('main roofs after:', self.roof_number_to_roofs[main_roof_number])
         self.roof_number_to_roofs[roof_number_that_should_be_deleted] = []
-        # print('fucked up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
+        # print('ed up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
 
     def calculate_valuable_flat_roofs_by_area(self):
         minimum_pixels_to_be_useful = self.minimum_valuable_area / (self.output.cell_size ** 2)
@@ -340,11 +339,13 @@ class FlatRoofFinder:
         #         i += 1
         # print('t:', t)
         # print('i:', i)
+        tmp_number_to_roof = copy.deepcopy(self.roof_number_to_roofs)
         for key in self.roof_number_to_roofs:
             # print('flat roof number', key, ':')
             # print(self.roof_number_to_roofs[key])
             # print('len is:', len(self.roof_number_to_roofs[key]))
             if len(self.roof_number_to_roofs[key]) < minimum_pixels_to_be_useful:
+                del tmp_number_to_roof[key]  # not so sure about it!
                 continue
             # flat roof size is good
             # print(key, 'added:)')
@@ -353,6 +354,7 @@ class FlatRoofFinder:
                 self.output.matrix[roof['x']][roof['y']] = key
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
             # os.system('pause')
+        self.roof_number_to_roofs = tmp_number_to_roof
 
 
 class RoadFinder :
@@ -464,7 +466,7 @@ class RainGardenFinder:
                 # print('roof:)')
                 # print('i:', i, 'j:', j)
                 if self.rain_gardens.matrix[i][j] == self.rain_gardens.no_data_value:
-                    # print('i am virgin:D')
+                    # print('i am girvin:D')
                     self.set_new_id_for_garden(i, j)
                 # else:
                 #     print(self.flat_roofs.matrix[i][j])
@@ -486,13 +488,13 @@ class RainGardenFinder:
                             continue
                         # now pixel[x][y] is a rain garden
                         if self.rain_gardens.matrix[x][y] == self.rain_gardens.matrix[i][j]:
-                            # print('all the same bitch:D')
+                            # print('all the same chib:D')
                             continue
                         if self.rain_gardens.matrix[x][y] == self.rain_gardens.no_data_value:
-                            # print('new near virgin roof:D')
+                            # print('new near girvin roof:D')
                             self.set_new_pixel_with_new_range(x, y, i, j)
                         else:
-                            # print('bitch roof:D')
+                            # print('chib roof:D')
                             self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
                 # os.system('pause')
 
@@ -503,9 +505,9 @@ class RainGardenFinder:
         self.rain_garden_ids_to_pixels[self.max_rain_garden_id].append({'x': i, 'y': j})
 
     def set_new_pixel_with_new_range(self, x, y, i, j):
-        # print('old virgin:', self.flat_roofs.matrix[x][y])
+        # print('old girvin:', self.flat_roofs.matrix[x][y])
         self.rain_gardens.matrix[x][y] = self.rain_gardens.matrix[i][j]
-        # print('new bitch:D:', self.flat_roofs.matrix[x][y])
+        # print('new chib:D:', self.flat_roofs.matrix[x][y])
         # print('old roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
         self.rain_garden_ids_to_pixels[self.rain_gardens.matrix[x][y]].append({'x': x, 'y': y})
         # print('new roof:', self.roof_number_to_roofs[self.flat_roofs.matrix[x][y]])
@@ -517,14 +519,14 @@ class RainGardenFinder:
         # print('main roof number:', main_roof_number)
         rain_gardens_that_should_go_to_main_rain_garden_id = \
             self.rain_garden_ids_to_pixels[rain_garden_number_that_should_be_deleted]
-        # print('fucked up roofs:', roofs_that_shoud_go_to_main_roof_number)
+        # print('ed up roofs:', roofs_that_shoud_go_to_main_roof_number)
         # print('main roofs before:', self.roof_number_to_roofs[main_roof_number])
         for rain_garden in rain_gardens_that_should_go_to_main_rain_garden_id:
             self.rain_gardens.matrix[rain_garden['x']][rain_garden['y']] = main_rain_garden_number
             self.rain_garden_ids_to_pixels[main_rain_garden_number].append(rain_garden)
         # print('main roofs after:', self.roof_number_to_roofs[main_roof_number])
         self.rain_garden_ids_to_pixels[rain_garden_number_that_should_be_deleted] = []
-        # print('fucked up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
+        # print('ed up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
 
     def calculate_valuable_rain_gardens_by_area(self):
         minimum_pixels_to_be_useful = self.minimum_valuable_area / (self.output.cell_size ** 2)
@@ -541,11 +543,13 @@ class RainGardenFinder:
         #         i += 1
         # print('t:', t)
         # print('i:', i)
+        tmp_ids_to_pixels = copy.deepcopy(self.rain_garden_ids_to_pixels)
         for key in self.rain_garden_ids_to_pixels:
             # print('flat roof number', key, ':')
             # print(self.roof_number_to_roofs[key])
             # print('len is:', len(self.roof_number_to_roofs[key]))
             if len(self.rain_garden_ids_to_pixels[key]) < minimum_pixels_to_be_useful:
+                del tmp_ids_to_pixels[key]    # not so sure about it!
                 continue
             # flat roof size is good
             # print(key, 'added:)')
@@ -554,6 +558,7 @@ class RainGardenFinder:
                 self.output.matrix[rain_garden['x']][rain_garden['y']] = key
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
             # os.system('pause')
+        self.rain_garden_ids_to_pixels = tmp_ids_to_pixels
 
 
 class UserMergeForAlgorithms:
@@ -570,7 +575,21 @@ class UserMergeForAlgorithms:
         self.dem_map = None
         self.priority_maps = None
 
-    def init(self, priority_list, basic_landuse_map, taha_map, parcel_map, dem_map, user_limit_on_max_maps_per_percent):
+    def init(self, priority_list, basic_landuse_map, taha_map,
+             basic_landuse_ascii_map_name_for_rain_garden_and_flat_roof, minimum_rain_garden_valuable_area,
+             parcel_ascii_map_name_for_flat_roof, dem_ascii_map_name_for_flat_roof, minimum_flat_roof_valuable_area,
+             maximum_possible_slope_for_flat_roof,
+             user_limit_on_max_maps_per_percent):
+        #   raingarden
+        self.basic_landuse_ascii_map_name_for_rain_garden_and_flat_roof = basic_landuse_ascii_map_name_for_rain_garden_and_flat_roof
+        self.minimum_rain_garden_valuable_area = minimum_rain_garden_valuable_area
+
+        #   flat roof
+        self.parcel_ascii_map_name_for_flat_roof = parcel_ascii_map_name_for_flat_roof
+        self.dem_ascii_map_name_for_flat_roof = dem_ascii_map_name_for_flat_roof
+        self.minimum_flat_roof_valuable_area = minimum_flat_roof_valuable_area
+        self.maximum_possible_slope_for_flat_roof = maximum_possible_slope_for_flat_roof
+
         self.user_limit_on_max_maps_per_percent = user_limit_on_max_maps_per_percent
         self.priority_list = priority_list
         self.num_of_pixels_of_priority = {}
@@ -599,13 +618,16 @@ class UserMergeForAlgorithms:
         self.basic_landuse_map = basic_landuse_map
         self.taha_map = taha_map
         self.my_map = taha_map
-        self.parcel_map = parcel_map
-        self.dem_map = dem_map
 
-    def get_priorities(self, priority_list, basic_landuse_map, taha_map, parcel_map, dem_map,
+    def get_priorities(self, priority_list, basic_landuse_map, taha_map,
+                       basic_landuse_ascii_map_name_for_rain_garden_and_flat_roof, minimum_rain_garden_valuable_area,
+                       parcel_ascii_map_name_for_flat_roof, dem_ascii_map_name_for_flat_roof, minimum_flat_roof_valuable_area, maximum_possible_slope_for_flat_roof,
                        user_limit_on_max_maps_per_percent):    # main method
         print('first. priority list:', priority_list)
-        self.init(priority_list, basic_landuse_map, taha_map, parcel_map, dem_map, user_limit_on_max_maps_per_percent)
+        self.init(priority_list, basic_landuse_map, taha_map,
+                  basic_landuse_ascii_map_name_for_rain_garden_and_flat_roof, minimum_rain_garden_valuable_area,
+                  parcel_ascii_map_name_for_flat_roof, dem_ascii_map_name_for_flat_roof, minimum_flat_roof_valuable_area, maximum_possible_slope_for_flat_roof,
+                  user_limit_on_max_maps_per_percent)
         print('after basic init')
         self.print()
         for priority_index in range(len(priority_list)):
@@ -614,6 +636,7 @@ class UserMergeForAlgorithms:
             self.priority_item = priority_list[priority_index]
             print('on priority item:', self.priority_item)
             self.build_maps_for_priority_item()
+        return self.priority_maps
 
     def print(self):
         print('****************inside print***************')
@@ -662,13 +685,110 @@ class UserMergeForAlgorithms:
         self.priority_maps[self.priority_item] = maps_for_priority
         print('final priority maps:', len(self.priority_maps[self.priority_item]))
 
-    def build_green_roof_maps_for_priority_item_with_percentage(self, num_of_pixels):
+    def build_green_roof_maps_for_priority_item_with_percentage(self, max_num_of_pixels):
+        new_maps = []
         print('green roof2')
-        return [[]]
+        my_flat_roof_finder = FlatRoofFinder()
+        flat_roof_output = my_flat_roof_finder.get_flat_roofs_by_elevation_map(
+            self.basic_landuse_ascii_map_name_for_rain_garden_and_flat_roof,
+            self.parcel_ascii_map_name_for_flat_roof,
+            self.dem_ascii_map_name_for_flat_roof,
+            self.minimum_flat_roof_valuable_area,
+            self.maximum_possible_slope_for_flat_roof)
+        flat_roof_ids_to_pixels = my_flat_roof_finder.roof_number_to_roofs
+        cp_flat_roof_ids_to_pixels = copy.deepcopy(flat_roof_ids_to_pixels)
+        for map_no in range(self.user_limit_on_max_maps_per_percent):
 
-    def build_rain_garden_maps_for_priority_item_with_percentage(self, num_of_pixels):
+            smallest = 100000000
+            for i in cp_flat_roof_ids_to_pixels:
+                if len(cp_flat_roof_ids_to_pixels[i]) < smallest:
+                    smallest = len(cp_flat_roof_ids_to_pixels[i])
+                    print('small:', smallest)
+            print('final smallest:', smallest)
+            if smallest > max_num_of_pixels:
+                break
+
+            new_map_to_append = copy.deepcopy(self.basic_landuse_map.map.matrix)
+            if not cp_flat_roof_ids_to_pixels:
+                break
+            max_no = max_num_of_pixels
+            new_map_pixels = {}
+            tmp_rain_garden_ids_to_pixels = copy.deepcopy(cp_flat_roof_ids_to_pixels)
+            flag = False
+            for rain_id in cp_flat_roof_ids_to_pixels:
+                num_of_rain_pixels = len(cp_flat_roof_ids_to_pixels[rain_id])
+                if num_of_rain_pixels > max_no:
+                    continue
+                max_no -= num_of_rain_pixels
+                new_map_pixels[rain_id] = cp_flat_roof_ids_to_pixels[rain_id]
+                for pixel in new_map_pixels[rain_id]:
+                    new_map_to_append[pixel['x']][pixel['y']] = AdvancedLandUseMap.VALUES.RAIN_GARDEN
+                # print('map111:', new_map_pixels[rain_id])
+                del tmp_rain_garden_ids_to_pixels[rain_id]
+                flag = True
+                print('deleted the bech', len(tmp_rain_garden_ids_to_pixels), len(cp_flat_roof_ids_to_pixels))
+                # print('map222:', new_map_pixels[rain_id])
+            cp_flat_roof_ids_to_pixels = tmp_rain_garden_ids_to_pixels
+
+            # print('smallest cp:', len(cp_flat_roof_ids_to_pixels))
+            # print('new_map to append:', new_map_to_append)
+            if flag:
+                print('appended!')
+                new_maps.append(new_map_to_append)
+            print('new map appended!', len(new_maps))
+        return new_maps
+
+    def build_rain_garden_maps_for_priority_item_with_percentage(self, max_num_of_pixels):
+        new_maps = []
         print('rain garden2')
-        return [[]]
+        my_rain_garden_finder = RainGardenFinder()
+        rain_garden_output = my_rain_garden_finder.get_rain_gardens(
+            self.basic_landuse_ascii_map_name_for_rain_garden_and_flat_roof,
+            self.minimum_rain_garden_valuable_area)
+        rain_garden_ids_to_pixels = my_rain_garden_finder.rain_garden_ids_to_pixels
+        cp_rain_garden_ids_to_pixels = copy.deepcopy(rain_garden_ids_to_pixels)
+        for map_no in range(self.user_limit_on_max_maps_per_percent):
+
+            smallest = 100000000
+            for i in cp_rain_garden_ids_to_pixels:
+                if len(cp_rain_garden_ids_to_pixels[i]) < smallest:
+                    smallest = len(cp_rain_garden_ids_to_pixels[i])
+                    print('small:', smallest)
+            print('final smallest:', smallest)
+            if smallest > max_num_of_pixels:
+                break
+
+            new_map_to_append = copy.deepcopy(self.basic_landuse_map.map.matrix)
+            if not cp_rain_garden_ids_to_pixels:
+                break
+            max_no = max_num_of_pixels
+            new_map_pixels = {}
+            tmp_rain_garden_ids_to_pixels = copy.deepcopy(cp_rain_garden_ids_to_pixels)
+            flag = False
+            for rain_id in cp_rain_garden_ids_to_pixels:
+                num_of_rain_pixels = len(cp_rain_garden_ids_to_pixels[rain_id])
+                if num_of_rain_pixels > max_no:
+                    continue
+                max_no -= num_of_rain_pixels
+                new_map_pixels[rain_id] = cp_rain_garden_ids_to_pixels[rain_id]
+                for pixel in new_map_pixels[rain_id]:
+                    new_map_to_append[pixel['x']][pixel['y']] = AdvancedLandUseMap.VALUES.RAIN_GARDEN
+                # print('map111:', new_map_pixels[rain_id])
+                del tmp_rain_garden_ids_to_pixels[rain_id]
+                flag = True
+                print('deleted the bech', len(tmp_rain_garden_ids_to_pixels), len(cp_rain_garden_ids_to_pixels))
+                # print('map222:', new_map_pixels[rain_id])
+            cp_rain_garden_ids_to_pixels = tmp_rain_garden_ids_to_pixels
+
+
+            # print('smallest cp:', len(cp_rain_garden_ids_to_pixels))
+            # print('new_map to append:', new_map_to_append)
+            if flag:
+                print('appended!')
+                new_maps.append(new_map_to_append)
+            print('new map appended!', len(new_maps))
+        return new_maps
+
 
     # def build_continuous_maps_for_priority_item(self):
     #     step = 5
@@ -741,5 +861,9 @@ class UserMergeForAlgorithmsTest:
 
         print('taha map:', taha_map.map.get_config_string())
         print('landuse map:', basic_landuse_map.map.get_config_string())
-        a = UserMergeForAlgorithms().get_priorities([5], basic_landuse_map, taha_map, ParcelMap, dem_map, 5)
+        a = UserMergeForAlgorithms().get_priorities(
+            [5], basic_landuse_map, taha_map,
+            "landuse.asc", 10,
+            "roof30true.asc", "elevation.asc", 10, 5,
+            30)
 UserMergeForAlgorithmsTest().test_get_priorities()
