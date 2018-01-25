@@ -619,6 +619,9 @@ class UserMergeForAlgorithms:
         self.taha_map = taha_map
         self.my_map = taha_map
 
+        ### old final maps, new basic maps
+        self.basic_map_for_me = self.basic_landuse_map.map.matrix
+
     def get_priorities(self, priority_list, basic_landuse_map, taha_map,
                        basic_landuse_ascii_map_name_for_rain_garden_and_flat_roof, minimum_rain_garden_valuable_area,
                        parcel_ascii_map_name_for_flat_roof, dem_ascii_map_name_for_flat_roof, minimum_flat_roof_valuable_area, maximum_possible_slope_for_flat_roof,
@@ -681,6 +684,7 @@ class UserMergeForAlgorithms:
             maps_for_priority['maps'][percent] = maps
             if percent == 100:
                 maps_for_priority['final'] = maps[0]  # should not be empty!!
+                self.basic_map_for_me = maps_for_priority['final']
             # print('maps for priority:', maps_for_priority)
         self.priority_maps[self.priority_item] = maps_for_priority
         print('final priority maps:', len(self.priority_maps[self.priority_item]))
@@ -708,7 +712,7 @@ class UserMergeForAlgorithms:
             if smallest > max_num_of_pixels:
                 break
 
-            new_map_to_append = copy.deepcopy(self.basic_landuse_map.map.matrix)
+            new_map_to_append = copy.deepcopy(self.basic_map_for_me)    ##########################
             if not cp_flat_roof_ids_to_pixels:
                 break
             max_no = max_num_of_pixels
@@ -758,7 +762,7 @@ class UserMergeForAlgorithms:
             if smallest > max_num_of_pixels:
                 break
 
-            new_map_to_append = copy.deepcopy(self.basic_landuse_map.map.matrix)
+            new_map_to_append = copy.deepcopy(self.basic_map_for_me)    #############################
             if not cp_rain_garden_ids_to_pixels:
                 break
             max_no = max_num_of_pixels
@@ -816,7 +820,7 @@ class UserMergeForAlgorithms:
         main_map = copy.deepcopy(self.my_map.map)
         matrix = main_map.matrix
         for map_no in range(self.user_limit_on_max_maps_per_percent):
-            new_map_to_append = copy.deepcopy(self.basic_landuse_map.map.matrix)
+            new_map_to_append = copy.deepcopy(self.basic_map_for_me)    ###############################
             seen_pixels = 0
             for i in range(len(matrix)):
                 # print('i:', i)
