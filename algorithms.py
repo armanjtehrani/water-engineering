@@ -1,3 +1,4 @@
+import copy
 import os
 import time
 
@@ -11,6 +12,7 @@ from maps import ParcelMap
 from maps import ElevationMap
 from maps import DetailedLandUseMap
 from maps import RunoffCoMap
+from maps import AdvancedLandUseMap
 
 
 map_loader = MapLoader()
@@ -554,9 +556,89 @@ class RainGardenFinder:
             # os.system('pause')
 
 
+class UserMergeForAlgorithms:
+    def __init__(self):
+        self.priority_list = None
+        self.priority_index = 0
+        self.priority_item = None
+        self.basic_landuse_map = None
+        self.taha_map = None
+        self.my_map = None
+        self.flat_roof_map = None
+        self.priority_maps = None
 
+    def init(self, priority_list, basic_landuse_map, taha_map, flat_roof_map):
+        self.priority_list = priority_list
+        self.priority_maps = {}
+        for i in priority_list:
+            self.priority_maps[i] = {'maps': {}, 'final': None}
+            # priority maps:{
+            #     priority item: {
+            #     'final': Map(),
+            #     'maps': {
+            #         5:[Map1, Map2, ...],
+            #         10:[Map1, Map2, ...],
+            #         ...,
+            #         100:[Map1]
+            #     }
+            # }
+            # }
+        self.basic_landuse_map = basic_landuse_map
+        self.taha_map = taha_map
+        self.my_map = taha_map
+        self.flat_roof_map = flat_roof_map
 
+    def get_priorities(self, priority_list, basic_landuse_map, taha_map, flat_roof_map):
+        self.init(priority_list, basic_landuse_map, taha_map, flat_roof_map)
+        for priority_index in range(1, len(priority_list)):
+            self.priority_index = priority_index
+            self.priority_item = priority_list[priority_index]
+            if self.priority_item == AdvancedLandUseMap.VALUES.GREEN_ROOF:
+                self.build_green_roof_maps()
+            elif self.priority_item == AdvancedLandUseMap.VALUES.RAIN_GARDEN:
+                self.build_rain_garden_maps()
+            else:
+                self.build_continuous_maps_for_priority_item()
 
+    def build_green_roof_maps(self):
+        pass
 
+    def build_rain_garden_maps(self):
+        pass
 
+    def build_continuous_maps_for_priority_item(self):
+        step = 5
+        maps_for_priority = {'maps': {}, 'final': None}
+        for i in range(100/step):
+            perc = step * i
+            maps = self.build_maps_for_priority_item_with_percentage(perc)
+            maps_for_priority['maps'][perc] = maps
+            if perc == 100:
+                maps_for_priority['final'] = maps[0]
+        self.priority_maps[self.priority_item] = maps_for_priority
 
+    def build_maps_for_priority_item_with_percentage(self, perc):
+        maps = []
+        priority_item = self.priority_item
+        main_map = self.my_map.map
+        matrix = main_map.matrix
+        num_of_pixels = main_map.n_cols * self.my_map.n_rows * (perc / 100)
+        while True:
+            map = copy.deepcopy(self.basic_landuse_map)
+            seen_pixels = 0
+            for i in range(len(matrix)):
+                if seen_pixels > num_of_pixels:
+                    break
+                col = matrix[i]
+                for j in range(len(col)):
+                    if seen_pixels > num_of_pixels:
+                        break
+                    it = col[j]
+                    if it == priority_item:
+                        seen_pixels += 1
+                        map[i][j] = it
+                        main_map[i][j] = self.basic_landuse_map[i][j]
+            else:
+                maps.append({'map': map, 'num_of_pixels:': seen_pixels})
+                break
+            maps.append({'map': map, 'num_of_pixels:': seen_pixels})
