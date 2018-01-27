@@ -114,7 +114,7 @@ class LandUseMap:
 
 class AdvancedLandUseMap:
     class VALUES:
-        GREEN_ROOF = 5
+        GREEN_ROOF = 15
         RAIN_GARDEN = 15
 
     def __init__(self):
