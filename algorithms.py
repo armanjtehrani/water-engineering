@@ -1224,7 +1224,7 @@ class UserMergeForAlgorithmsTest:
              MIN_AREA: '20', MAX_SLOPE: '5'})
 
 
-UserMergeForAlgorithmsTest().test_get_priorities_in_clean_way()
+# UserMergeForAlgorithmsTest().test_get_priorities_in_clean_way()
 # ChooseStuff().choose_all_situations_of_n(322)
 class ChooseStuff2:
     nth_list = {}
