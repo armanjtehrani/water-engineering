@@ -22,12 +22,12 @@ class Map:
 
     def get_config_string(self):
         str_data = ""
-        str_data += "ncols:" + str(self.n_cols) + '\n'
-        str_data += "nrows:" + str(self.n_rows) + '\n'
-        str_data += "xllcorner:" + str(self.xll_corner) + '\n'
-        str_data += "yllcorner:" + str(self.yll_corner) + '\n'
-        str_data += "cellsize:" + str(self.cell_size) + '\n'
-        str_data += "NODATA_value:" + str(self.no_data_value) + '\n'
+        str_data += "ncols         " + str(self.n_cols) + '\n'
+        str_data += "nrows         " + str(self.n_rows) + '\n'
+        str_data += "xllcorner     " + str(self.xll_corner) + '\n'
+        str_data += "yllcorner     " + str(self.yll_corner) + '\n'
+        str_data += "cellsize      " + str(self.cell_size) + '\n'
+        str_data += "NODATA_value  " + str(self.no_data_value) + '\n'
         return str_data
 
     def get_matrix_string(self):
@@ -48,7 +48,8 @@ class Map:
         return str_data
 
     def to_file(self, file_name):
-        file = open('maps/' + file_name, 'w+')
+
+        file = open('map/' + file_name, 'w+')
         str_data = ""
         str_data += self.get_config_string()
         str_data += self.get_matrix_string()
@@ -61,6 +62,14 @@ class GWMap:
 
     def __str__(self):
         return str('ground water map:\n' + str(self.map))
+
+
+class BasicMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('Basic map:\n' + str(self.map))
 
 
 class SoilMap:
@@ -114,8 +123,11 @@ class LandUseMap:
 
 class AdvancedLandUseMap:
     class VALUES:
-        GREEN_ROOF = 1
-        RAIN_GARDEN = 2
+        ROAD = 50
+        RIPARIAN_ZONE = 40
+        RAIN_GARDEN = 30
+        GREEN_ROOF = 20
+
 
     def __init__(self):
         self.map = Map()
@@ -150,7 +162,14 @@ class SlopeMap:
 
 class DetailedLandUseMap:
     class VALUES:
-        Asphalt = 80
+        Asphalt = 50
+        unknown = 0
+        buildings = 1
+        roads = 2
+        trees = 3
+        grass = 4
+        bare_soil = 5
+        water = 6
 
     def __init__(self):
         self.map = Map()
@@ -165,3 +184,19 @@ class RunoffCoMap:
 
     def __str__(self):
         return str('runoff coefficient map:\n' + str(self.map))
+
+
+class FlowAccMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('flow accumulator map:\n' + str(self.map))
+
+
+class ConductivityMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('conductivity map:\n' + str(self.map))

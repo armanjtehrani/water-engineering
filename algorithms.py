@@ -2,7 +2,8 @@ import copy
 import os
 import time
 
-import maps
+from math import *
+
 from map_loader import MapLoader
 from maps import Map
 from maps import GWMap
@@ -12,7 +13,12 @@ from maps import ParcelMap
 from maps import ElevationMap
 from maps import DetailedLandUseMap
 from maps import RunoffCoMap
+from maps import FlowAccMap
+from maps import SlopeMap
+from maps import ConductivityMap
+from maps import BasicMap
 from maps import AdvancedLandUseMap
+
 
 
 map_loader = MapLoader()
@@ -368,7 +374,7 @@ class RoadFinder :
             for j in range(len(detailed_landuse_map.matrix[i])):
                 if detailed_landuse_map.matrix[i][j] == detailed_landuse_map.no_data_value:
                     continue
-                if detailed_landuse_map.matrix[i][j] == DetailedLandUseMap.VALUES.Asphalt:
+                if detailed_landuse_map.matrix[i][j] == DetailedLandUseMap.VALUES.FAsphalt:
                     self.output.matrix[i][j] = 1
                 else:
                     self.output.matrix[i][j] = 0
@@ -458,7 +464,7 @@ class RainGardenFinder:
                 if landuse.matrix[i][j] == landuse.no_data_value:
                     continue
                 if landuse.matrix[i][j] not in self.list_of_acceptable_land_use_parts:
-                    self.rain_gardens[i][j] = 0
+                    self.rain_gardens.matrix[i][j] = 0
                     continue
                 # pixel[i][j] is a roof
                 # print('roof:)')
@@ -642,3 +648,4 @@ class UserMergeForAlgorithms:
                 maps.append({'map': map, 'num_of_pixels:': seen_pixels})
                 break
             maps.append({'map': map, 'num_of_pixels:': seen_pixels})
+        return maps
