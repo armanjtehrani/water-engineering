@@ -410,7 +410,7 @@ class RunoffCoefficient:
 
 class RainGardenFinder:
     def __init__(self):
-        self.list_of_acceptable_land_use_parts = [
+        self.list_of_non_acceptable_land_use_parts = [
             LandUseMap.VALUES.URBON_AND_BUILT_UP,
             LandUseMap.VALUES.WATER_BODIES
         ]
@@ -459,7 +459,7 @@ class RainGardenFinder:
             for j in range(len(self.rain_gardens.matrix[i])):
                 if landuse.matrix[i][j] == landuse.no_data_value:
                     continue
-                if landuse.matrix[i][j] not in self.list_of_acceptable_land_use_parts:
+                if landuse.matrix[i][j] in self.list_of_non_acceptable_land_use_parts:
                     self.rain_gardens.matrix[i][j] = 0
                     continue
                 # pixel[i][j] is a roof
@@ -483,7 +483,7 @@ class RainGardenFinder:
                             # print('roof on gooshe:D')
                             continue
                         # now pixel[x][y] exist!
-                        if landuse.matrix[x][y] not in self.list_of_acceptable_land_use_parts:
+                        if landuse.matrix[x][y] in self.list_of_non_acceptable_land_use_parts:
                             # print('edge roof:D')
                             continue
                         # now pixel[x][y] is a rain garden

@@ -154,6 +154,7 @@ class CostOptimizerForSubs:
 
             self.calculate_max_number_of_priorities_pixels_for_sub()
             for priority_index in range(len(priorities)):
+                self.max_id = 1
                 self.price = 0
                 self.priority_index = priority_index
                 self.priority = priorities[priority_index]
@@ -215,35 +216,26 @@ class CostOptimizerForSubs:
 
         self.price = (needed_pixels / self.pixel_size) * self.priority[PriorityConsts.PRICE_PER_SQ_METER]
         self.extra_volume_left = 0
-        if self.is_continues_priority(self.priority):
-            self.add_continues_priority_as_needed()
-
+        if self.is_flat_roof_priority(self.priority):
+            self.build_id_to_pixels_for_flat_roof_priority()
         else:
-            self.add_discrete_priority_as_needed()
+            self.calculate_id_to_pixels_for_priority()
+        # else:
+        self.add_priority_as_needed()
 
-    def add_continues_priority_as_needed(self):
-        if 0 >= self.num_of_needed_pixels:
-            return
-        advanced_map = self.sub[SubConsts.ADVANCED_LANDUSE_MAP].map
-        pixel_code = self.priority[PriorityConsts.PIXEL_CODE]
-        sub_id = self.sub[SubConsts.ID]
-        added = 0
-        for i in range(len(advanced_map.matrix)):
-            row = advanced_map.matrix[i]
-            for j in range(len(row)):
-                cell = row[j]
-                if cell == pixel_code:
-                    self.output_maps[sub_id].matrix[i][j] = pixel_code
-                    added += 1
-                    if added >= self.num_of_needed_pixels:
-                        return
+    def is_flat_roof_priority(self, priority):
+        if priority[PriorityConsts.PIXEL_CODE] == AdvancedLandUseMap.VALUES.GREEN_ROOF:
+            return True
+        return False
 
-    def add_discrete_priority_as_needed(self):
+    def add_priority_as_needed(self):
         sub_id = self.sub[SubConsts.ID]
         pixel_code = self.priority[PriorityConsts.PIXEL_CODE]
-        id_to_pixels = self.build_id_to_pixels_for_discrete_priority()
+        # self.calculate_id_to_pixels_for_priority()
+        id_to_pixels = self.id_t_p
         max_needed = self.num_of_needed_pixels
-        for id in id_to_pixels:
+        self.sort_id_to_pixels(id_to_pixels)
+        for id in self.ids_list:
             if max_needed <= 0:
                 return
             if len(id_to_pixels[id]) <= max_needed:
@@ -259,6 +251,49 @@ class CostOptimizerForSubs:
                     max_needed -= 1
                     if max_needed <= 0:
                         return
+
+    def build_id_to_pixels_for_flat_roof_priority(self):
+        id_to_pixels = {}
+        basic_landuse_name = self.sub[SubConsts.BASIC_LANDUSE_MAP_NAME]
+        parcel_name = self.sub[SubConsts.PARCEL_MAP_NAME]
+        dem_name = self.sub[SubConsts.ELEVATION_MAP_NAME]
+        min_val_area_for_roof = self.sub[SubConsts.MIN_VALUABLE_AREA_FOR_FLAT_ROOF]
+        max_slope = self.sub[SubConsts.MAX_POSSIBLE_SLOPE]
+        pixel_code = self.priority[PriorityConsts.PIXEL_CODE]
+        fd = FlatRoofFinder()
+        output = fd.get_flat_roofs_by_elevation_map(basic_landuse_name,
+                                                    parcel_name,
+                                                    dem_name,
+                                                    min_val_area_for_roof,
+                                                    max_slope)
+        id_to_pixels = fd.roof_number_to_roofs
+        self.id_t_p = id_to_pixels
+
+    def add_discrete_priority_as_needed(self):
+        sub_id = self.sub[SubConsts.ID]
+        pixel_code = self.priority[PriorityConsts.PIXEL_CODE]
+        id_to_pixels = self.build_id_to_pixels_for_discrete_priority()
+        max_needed = self.num_of_needed_pixels
+        self.sort_id_to_pixels(id_to_pixels)
+        for id in self.ids_list:
+            if max_needed <= 0:
+                return
+            if len(id_to_pixels[id]) <= max_needed:
+                max_needed -= len(id_to_pixels[id])
+                for pixel in id_to_pixels[id]:
+                    # print("pixel:", pixel)
+                    self.output_maps[sub_id].matrix[pixel['x']][pixel['y']] = pixel_code
+            else:
+                for pixel in id_to_pixels[id]:
+                    # print("pixel:", pixel)
+                    # print("output:", self.output_maps[sub_id])
+                    self.output_maps[sub_id].matrix[pixel['x']][pixel['y']] = pixel_code
+                    max_needed -= 1
+                    if max_needed <= 0:
+                        return
+
+    def sort_id_to_pixels(self, id_to_pixels):
+        self.ids_list = reversed(sorted(id_to_pixels, key=lambda id: len(id_to_pixels[id])))
 
     def build_id_to_pixels_for_discrete_priority(self):
         id_to_pixels = {}
@@ -283,6 +318,77 @@ class CostOptimizerForSubs:
             id_to_pixels = fd.roof_number_to_roofs
         return id_to_pixels
 
+    def build_new_id_for_pixel(self, i, j):
+        self.max_id += 1
+        self.id_t_p[self.max_id] = []
+        self.id_t_p[self.max_id].append({'x': i, 'y': j})
+        return self.max_id
+
+    def calculate_id_to_pixels_for_priority(self):
+        self.id_t_p = {}
+        self.pixel_code = self.priority[PriorityConsts.PIXEL_CODE]
+        self.advanced_map = self.sub[SubConsts.ADVANCED_LANDUSE_MAP]
+        self.flag_map = deepcopy(self.advanced_map.map)
+        for i in range(len(self.flag_map.matrix)):
+            for j in range(len(self.flag_map.matrix[i])):
+                self.flag_map.matrix[i][j] = False
+
+        self.id_map = deepcopy(self.advanced_map.map)
+        for i in range(len(self.id_map.matrix)):
+            for j in range(len(self.id_map.matrix[i])):
+                self.id_map.matrix[i][j] = 0
+
+        for i in range(len(self.advanced_map.map.matrix)):
+            row = self.advanced_map.map.matrix[i]
+            for j in range(len(row)):
+                cell = row[j]
+                if cell != self.pixel_code:
+                    continue
+                if self.id_map.matrix[i][j] == 0:
+                    self.id_map.matrix[i][j] = self.build_new_id_for_pixel(i, j)
+                for x in range(i-1, i+2):
+                    for y in range(j-1, j+2):
+                        if x < 0 or y < 0 or \
+                                        x >= self.advanced_map.map.n_rows or \
+                                        y >= self.advanced_map.map.n_cols:
+                            continue
+                        if x == i and y == j:
+                            continue
+                        if self.advanced_map.map.matrix[x][y] != cell:
+                            continue
+                        if self.id_map.matrix[x][y] == self.id_map.matrix[i][j]:
+                            continue
+                        if not self.flag_map.matrix[x][y]:
+                            self.flag_map.matrix[x][y] = True
+                            self.set_new_pixel_with_new_range(x, y, i, j)
+                        else:
+                            self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
+        if self.priority[PriorityConsts.PIXEL_CODE] == AdvancedLandUseMap.VALUES.RAIN_GARDEN:
+            min_val_area_for_rain = self.sub[SubConsts.MIN_VALUABLE_AREA_FOR_RAIN_GARDEN] / \
+                                    self.sub[SubConsts.ADVANCED_LANDUSE_MAP].map.cell_size
+            self.delete_ids_smaller_than(min_val_area_for_rain)
+        return self.id_t_p
+
+    def delete_ids_smaller_than(self, size):
+        id_tp_cp = copy.deepcopy(self.id_t_p)
+        for i in self.id_t_p:
+            if len(self.id_t_p) < size:
+                del id_tp_cp
+        self.id_t_p = id_tp_cp
+
+    def set_new_pixel_with_new_range(self, x, y, i, j):
+        id = self.id_map.matrix[i][j]
+        self.id_t_p[id].append({"x": x, "y": y})
+        self.id_map.matrix[x][y] = id
+
+    def set_all_pixels_in_new_range_with_ones_in_old_range(self, i, j, x, y):
+        id_that_should_be_deleted = self.id_map.matrix[i][j]
+        main_id = self.id_map.matrix[x][y]
+        pixels_that_should_go_to_main_id = self.id_t_p[id_that_should_be_deleted]
+        for pixel in pixels_that_should_go_to_main_id:
+            self.id_map.matrix[pixel['x']][pixel['y']] = main_id
+            self.id_t_p[main_id].append(pixel)
+        self.id_t_p[id_that_should_be_deleted] = []
 
     def add_all_priority_pixels(self):
         advanced_map = self.sub[SubConsts.ADVANCED_LANDUSE_MAP].map
@@ -295,15 +401,3 @@ class CostOptimizerForSubs:
                 cell = row[j]
                 if cell == pixel_code:
                     self.output_maps[sub_id].matrix[i][j] = pixel_code
-
-
-a = CostOptimizerForSubs()
-output = a.optimize_cost_for_subs(basic_subs, basic_priorities)
-print("max priorities for sub:::", a.priority_pixels_for_sub)
-print("final cost:", output["final_price"])
-print("detailed cost:", output["detailed_price"])
-maps = output["maps"]
-for i in maps:
-    map = maps[i]
-    print("file name:", i)
-    map.to_file(str(i) + ".asc")
