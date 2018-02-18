@@ -38,7 +38,7 @@ basic_priorities = [
 
 basic_subs = [
     {
-        'id': 1,
+        'id': 16,
         'basic_land_use_map': map_loader.load_map(LandUseMap, "landuse.asc"),
         'advanced_land_use_map': map_loader.load_map(AdvancedLandUseMap, "arman.asc"),
         'parcel_map': map_loader.load_map(ParcelMap, "roofs.asc"),  # could be not
@@ -132,8 +132,8 @@ class CostOptimizerForSubs:
         self.output_maps = {}
         if len(self.subs) > 0:
             self.config_map = self.subs[0][SubConsts.BASIC_LANDUSE_MAP].map
-        for index in range(len(self.subs)):
-            self.subs[index][SubConsts.ID] = index
+        # for index in range(len(self.subs)):
+        #     self.subs[index][SubConsts.ID] = index
         self.build_basic_map_for_output_maps()
 
     def build_basic_map_for_output_maps(self):
@@ -401,3 +401,180 @@ class CostOptimizerForSubs:
                 cell = row[j]
                 if cell == pixel_code:
                     self.output_maps[sub_id].matrix[i][j] = pixel_code
+
+
+class RegionHandlerWithLogicalInput:
+    def __init__(self):
+        self.cost_optimizer = CostOptimizerForSubs()
+
+    def build_region_source_by(self, region_sink):
+        region_source = {}
+        for sink in region_sink:
+            print("sink:", region_sink)
+            for src in region_sink[sink]:
+                if src not in region_source:
+                    region_source[src] = [sink]
+                else:
+                    src_sink = region_source[src]
+                    if sink not in src_sink:
+                        region_source[src].append(sink)
+        return region_source
+
+    def init(self, subs, region_sink, user_priorities):
+        self.region_source = self.build_region_source_by(region_sink)
+        self.region_sink = region_sink
+        self.subs = subs
+        self.priorities = user_priorities
+        for i in self.region_sink:
+            print("sink:", i, "sources:", self.region_sink[i])
+        for i in self.region_source:
+            print("source:", i, "sinks:", self.region_source[i])
+
+    def handle_regions(self, subs, region_sink, user_priorities):
+        self.init(subs, region_sink, user_priorities)
+        self.regions_by_alg_1 = self.get_regions_by_alg_1()
+        self.regions_by_alg_2 = self.get_regions_by_alg_2()
+        self.regions_by_alg_3 = self.get_regions_by_alg_3()
+        self.regions_by_alg_4 = self.get_regions_by_alg_4()
+        alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, self.priorities)
+        alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, self.priorities)
+        alg3_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_3, self.priorities)
+        alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, self.priorities)
+        output = {1: alg1_maps, 2: alg2_maps, 3: alg3_maps, 4: alg4_maps}
+        return output
+
+    def get_regions_by_alg_1(self):
+        regions = []
+        for sub in self.subs:
+            sub_id = int(sub[SubConsts.ID])
+            if sub_id in self.region_source and sub[SubConsts.EXTRA_VOLUME > 0]:
+                regions.append(sub)
+        #
+        # for i in self.region_source:
+        #     for j in self.subs:
+        #         if int(j[SubConsts.ID]) == int(i):
+        #             if j[SubConsts.EXTRA_VOLUME] > 0:
+        #                 regions.append(j)
+        return regions
+
+    def get_regions_by_alg_2(self):
+        regions = []
+        src_regions = self.get_regions_by_alg_1()
+        for sub in self.subs:
+            sub_id = int(sub[SubConsts.ID])
+            if sub_id in self.region_sink and sub[SubConsts.EXTRA_VOLUME > 0]:
+                if sub not in regions:
+                    regions.append(sub)
+        #
+        # for i in self.region_sink:
+        #     for j in self.subs:
+        #         if int(j[SubConsts.ID]) == int(i):
+        #             if j[SubConsts.EXTRA_VOLUME] > 0:
+        #                 if j not in regions:
+        #                     regions.append(j)
+        return regions
+
+    def get_regions_by_alg_3(self):
+        return []
+
+    def get_regions_by_alg_4(self):
+        reg3 = self.get_regions_by_alg_3()
+        reg2 = self.get_regions_by_alg_2()
+        reg4 = []
+        reg4.extend(reg3)
+        for i in reg2:
+            if i not in reg3:
+                reg4.append(i)
+        return reg4
+
+
+class FloodDataBuilder:
+    def build_flooding_data_with_max_node(self, rpt_file, max_node):
+        all_nodes_with_max_number = {}
+        rpt_nodes = self.build_flooding_data(rpt_file)
+        for i in range(max_node):
+            all_nodes_with_max_number[i] = rpt_nodes.get(i, 0)
+        return all_nodes_with_max_number
+
+    def build_flooding_data(self, rpt_file):
+        nodes = self.build_basic_data(rpt_file)
+        ret_nodes = {}
+        for node in nodes:
+            ret_nodes[int(node[0])] = node[5]
+        return ret_nodes
+
+    def build_basic_data(self, rpt_file):
+        rpt = open(rpt_file, "r")
+
+        # ---- Find Node Flooding Summary -----
+        check = True
+        while check:
+            line1 = rpt.readline()
+            if "Node Flooding Summary" in line1:
+                check2 = True
+                while check2:
+
+                    line1 = rpt.readline()
+                    if "Node" in line1:
+                        line1 = rpt.readline()
+                        line1 = rpt.readline()
+
+                        check3 = True
+                        while check3:
+                            if "*" in line1:
+                                check3 = False
+
+                            line1 += rpt.readline()
+
+                        check = False
+                        check2 = False
+
+        Node_FS = []
+        a = line1.split("\n")
+
+        for i in range(len(a)):
+            Node_FS.append([])
+            line1 = str(a[i])
+            a[i] = line1.split(" ")
+            for j in a[i]:
+                if j != '':
+                    Node_FS[i].append(j)
+        node = []
+        for n in Node_FS:
+            if len(n) == 7:
+                node.append(n)
+        return node
+
+
+class RegionHandler:
+    def __init__(self):
+        self.logical_handler = RegionHandlerWithLogicalInput()
+        self.flood_builder = FloodDataBuilder()
+
+    def handle_regions(self, rpt_file, subs, subs_sink, priorities, max_node_number):
+        subs_with_extra_volume = self.flood_builder.build_flooding_data_with_max_node(rpt_file, max_node_number)
+        print("ids:", subs_with_extra_volume)
+        for sub in subs:
+            print("old:", sub)
+            sub_id = sub[SubConsts.ID]
+            extra_volume = subs_with_extra_volume.get(sub_id, 0)
+            sub[SubConsts.EXTRA_VOLUME] = extra_volume
+            print("sub:", sub)
+        output_maps = self.logical_handler.handle_regions(subs, subs_sink, priorities)
+        return output_maps
+
+m = RegionHandler().handle_regions("report.rpt", basic_subs, {1:[1]}, basic_priorities, 32)
+print("m:", m)
+# RegionHandler().handle_regions({}, {1: [2.3], 2: [3]}, {1: [2, 3], 2: [3, 4], 4: [1, 2]})
+
+# a = CostOptimizerForSubs()
+# output = a.optimize_cost_for_subs(basic_subs, basic_priorities)
+# print("max priorities for sub:::", a.priority_pixels_for_sub)
+# print("final cost:", output["final_price"])
+# print("detailed cost:", output["detailed_price"])
+# maps = output["maps"]
+# for i in maps:
+#     map = maps[i]
+#     print("file name:", i)
+#     map.to_file(str(i) + ".asc")
+
