@@ -1,8 +1,5 @@
-import copy
-import os
-import time
+from math import *
 
-import maps
 from map_loader import MapLoader
 from maps import Map
 from maps import GWMap
@@ -12,32 +9,42 @@ from maps import ParcelMap
 from maps import ElevationMap
 from maps import DetailedLandUseMap
 from maps import RunoffCoMap
+from maps import FlowAccMap
+from maps import SlopeMap
+from maps import ConductivityMap
+from maps import BasicMap
 from maps import AdvancedLandUseMap
-
+import copy
 
 map_loader = MapLoader()
 
 
 class SuitableAreaBasedOnGW:
-    def get_suitable_areas(self, GW_ascii_map_name, user_limit):
-        self.gw_map = map_loader.load_map(GWMap, GW_ascii_map_name)
+    tag = '1'
+
+    def get_suitable_areas(self, gw_map_name, elevation_map_name, user_limit):
+        self.gw_map = map_loader.load_map(GWMap, gw_map_name).map
+        self.elev_map = map_loader.load_map(ElevationMap, elevation_map_name)
         self.output = Map()
-        self.output.set_config(self.gw_map.map)
+        self.output.set_config(self.gw_map)
         # self.output.no_data_value = 0
-        for i in range(len(self.gw_map.map.matrix)):
+        for i in range(len(self.gw_map.matrix)):
             self.output.matrix.append([])
-            for pixel in self.gw_map.map.matrix[i]:
-                if pixel == self.gw_map.map.no_data_value:
+            for j in range(len(self.gw_map.matrix[i])):
+                if self.gw_map.matrix[i][j] == self.gw_map.no_data_value:
                     self.output.matrix[i].append(self.output.no_data_value)
-                elif pixel > user_limit:
+                elif self.elev_map.map.matrix[i][j] - self.gw_map.matrix[i][j] < user_limit:
                     self.output.matrix[i].append(0)
                 else:
                     self.output.matrix[i].append(1)
         return self.output
 
+    def __str__(self):
+        return "SuitableAreaBasedOnGW"
+
 
 class SuitableSoilArea:
-    def get_suitable_areas(self, soil_ascii_map_name, land_use_ascii_map_name, user_soil_number):
+    def get_suitable_areas(self, soil_ascii_map_name, land_use_ascii_map_name, list_of_user_soil_numbers):
         self.soil_map = map_loader.load_map(SoilMap, soil_ascii_map_name)
         self.land_use_map = map_loader.load_map(LandUseMap, land_use_ascii_map_name)
         self.output = Map()
@@ -47,7 +54,7 @@ class SuitableSoilArea:
             for j in range(len(self.soil_map.map.matrix[i])):
                 if self.soil_map.map.matrix[i][j] == self.soil_map.map.no_data_value:
                     self.output.matrix[i].append(self.output.no_data_value)
-                elif self.soil_map.map.matrix[i][j] != user_soil_number:
+                elif self.soil_map.map.matrix[i][j] not in list_of_user_soil_numbers:
                     self.output.matrix[i].append(0)
                 elif self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
                         self.land_use_map.map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES:
@@ -58,10 +65,12 @@ class SuitableSoilArea:
 
 
 class FindingRiperianZone:
+    tag = '3'
+
     def __init__(self):
         self.land_use_map = LandUseMap()
         self.pixel_distance = 0
-        self.output= Map()
+        self.output = Map()
         self.land_use_tuple = Map()
 
     def get_riperian_zone(self, land_use_ascii_map_name, user_distance):
@@ -86,15 +95,15 @@ class FindingRiperianZone:
         return self.output
 
     def build_basic_output_matrix(self):
-        self.output.matrix = [[self.output.no_data_value]*self.output.n_cols]*self.output.n_rows
+        self.output.matrix = [[self.output.no_data_value] * self.output.n_cols] * self.output.n_rows
 
     def highlight_nearby_pixels(self, i, j):
         landuse_map = self.land_use_map.map
         for x in range(i - self.pixel_distance, i + self.pixel_distance):
             for y in range(j - self.pixel_distance, j + self.pixel_distance):
                 if landuse_map.matrix[x][y] != LandUseMap.VALUES.WATER_BODIES and \
-                    landuse_map.matrix[x][y] != LandUseMap.VALUES.URBON_AND_BUILT_UP and \
-                        landuse_map.matrix[x][y] != landuse_map.no_data_value:
+                                landuse_map.matrix[x][y] != LandUseMap.VALUES.URBON_AND_BUILT_UP and \
+                                landuse_map.matrix[x][y] != landuse_map.no_data_value:
                     self.output.matrix[x][y] = 1
 
     def get_riperian_zone2(self, land_use_ascii_map_name, user_distance):
@@ -113,7 +122,7 @@ class FindingRiperianZone:
                 if landuse_map.matrix[i][j] == landuse_map.no_data_value:
                     continue
                 elif landuse_map.matrix[i][j] == LandUseMap.VALUES.WATER_BODIES or \
-                    landuse_map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP:
+                                landuse_map.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP:
                     self.output.matrix[i][j] = 0
                 elif self.pixel_has_water_next_to_it(i, j):
                     self.output.matrix[i][j] = 1
@@ -137,8 +146,13 @@ class FindingRiperianZone:
                     return True
         return False
 
+    def __str__(self):
+        return "FindingRiperianZone"
+
 
 class RoofAreaCalculator:
+    tag = '4'
+
     def __init__(self):
         self.land_use_map = LandUseMap()
         self.parcel_map = ParcelMap()
@@ -161,8 +175,8 @@ class RoofAreaCalculator:
         self.output = {}
         self.roof_pixels = {}
 
-    def coordination_is_roof(self, i, j):\
-        return self.parcel_map.map.matrix[i][j] != self.parcel_map.map.no_data_value
+    def coordination_is_roof(self, i, j): \
+            return self.parcel_map.map.matrix[i][j] != self.parcel_map.map.no_data_value
 
     def increase_roof_pixels(self, i, j):
         roof_number = self.parcel_map.map.matrix[i][j]
@@ -176,6 +190,9 @@ class RoofAreaCalculator:
         str_data += str(self.output)
         file.write(str_data)
 
+    def __str__(self):
+        return "RoofAreaCalculator"
+
 
 class FlatRoofFinder:
     def __init__(self):
@@ -187,6 +204,47 @@ class FlatRoofFinder:
         self.dem_map = ElevationMap()
         self.minimum_valuable_area = 10
         self.maximum_possible_slope = 10
+        self.roof_number_to_roofs = {}
+
+    def get_flat_roofs_by_elevation_map_from_map_object(self, land_use_ascii_map,
+                                        parcel_ascii_map,
+                                        dem_ascii_map,
+                                        minimum_valuable_area,
+                                        maximum_possible_slope):
+        self.init_variables_by_elevation_map_from_map_object(land_use_ascii_map,
+                                                             parcel_ascii_map,
+                                                             dem_ascii_map,
+                                                             minimum_valuable_area,
+                                                             maximum_possible_slope)
+        self.build_flat_roofs_map()
+        self.calculate_valuable_flat_roofs_by_area()
+        return self.output
+
+    def init_variables_by_elevation_map_from_map_object(self, land_use_ascii_map,
+                                        parcel_ascii_map,
+                                        dem_ascii_map,
+                                        minimum_valuable_area,
+                                        maximum_possible_slope):
+        self.max_flat_roof_number = 0
+
+        self.land_use_map = land_use_ascii_map
+        self.parcel_map = parcel_ascii_map
+        self.dem_map = dem_ascii_map
+
+        self.flat_roofs = Map()
+        self.output = Map()
+        self.flat_roofs.set_config(self.land_use_map.map)
+        self.output.set_config(self.flat_roofs)
+        for i in range(len(self.land_use_map.map.matrix)):
+            self.flat_roofs.matrix.append([])
+            self.output.matrix.append([])
+            for j in range(len(self.land_use_map.map.matrix[i])):
+                self.flat_roofs.matrix[i].append(self.flat_roofs.no_data_value)
+                self.output.matrix[i].append(self.output.no_data_value)
+
+        self.minimum_valuable_area = minimum_valuable_area
+        self.maximum_possible_slope = maximum_possible_slope
+
         self.roof_number_to_roofs = {}
 
     def get_flat_roofs_by_slope_map(self, land_use_ascii_map_name, parcel_ascii_map_name, slope_dot_map_name):
@@ -357,7 +415,9 @@ class FlatRoofFinder:
         self.roof_number_to_roofs = tmp_number_to_roof
 
 
-class RoadFinder :
+class RoadFinder:
+    tag = '6'
+
     def __init__(self):
         self.detailed_landuse_map = DetailedLandUseMap()
         self.output = Map()
@@ -370,31 +430,37 @@ class RoadFinder :
             for j in range(len(detailed_landuse_map.matrix[i])):
                 if detailed_landuse_map.matrix[i][j] == detailed_landuse_map.no_data_value:
                     continue
-                if detailed_landuse_map.mطططططططatrix[i][j] == DetailedLandUseMap.VALUES.Asphalt:
+                if detailed_landuse_map.matrix[i][j] == DetailedLandUseMap.VALUES.Asphalt:
                     self.output.matrix[i][j] = 1
                 else:
                     self.output.matrix[i][j] = 0
         return self.output
 
     def build_basic_output(self):
+        self.output.set_config(self.detailed_landuse_map.map)
         for i in range(len(self.detailed_landuse_map.map.matrix)):
             self.output.matrix.append([])
             for j in range(len(self.detailed_landuse_map.map.matrix[i])):
                 self.output.matrix[i].append(self.output.no_data_value)
 
+    def __str__(self):
+        return "RoadFinder"
+
 
 class RunoffCoefficient:
+    tag = '7'
+
     def __init__(self):
         self.runoff_coefficient_map = RunoffCoMap()
         self.output = Map()
 
-    def get_runoff_coefficient_map(self, runoff_coefficient_map_ascii, user_limit):
-        self.runoff_coefficient_map = map_loader.load_map(RunoffCoefficient, runoff_coefficient_map_ascii)
+    def get_runoff_coefficient_map(self, runoff_coefficient_dot_map, user_limit):
+        self.runoff_coefficient_map = map_loader.load_dot_map(RunoffCoefficient, runoff_coefficient_dot_map)
         runoff_coefficient_map = self.runoff_coefficient_map.map
         self.build_basic_output()
         for i in range(len(runoff_coefficient_map.matrix)):
             for j in range(len(runoff_coefficient_map.matrix[i])):
-                if runoff_coefficient_map.matrix[i][j] == runoff_coefficient_map.no_data_value:
+                if runoff_coefficient_map.matrix[i][j] != runoff_coefficient_map.no_data_value:
                     if runoff_coefficient_map.matrix[i][j] >= user_limit:
                         self.output.matrix[i][j] = 1
                     else:
@@ -402,10 +468,14 @@ class RunoffCoefficient:
         return self.output
 
     def build_basic_output(self):
+        self.output.set_config(self.runoff_coefficient_map.map)
         for i in range(len(self.runoff_coefficient_map.map.matrix)):
             self.output.matrix.append([])
             for j in range(len(self.runoff_coefficient_map.map.matrix[i])):
                 self.output.matrix[i].append(self.output.no_data_value)
+
+    def __str__(self):
+        return "RunoffCoefficient"
 
 
 class RainGardenFinder:
@@ -561,6 +631,234 @@ class RainGardenFinder:
         self.rain_garden_ids_to_pixels = tmp_ids_to_pixels
 
 
+class LandaEq:
+    tag = '9'
+
+    def __init__(self):
+
+        self.flow_acc_map = FlowAccMap()
+        self.output_alpha = Map()
+        self.output_tan_B = Map()
+        self.output_Ks = Map()
+        self.D = 2
+        self.output = Map()
+
+    def calculate_alpha(self, flow_acc_map_ascii):
+        self.flow_acc_map = map_loader.load_map(FlowAccMap, flow_acc_map_ascii)
+        self.output_alpha.set_config(self.flow_acc_map.map)
+        
+        for i in range(len(self.flow_acc_map.map.matrix)):
+            for j in range(len(self.flow_acc_map.map.matrix[i])):
+                self.output_alpha.matrix.append([])
+                if self.flow_acc_map.map.matrix[i][j] == self.flow_acc_map.map.no_data_value:
+                    self.output_alpha.matrix[i].append(self.output_alpha.no_data_value)
+                else:
+                    self.output_alpha.matrix[i].append(
+                        self.flow_acc_map.map.matrix[i][j] * self.flow_acc_map.map.cell_size)
+        print('alpha done !')
+
+    def calculate_tan_B(self, slope_map_ascii):
+        self.slope_map = map_loader.load_map(SlopeMap, slope_map_ascii)
+        self.output_tan_B.set_config(self.slope_map.map)
+        
+        for i in range(len(self.slope_map.map.matrix)):
+            self.output_tan_B.matrix.append([])
+            for j in range(len(self.slope_map.map.matrix[i])):
+                if self.slope_map.map.matrix[i][j] == self.slope_map.map.no_data_value:
+                    self.output_tan_B.matrix[i].append(self.output_tan_B.no_data_value)
+                else:
+                    self.output_tan_B.matrix[i].append(int(self.slope_map.map.matrix[i][j]) / self.slope_map.map.cell_size)
+        print('tan_B done !')
+
+    def calculate_Ks(self, conductivity_map_ascii):
+        self.conductivity_map = map_loader.load_map(ConductivityMap, conductivity_map_ascii)
+        self.output_Ks.set_config(self.conductivity_map.map)
+
+        for i in range(len(self.conductivity_map.map.matrix)):
+            self.output_Ks.matrix.append([])
+            for j in range(len(self.conductivity_map.map.matrix[i])):
+                if self.conductivity_map.map.matrix[i][j] == self.conductivity_map.map.no_data_value:
+                    self.output_Ks.matrix[i].append(self.output_Ks.no_data_value)
+                else:
+                    self.output_Ks.matrix[i].append(self.conductivity_map.map.matrix[i][j])
+        print('Ks done !')
+
+    def get_output(self, flow_acc_map_ascii, slope_map_ascii, conductivity_map_ascii):
+        self.calculate_alpha(flow_acc_map_ascii)
+        self.calculate_tan_B(slope_map_ascii)
+        self.calculate_Ks(conductivity_map_ascii)
+        self.output.set_config(self.output_alpha)
+        print("flow nodata:", self.flow_acc_map.map.no_data_value)
+        print("alpha nodata:", self.output_alpha.no_data_value)
+        print("slope nodata:", self.slope_map.map.no_data_value)
+        print("tan b nodata:", self.output_tan_B.no_data_value)
+        print("conduct nodata:", self.conductivity_map.map.no_data_value)
+        print("ks nodata:", self.output_Ks.no_data_value)
+        print("output nodata:", self.output.no_data_value)
+        
+        for i in range(len(self.output_alpha.matrix)):
+            self.output.matrix.append([])
+            for j in range(len(self.output_alpha.matrix[i])):
+                if self.output_alpha.matrix[i][j] == self.output_alpha.no_data_value or self.output_tan_B.matrix[i][j] == self.output_tan_B.no_data_value or self.output_Ks.matrix[i][j] == self.output_Ks.no_data_value:
+                    self.output.matrix[i].append(self.output.no_data_value)
+                else:
+                    if(self.output_tan_B.matrix[i][j] == 0):
+                        temp = float(self.output_alpha.matrix[i][j]) / (0.0001 * self.output_Ks.matrix[i][j] * self.D)
+
+                    else :
+                        temp = float(self.output_alpha.matrix[i][j]) / (self.output_tan_B.matrix[i][j] * self.output_Ks.matrix[i][j] * self.D)
+                    self.output.matrix[i].append(log(temp))
+
+        return self.output
+
+    def get_output_with_user_limit(self, flow_acc_map_ascii, slope_map_ascii, conductivity_map_ascii, user_limit):
+        output = self.get_output(flow_acc_map_ascii, slope_map_ascii, conductivity_map_ascii)
+        for i in range(len(output.matrix)):
+            for j in range(len(output.matrix[i])):
+                pixel = output.matrix[i][j]
+                if pixel == output.no_data_value:
+                    continue
+                if pixel >= user_limit:
+                    output.matrix[i][j] = 1
+                else:
+                    output.matrix[i][j] = 0
+        return output
+    
+    def __str__(self):
+        return "LandaEq"
+
+
+class Overlay:
+    def build_basic_output(self):
+        for i in range(self.output_map.n_rows):
+            self.output_map.matrix.append([])
+            for j in range(self.output_map.n_cols):
+                self.output_map.matrix[i].append(self.output_map.no_data_value)
+    
+    def overlay_and(self, map_list_in_ascii):
+        self.output_map = Map()
+        if not map_list_in_ascii:
+            return self.output_map
+        map_list = []
+        for ascii_map in map_list_in_ascii:
+            map_list.append(map_loader.load_map(BasicMap, ascii_map))
+        self.output_map.set_config(map_list[0].map)
+        self.build_basic_output()
+        for i in range(len(self.output_map.matrix)):
+            for j in range(len(self.output_map.matrix[i])):
+                if map_list[0].map.matrix[i][j] == self.output_map.no_data_value:
+                    continue
+                for map_item in map_list:
+                    if map_item.map.matrix[i][j] == 0:
+                        self.output_map.matrix[i][j] = 0
+                        break
+                else:
+                    self.output_map.matrix[i][j] = 1
+        return self.output_map
+
+    def overlay_or(self, map_dict_list):
+        # input format: {"a.asc": 10, "b.asc": 20, "c.asc": 30}
+        self.output_map = Map()
+        if not map_dict_list:
+            return self.output_map
+        map_keys = []
+        map_list = []
+        for ascii_map in map_dict_list:
+            map_keys.append(ascii_map)
+            map_list.append(map_loader.load_map(BasicMap, ascii_map))
+        self.output_map.set_config(map_list[0].map)
+        self.build_basic_output()
+        for i in range(len(self.output_map.matrix)):
+            for j in range(len(self.output_map.matrix[i])):
+                pixel_is_null = True
+                if map_list[0].map.matrix[i][j] == self.output_map.no_data_value:
+                    continue
+                for map_index in range(len(map_list)):
+                    map_item = map_list[map_index]
+                    if map_item.map.matrix[i][j] == 1:
+                        if pixel_is_null:
+                            self.output_map.matrix[i][j] = str(map_dict_list[map_keys[map_index]])
+                            pixel_is_null = False
+                        else:
+                            self.output_map.matrix[i][j] += str(map_dict_list[map_keys[map_index]])
+                if self.output_map.matrix[i][j] == self.output_map.no_data_value:
+                    self.output_map.matrix[i][j] = 0
+        return self.output_map
+
+    
+    def overlay_or_with_priority_3(self, input_map_list):
+        # input format: [("a.asc", 10), ("b.asc", 20), ]
+        self.output_map = Map()
+        map_list = []
+        map_dict = {}
+        for i in input_map_list:
+            print(i[0], i[1])
+            map_list.append(map_loader.load_map(BasicMap, i[0]))
+            map_dict[i[0]] = i[1]
+        self.output_map.set_config(map_list[0].map)
+        self.build_basic_output()
+        for i in range(len(self.output_map.matrix)):
+            for j in range(len(self.output_map.matrix[i])):
+                no_data_value = False
+                for item in map_list:
+                    if item.map.matrix[i][j] != item.map.no_data_value:
+                        break
+                else:
+                    no_data_value = True
+                if no_data_value:
+                    continue
+                for map_index in range(len(map_list)):
+                    map_item = map_list[map_index]
+                    #if input_map_list[map_index][0] == "flatroofs.asc":
+                     #   print("flatroof:", int(map_item.map.matrix[i][j]), "data:", input_map_list[map_index][1])
+                    #if input_map_list[map_index][0] == "FinalRiparianZone.asc":
+                     #   print("Zone.asc:", int(map_item.map.matrix[i][j]), "data:", input_map_list[map_index][1])
+                    #if input_map_list[map_index][0] == "FinalRoads.asc":
+                     #   print("Roads:", int(map_item.map.matrix[i][j]), "data:", input_map_list[map_index][1])
+                    #if input_map_list[map_index][0] == "FinalRaingardens.asc":
+                     #   print("Raingardens.asc:", int(map_item.map.matrix[i][j]), "data:", input_map_list[map_index][1])
+                    map_item.map.matrix[i][j] = int(map_item.map.matrix[i][j])
+                    if map_item.map.matrix[i][j] > 0:
+                        self.output_map.matrix[i][j] = input_map_list[map_index][1]
+                        #print("data:", int(map_item.map.matrix[i][j]))
+                        break
+                        print(":D")
+                    #else:
+                        #print("no break!!!!!!!!!!!")
+                else:
+                    self.output_map.matrix[i][j] = 0
+        return self.output_map
+
+    def overlay_with_landuse(self, input_ascii_name, landuse_name):
+        self.output_map = Map()
+        input_map = map_loader.load_map(BasicMap, input_ascii_name)
+        landuse_map = map_loader.load_map(LandUseMap, landuse_name)
+        self.output_map.set_config(landuse_map.map)
+        self.build_basic_output()
+        for i in range(len(self.output_map.matrix)):
+            for j in range(len(self.output_map.matrix[i])):
+                input_map.map.matrix[i][j] = int(input_map.map.matrix[i][j])
+                self.output_map.matrix[i][j] = input_map.map.matrix[i][j]
+                if input_map.map.matrix[i][j] == 0:
+                    self.output_map.matrix[i][j] = landuse_map.map.matrix[i][j]
+        return self.output_map
+
+    
+
+
+#a = Overlay().overlay_and(["gw.asc", "Roads.asc"])
+#a.to_file("FinalRoads.asc")
+#b = Overlay().overlay_or_with_priority_3([("flatroofs.asc", 20), ("FinalRiparianZone.asc", 40), ("FinalRoads.asc", 50), ("FinalRaingardens.asc", 30)])
+#b.to_file("FinalCombinedprio.asc")
+#c = Overlay().overlay_with_landuse("FinalCombinedprio.asc", "landuse.asc")
+#c.to_file("prioritizedLID.asc")
+#a = FlatRoofFinder().get_flat_roofs_by_elevation_map("landuse.asc", 
+#                                                     "parcel.asc", 
+#                                                     "elevation.asc", 
+#                                                     15, 
+#                                                     0.5)
+#a.to_file("flatroofs.asc")
+
 class ChooseStuff:
     temp_list = []
     final_list = {}
@@ -594,7 +892,6 @@ class ChooseStuff:
             print(time.time() - t)
         print('final time:', time.time() - t1)
         return self.final_list
-
 
 class UserMergeForAlgorithms:
     def __init__(self):
@@ -889,7 +1186,7 @@ class UserMergeForAlgorithms:
                                things_needed_for_rain_garden_calculation,
                                things_needed_for_flat_roof_calculation)
         print('after basic init')
-        self.print()
+        #self.print()
         for priority_index in range(len(priority_list)):
             self.priority_index = priority_index
             self.priority_item = priority_list[priority_index]
@@ -898,10 +1195,10 @@ class UserMergeForAlgorithms:
             self.build_maps_for_priority_item_in_clean_way()
         return self.priority_maps
 
-    def print(self):
-        print('****************inside print***************')
-        print('priority list:', self.priority_list)
-        print('priority maps:', self.priority_maps)
+    #def print(self):
+        #print('****************inside print***************')
+        #print('priority list:', self.priority_list)
+        #print('priority maps:', self.priority_maps)
             # priority maps:{
             #     priority item: {
             #     'priority': 0,
@@ -934,15 +1231,19 @@ class UserMergeForAlgorithms:
             print('len:', i)
             percent = self.STEP * i
             print('%:', percent)
-            num_of_pixels = int(all_priority_pixels * (percent / 100))
+            num_of_pixels = int(all_priority_pixels * (percent / 100.))
             print('all of pixels:', all_priority_pixels)
             print('num of pixels:', num_of_pixels)
+            print("per/100", percent/100.)
             all_maps_in_specific_percent = method_to_call_for_priority_item(num_of_pixels, percent)
             print('maps len:', len(all_maps_in_specific_percent))
             all_maps_for_1_priority['maps'][percent] = all_maps_in_specific_percent
             next_percent = percent + self.STEP
             if next_percent > 100:
-                all_maps_for_1_priority['final'] = all_maps_in_specific_percent[0]  # should not be empty!!
+                try:
+                    all_maps_for_1_priority['final'] = all_maps_in_specific_percent[0]['map']  # should not be empty!!
+                except:
+                    all_maps_for_1_priority['final'] = all_maps_in_specific_percent[0]
                 self.basic_map_for_new_priority = all_maps_for_1_priority['final']
                 # print('maps for priority:', maps_for_priority)
         self.priority_maps[self.priority_item] = all_maps_for_1_priority
@@ -1157,6 +1458,8 @@ class UserMergeForAlgorithms:
         for map_no in range(self.user_limit_on_max_maps_per_percent):
             new_map_to_append = copy.deepcopy(self.basic_map_for_new_priority)    ###############################
             seen_pixels = 0
+            print("num of pixels:", num_of_pixels)
+            print("seen pixels:", seen_pixels)
             for i in range(len(matrix)):
                 # print('i:', i)
                 # print('seen pixels:', seen_pixels)
@@ -1164,14 +1467,21 @@ class UserMergeForAlgorithms:
                 # print('seen pixels > num of pixels:', seen_pixels > num_of_pixels)
                 if seen_pixels > num_of_pixels:
                     # print('seen pixels > num_of_pixels111:', seen_pixels)
+                    print("on break1:")
+                    print("num of pixels:", num_of_pixels)
+                    print("seen pixels:", seen_pixels)
                     break
                 col = matrix[i]
                 for j in range(len(col)):
                     # print('j:', j)
                     if seen_pixels > num_of_pixels:
                         # print('seen pixels > num_of_pixels222:', seen_pixels)
+                        print("on break2:")
+                        print("num of pixels:", num_of_pixels)
+                        print("seen pixels:", seen_pixels)
                         break
-                    it = matrix[i][j]
+                    it = int(matrix[i][j])
+                    priority_item = int(priority_item)
                     # print('matrix[i][j]:', matrix[i][j])
                     if it == priority_item:
                         matrix[i][j] = main_map.no_data_value
@@ -1190,12 +1500,22 @@ class UserMergeForAlgorithms:
             print('maps len222:', len(maps))
         return maps
 
+def build_files_for_user_merge(priority_maps):
+    for priority_item in priority_maps:
+        priority_name = AdvancedLandUseMap.VALUES_TO_NAMES[priority_item]
+        maps = priority_maps[priority_item]['maps']
+        for percent in maps:
+            for index in range(len(maps[percent])):
+                file_name = priority_name + "_" + str(percent) + "_" + str(index+1) + ".asc"
+                mymap = maps[percent][index]["map"]
+                mymap.to_file_for_merge(file_name)
+
 
 class UserMergeForAlgorithmsTest:
     # def test_get_priorities(self):
     #     basic_landuse_map = map_loader.load_map(LandUseMap, "landuse.asc")
     #     advanced_landuse_map = map_loader.load_map(DetailedLandUseMap, "landuse.asc")
-    #
+    # 
     #     print('taha map:', advanced_landuse_map.map.get_config_string())
     #     print('landuse map:', basic_landuse_map.map.get_config_string())
     #     a = UserMergeForAlgorithms().get_priorities(
@@ -1212,82 +1532,240 @@ class UserMergeForAlgorithmsTest:
         MAX_SLOPE = 'max_possible_slope_for_flat_roof'
 
         basic_landuse_map = map_loader.load_map(LandUseMap, 'landuse.asc')
-        advanced_landuse_map = map_loader.load_map(DetailedLandUseMap, "landuse.asc")
+        advanced_landuse_map = map_loader.load_map(DetailedLandUseMap, "prioritizedLID.asc")
         print('taha:', advanced_landuse_map.map.get_config_string())
         print('landuse:', basic_landuse_map.map.get_config_string())
         a = UserMergeForAlgorithms().get_priorities_in_clean_way(
-            [5], basic_landuse_map, advanced_landuse_map, 12,
-            {LANDUSE_NAME: 'landuse.asc', MIN_AREA: '10'},
+            [40,50], basic_landuse_map, advanced_landuse_map, 1,
+            {LANDUSE_NAME: 'landuse.asc', MIN_AREA: '25'},
             {LANDUSE_NAME: 'landuse.asc',
-             PARCEL_NAME: 'roof30true.asc',
+             PARCEL_NAME: 'parcel.asc',
              DEM_NAME: 'elevation.asc',
-             MIN_AREA: '20', MAX_SLOPE: '5'})
+             MIN_AREA: '15', MAX_SLOPE: '0.5'})
+        build_files_for_user_merge(a)
 
 
-# UserMergeForAlgorithmsTest().test_get_priorities_in_clean_way()
-# ChooseStuff().choose_all_situations_of_n(322)
-class ChooseStuff2:
-    nth_list = {}
 
-    def limit(self, n):
-        if n < 10:
-            return 600000
-        if n < 15:
-            return 1000000
-        if n < 20:
-            return 2000000
-        if n < 25:
-            return 3000000
-        return 2500000
-        # if n < 10:
-        #     return 2000000
-        # if n < 15:
-        #     return 2000000
-        # if n < 20:
-        #     return max(50*n*n, 100000)
-        # if n < 30:
-        #     return max(50*n*n, 50000)
-        return 2000000
+# TESTS:
 
-    def build(self, n):
-        t = time.time()
-        self.nth_list[1] = []
-        for i in range(n):
-            # print(i)
-            self.nth_list[1].append([i])
-        for i in range(2, n + 1):
-            print(i)
-            self.nth_list[i] = []
-            # print('i - 1 list:', self.nth_list[i-1])
-            limit = self.limit(i)
-            index = 0
-            for j in reversed(self.nth_list[i-1]):
-                # print('j:', j)
-                mm = 0
-                for k in reversed(range(j[0])):
-                    # if i == 23:
-                    #     mm+=1
-                    #     if mm > 1000000:
-                    #         mm = 0
-                    #         print('another mil', index)
-                    self.nth_list[i].append([k] + j)
-                    # print('nth:', self.nth_list[i])
-                    index += 1
-                    if index >= limit:
-                        break
-                if index >= limit:
-                    print(time.time() - t)
-                    break
-            print('len:', len(self.nth_list[i]))
-        return self.nth_list
+#   GW
+gw_map_builder = SuitableAreaBasedOnGW()
+
+gw_map_name = "gw.asc"
+gw_elevation_map_name = "elevation.asc"
+gw_user_limit = 0
+gw_output_name = "gw_s.asc"
+
+# gw_output = gw_map_builder.get_suitable_areas(gw_map_name, gw_elevation_map_name, gw_user_limit)
+# gw_output.to_file(gw_output_name)
 
 
-# t = time.time()
-# a = ChooseStuff2().build(322)
-# for i in a:
-#     print('i:', i, len(a[i]))
-#     if len(a[i]) == 0:
-#         print(i)
-#         break
-#
-# print(time.time() - t)
+#   SUITABLE SOIL
+suitable_soil_area_builder = SuitableSoilArea()
+
+ssoil_map_name = "soil.asc"
+ssoil_landuse_map_name = "landuse.asc"
+ssoil_list_of_user_soil_numbers = [3, 11]
+ssoil_output_name = "soil_s.asc"
+
+# ssoil_output = suitable_soil_area_builder.get_suitable_areas(ssoil_map_name, ssoil_landuse_map_name, ssoil_list_of_user_soil_numbers)
+# ssoil_output.to_file(ssoil_output_name)
+
+
+#   RIPARIAN ZONE
+riparian_zone_builder = FindingRiperianZone()
+
+rip_zone_landuse_map_name = "landuse.asc"
+rip_zone_user_distance = 30
+riparian_zone_output_name = "riparian_s.asc"
+
+# riparian_zone_output = riparian_zone_builder.get_riperian_zone(rip_zone_landuse_map_name, rip_zone_user_distance)
+# riparian_zone_output.to_file(riparian_zone_output_name)
+
+
+#   ROOF AREA CALCULATOR
+roof_area_calculator = RoofAreaCalculator()
+
+r_calc_landuse_map_name = "landuse.asc"
+r_calc_parcel_map_name = "roofs.asc"
+r_calc_output_name = "output.asc"
+
+# r_calc_output = roof_area_calculator.get_roof_areas(r_calc_landuse_map_name, r_calc_parcel_map_name)
+# roof_area_calculator.build_map_for_output(r_calc_output_name)
+
+
+#   FLAT ROOF FINDER
+flat_roof_bilder = FlatRoofFinder()
+flat_landuse_map_name = "landuse.asc"
+flat_parcel_map_name = "parcel.asc"
+flat_dem_map_name = "elevation.asc"
+flat_min_val_area = 20
+flat_max_slope = 0.5
+flat_output_name = "greenroof_s.asc"
+
+# flat_output = flat_roof_bilder.get_flat_roofs_by_elevation_map(flat_landuse_map_name, flat_parcel_map_name, flat_dem_map_name, flat_min_val_area, flat_max_slope)
+# flat_output.to_file(flat_output_name)
+
+
+#   ROAD FINDER
+road_builder = RoadFinder()
+
+road_detailed_landuse_map_name = "detailedlandusemap.asc"
+road_output_name = "road_s.asc"
+
+road_output = road_builder.get_detailed_landuse_map(road_detailed_landuse_map_name)
+road_output.to_file(road_output_name)
+
+
+#   RUNOFF COEFFICIENT
+runoff_builder = RunoffCoefficient()
+
+runoff_map_name = "runoff.asc"
+runoff_user_limit = 93
+runoff_output_name = "output.asc"
+
+# runoff_output = runoff_builder.get_runoff_coefficient_map(runoff_map_name, runoff_user_limit)
+# runoff_output.to_file(runoff_output_name)
+
+
+#   RAIN GARDEN
+rain_builder = RainGardenFinder()
+
+rain_landuse = "landuse.asc"
+rain_min_val_area = 30
+rain_output_name = "raingarden_s.asc"
+
+# rain_output = rain_builder.get_rain_gardens(rain_landuse, rain_min_val_area)
+# rain_output.to_file(rain_output_name)
+
+
+#   LANDA EQ
+landa_builder = LandaEq()
+
+landa_flow_acc_map_name = "flowacc.asc"
+landa_conductivity_map_name = "conduct.asc"
+landa_slope_map_name = "slope.asc"
+landa_user_limit = 12
+landa_output_name = "labda.asc"
+
+# landa_output = landa_builder.get_output_with_user_limit(landa_flow_acc_map_name, landa_slope_map_name, landa_conductivity_map_name, landa_user_limit)
+# landa_output.to_file(landa_output_name)
+
+
+#   OVERLAY
+overlay_builder = Overlay()
+
+overlay_map_list = ["orp.asc","landuse.asc"]
+overlay_output_and_name = "riparian_suitable.asc"
+overlay_output_or_name = "Final.asc"
+overlay_output_or_with_priority_name = "orp.asc"
+
+# over_output_and = overlay_builder.overlay_and(overlay_map_list)
+# over_output_and.to_file(overlay_output_and_name)
+
+# over_output_or = overlay_builder.overlay_with_landuse("orp.asc","landuse.asc")
+# over_output_or.to_file(overlay_output_or_name)
+
+# over_output_or_with_priority = overlay_builder.overlay_or_with_priority_3(overlay_map_list)
+# over_output_or_with_priority.to_file(overlay_output_or_with_priority_name)
+
+
+
+#old
+
+#   GW
+gw_map_builder = SuitableAreaBasedOnGW()
+
+gw_map_name = "gw.asc"
+gw_elevation_map_name = "dem.asc"
+gw_user_limit = 12
+gw_output_name = "output.asc"
+
+# gw_output = gw_map_builder.get_suitable_areas(gw_map_name, gw_elevation_map_name, gw_user_limit)
+# gw_output.to_file(gw_output_name)
+
+
+# SUITABLE SOIL
+suitable_soil_area_builder = SuitableSoilArea()
+
+ssoil_map_name = "soil.asc"
+ssoil_landuse_map_name = "landuse.asc"
+ssoil_list_of_user_soil_numbers = [12, 13]
+ssoil_output_name = "output.asc"
+
+# ssoil_output = suitable_soil_area_builder.get_suitable_areas(ssoil_map_name, ssoil_landuse_map_name, ssoil_list_of_user_soil_numbers)
+# ssoil_output.to_file(ssoil_output_name)
+
+
+# RIPARIAN ZONE
+riparian_zone_builder = FindingRiperianZone()
+
+rip_zone_landuse_map_name = "landuse.asc"
+rip_zone_user_distance = 12
+riparian_zone_output_name = "output.asc"
+
+# riparian_zone_output = riparian_zone_builder.get_riperian_zone(rip_zone_landuse_map_name, rip_zone_user_distance)
+# riparian_zone_output.to_file(riparian_zone_output_name)
+
+
+# ROOF AREA CALCULATOR
+roof_area_calculator = RoofAreaCalculator()
+
+r_calc_landuse_map_name = "landuse.asc"
+r_calc_parcel_map_name = "roofs.asc"
+r_calc_output_name = "output.asc"
+
+# r_calc_output = roof_area_calculator.get_roof_areas(r_calc_landuse_map_name, r_calc_parcel_map_name)
+# roof_area_calculator.build_map_for_output(r_calc_output_name)
+
+
+# FLAT ROOF FINDER
+flat_roof_bilder = FlatRoofFinder()
+flat_landuse_map_name = "landuse.asc"
+flat_parcel_map_name = "parcel.asc"
+flat_dem_map_name = "dem.asc"
+flat_min_val_area = 12
+flat_max_slope = 0.5
+flat_output_name = "output.asc"
+
+# flat_output = flat_roof_bilder.get_flat_roofs_by_elevation_map(flat_landuse_map_name, flat_parcel_map_name, flat_dem_map_name, flat_min_val_area, flat_max_slope)
+# flat_output.to_file(flat_output_name)
+
+
+# ROAD FINDER
+road_builder = RoadFinder()
+
+road_detailed_landuse_map_name = "detailed.asc"
+road_output_name = "output.asc"
+
+# road_output = road_builder.get_detailed_landuse_map(road_detailed_landuse_map_name)
+# road_output.to_file(road_output_name)
+
+
+# RUNOFF COEFFICIENT
+runoff_builder = RunoffCoefficient()
+
+runoff_map_name = "runoff.asc"
+runoff_user_limit = 12
+runoff_output_name = "output.asc"
+
+# runoff_output = runoff_builder.get_runoff_coefficient_map(runoff_map_name, runoff_user_limit)
+# runoff_output.to_file(runoff_output_name)
+
+
+# RAIN GARDEN
+rain_builder = RainGardenFinder()
+
+rain_landuse = "landuse.asc"
+rain_min_val_area = 12
+rain_output_name = "output.asc"
+
+# rain_output = rain_builder.get_rain_gardens(rain_landuse, rain_min_val_area)
+# rain_output.to_file(rain_output_name)
+
+
+
+
+
+
+
