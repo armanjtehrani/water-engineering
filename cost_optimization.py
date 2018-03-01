@@ -37,27 +37,29 @@ basic_priorities = [
 
 
 basic_subs = [
-    {
-        'id': 24,
-        'basic_land_use_map': "landuse.asc",
-        'advanced_land_use_map': "final.asc",
-        'parcel_map': "parcel.asc",  # could be not
-        'elevation_map': "elevation.asc",  # could be not
-        'extra_volume': 350000,
-        'minimum_valuable_area_for_rain_garden': 50,
-        'minimum_valuable_area_for_flat_roof': 30,
-        'maximum_possible_slope': 0.2,
-    },
+    # {
+    #     'id': 24,
+    #     'basic_land_use_map': "landuse.asc",
+    #     'advanced_land_use_map': "final.asc",
+    #     'parcel_map': "parcel.asc",  # could be not
+    #     'elevation_map': "elevation.asc",  # could be not
+    #     'extra_volume': 350000,
+    #     'minimum_valuable_area_for_rain_garden': 50,
+    #     'minimum_valuable_area_for_flat_roof': 30,
+    #     'maximum_possible_slope': 0.2,
+    #     'is_source': False
+    # },
     {
         'id': 4,
         'basic_land_use_map': "landuse.asc",
         'advanced_land_use_map': "final.asc",
         'parcel_map': "parcel.asc",  # could be not
         'elevation_map': "elevation.asc",  # could be not
-        'extra_volume': 350000,
+        'extra_volume': 0,
         'minimum_valuable_area_for_rain_garden': 50,
         'minimum_valuable_area_for_flat_roof': 30,
         'maximum_possible_slope': 0.2,
+        'is_source': True
     },
     {
         'id': 9,
@@ -69,6 +71,7 @@ basic_subs = [
         'minimum_valuable_area_for_rain_garden': 50,
         'minimum_valuable_area_for_flat_roof': 30,
         'maximum_possible_slope': 0.2,
+        'is_source': False
     },
     {
         'id': 14,
@@ -80,6 +83,7 @@ basic_subs = [
         'minimum_valuable_area_for_rain_garden': 50,
         'minimum_valuable_area_for_flat_roof': 30,
         'maximum_possible_slope': 0.2,
+        'is_source': True
     },
     {
         'id': 11,
@@ -91,6 +95,7 @@ basic_subs = [
         'minimum_valuable_area_for_rain_garden': 50,
         'minimum_valuable_area_for_flat_roof': 30,
         'maximum_possible_slope': 0.2,
+        'is_source': False
     },
     {
         'id': 10,
@@ -102,6 +107,7 @@ basic_subs = [
         'minimum_valuable_area_for_rain_garden': 50,
         'minimum_valuable_area_for_flat_roof': 30,
         'maximum_possible_slope': 0.2,
+        'is_source': True
     },
     {
         'id': 12,
@@ -113,6 +119,7 @@ basic_subs = [
         'minimum_valuable_area_for_rain_garden': 50,
         'minimum_valuable_area_for_flat_roof': 30,
         'maximum_possible_slope': 0.2,
+        'is_source': True
     },
 ]
 
@@ -240,7 +247,8 @@ class CostOptimizerForSub:
 
     def calculate_num_of_needed_pixels_for_priority(self):   # tested
         priority_volume_per_meter = self.priority[PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER]
-        self.pixel_size = self.sub[SubConsts.BASIC_LANDUSE_MAP].map.cell_size
+        pixel_len = self.sub[SubConsts.BASIC_LANDUSE_MAP].map.cell_size
+        self.pixel_size = pixel_len * pixel_len
         priority_volume_per_pixel = priority_volume_per_meter * self.pixel_size
         extra_volume = self.extra_volume_left
         number_of_needed_pixels_of_priority = float(extra_volume) / priority_volume_per_pixel
@@ -400,8 +408,9 @@ class CostOptimizerForSub:
                         else:
                             self.set_all_pixels_in_new_range_with_ones_in_old_range(i, j, x, y)
         if self.priority[PriorityConsts.PIXEL_CODE] == AdvancedLandUseMap.VALUES.RAIN_GARDEN:
+            rain_cell_size = self.sub[SubConsts.ADVANCED_LANDUSE_MAP].map.cell_size
             min_val_area_for_rain = self.sub[SubConsts.MIN_VALUABLE_AREA_FOR_RAIN_GARDEN] / \
-                                    self.sub[SubConsts.ADVANCED_LANDUSE_MAP].map.cell_size
+                                    (rain_cell_size * rain_cell_size)
             self.delete_ids_smaller_than(min_val_area_for_rain)
         return self.id_t_p
 
@@ -456,6 +465,7 @@ class CostOptimizer:
             sub_id = basic_sub[SubConsts.ID]
             self.build_sub_by_basic_sub(basic_sub)
             output = self.cost_optimizer.optimize_cost_for_sub(self.built_sub, priorities)
+            print("\nextra volume left in alg", alg_number, "for region", sub_id, "is:", output["extra_volume_left"], "\n")
             self.cost_optimizer.clear()
             map = output["map"]
             print("alg:", alg_number, str(alg_number))
@@ -557,7 +567,201 @@ class RegionHandlerWithLogicalInput:
 
     def get_regions_by_alg_3(self):
         print("alg3")
-        return []
+        nodes_distance, indexed_nodes_distance, indexed_distances_to_nodes = \
+            self.build_flooding_to_sources()
+        alg3_subs = self.find_and_build_source_subs(indexed_distances_to_nodes)
+        return alg3_subs
+
+    def find_and_build_source_subs(self, indexed_distances_to_nodes):   # hopefully works correctly:D
+        subs_for_alg3 = []
+        flooded_subs = [sub for sub in self.subs if sub[SubConsts.EXTRA_VOLUME] > 0]
+        print("flooded subs:")
+        for sub in flooded_subs:
+            print(sub[SubConsts.ID], ":", sub[SubConsts.EXTRA_VOLUME])
+        flooded_subs_ids = [sub[SubConsts.ID] for sub in flooded_subs]
+        print("flooded ids:", flooded_subs_ids)
+        flooded_nodes_flooding_left = {sub[SubConsts.ID]: sub[SubConsts.EXTRA_VOLUME] for sub in flooded_subs}
+        print("flooded nodes left:")
+        for sub in flooded_nodes_flooding_left:
+            print(sub, ":", flooded_nodes_flooding_left[sub])
+        source_nodes_volume_left = {sub[SubConsts.ID]: self.calculate_sub_max_vol_by_priorities(sub)
+                                    for sub in self.subs
+                                    if sub[SubConsts.IS_SOURCE]}
+        print("src basic volume")
+        for sub in source_nodes_volume_left:
+            print(sub, ":", source_nodes_volume_left[sub])
+        source_nodes_volume_used = {sub_id: 0 for sub_id in source_nodes_volume_left}
+        print("src basic volume used:")
+        for sub in source_nodes_volume_used:
+            print(sub, ":", source_nodes_volume_used[sub])
+        for distance in sorted(indexed_distances_to_nodes):
+            print("building distance:", distance)
+            to_nodes = indexed_distances_to_nodes[distance]
+            print("to nodes for distance:", to_nodes)
+            for to_node in to_nodes:
+                print("to node:", to_node)
+                if to_node not in flooded_subs_ids:
+                    print("node doesn't have flooding!")
+                    continue
+                flood_left = flooded_nodes_flooding_left.get(to_node)
+                print("flood left for node:", flood_left)
+                if flood_left <= 0:
+                    print("flood is over for node")
+                    continue
+                to_node_sources_with_dist = indexed_distances_to_nodes[distance].get(to_node)
+                print("node sources with dist:", to_node_sources_with_dist)
+                if not to_node_sources_with_dist:
+                    print("no source with this distance for node!")
+                    continue
+                for src_id in to_node_sources_with_dist:
+                    for sub in self.subs:
+                        if sub[SubConsts.ID] == src_id:
+                            src_node = sub
+                            break
+                    print("on source:", src_node[SubConsts.ID])
+                    if not src_node[SubConsts.IS_SOURCE]:
+                        print("src node is not real source!")
+                        continue
+                    print("src vol left:", source_nodes_volume_left[src_id])
+                    if source_nodes_volume_left[src_id] <= 0:
+                        print("no vol left for src")
+                        continue
+                    if flood_left > source_nodes_volume_left[src_id]:
+                        flood_left -= source_nodes_volume_left[src_id]
+                        source_nodes_volume_used[src_id] += source_nodes_volume_left[src_id]
+                        source_nodes_volume_left[src_id] = 0
+                    else:
+                        #   flood_left <= source_nodes_volume_left
+                        source_nodes_volume_left[src_id] -= flood_left
+                        source_nodes_volume_used[src_id] += flood_left
+                        flood_left = 0
+        for sub_index in range(len(self.subs)):
+            sub = self.subs[sub_index]
+            sub_id = self.subs[sub_index][SubConsts.ID]
+            print("on sub:", sub_id)
+            if self.subs[sub_index][SubConsts.IS_SOURCE]:
+                if source_nodes_volume_used[sub_id] > 0:
+                    subs_for_alg3.append(sub.copy())
+                    subs_for_alg3[-1][SubConsts.EXTRA_VOLUME] = source_nodes_volume_used[sub_id]
+        for i in subs_for_alg3:
+            print("su", i[SubConsts.ID], ":", i[SubConsts.EXTRA_VOLUME])
+        return subs_for_alg3
+
+
+    def calculate_sub_max_vol_by_priorities(self, my_sub):  # guess is checked!!
+        print("starting sub:", my_sub[SubConsts.ID])
+        max_vol = 0
+        sub_advanced = map_loader.load_map(AdvancedLandUseMap, my_sub[SubConsts.ADVANCED_LANDUSE_MAP]).map
+        for priority in self.priorities:
+            num_of_priority = 0
+            for row in sub_advanced.matrix:
+                num_of_priority += row.count(priority[PriorityConsts.PIXEL_CODE])
+            priority_vol = num_of_priority * priority[PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER]
+            max_vol += priority_vol
+        return max_vol
+
+    def build_flooding_to_sources(self):    # checked
+        nodes_distance = self.build_nodes_distance()
+        nodes_distance = self.remove_extra_regions(nodes_distance)
+        indexed_nodes_distance = self.index_nodes_distance(nodes_distance)
+        indexed_distances_to_nodes = self.index_distances_to_nodes(indexed_nodes_distance)
+        return nodes_distance, indexed_nodes_distance, indexed_distances_to_nodes
+
+    def remove_extra_regions(self, nodes_distance):
+        subs_ids = [sub[SubConsts.ID] for sub in self.subs]
+        nodes_without_extra = {}
+        for node_id in nodes_distance:
+            from_nodes = nodes_distance[node_id]
+            if node_id in subs_ids:
+                row_without_extra = {}
+                for from_id in from_nodes:
+                    if from_id in subs_ids:
+                        row_without_extra[from_id] = from_nodes[from_id]
+                nodes_without_extra[node_id] = row_without_extra
+        # print("aaaaaa")
+        # for node in nodes_without_extra:
+        #     print(node, ":", nodes_without_extra[node])
+        return nodes_without_extra
+
+
+
+    def index_distances_to_nodes(self, indexed_nodes_distance):     # checked
+        indexed_nodes_distance = indexed_nodes_distance.copy()
+
+        dists = []
+        for node in indexed_nodes_distance:
+            for node_dists in indexed_nodes_distance[node]:
+                if node_dists not in dists:
+                    dists.append(node_dists)
+
+        indexed = {}
+        for dist in dists:
+            indexed[dist] = {}
+            for node in indexed_nodes_distance:
+                if indexed_nodes_distance[node].get(dist):
+                    indexed[dist][node] = indexed_nodes_distance[node][dist]
+        print("final indexed:", indexed)
+        return indexed
+
+    def build_graph_nodes(self):    # checked
+        graph_nodes = []
+        for i in self.region_sink:
+            if i not in graph_nodes:
+                graph_nodes.append(i)
+        for i in self.region_source:
+            if i not in graph_nodes:
+                graph_nodes.append(i)
+        return graph_nodes
+
+    def reset_check_node_by_graph_node(self, graph_nodes):
+        is_checked = {}
+        for node in graph_nodes:
+            is_checked[node] = False
+        return is_checked
+
+    def build_nodes_distance(self):     # checked
+        graph_nodes = self.build_graph_nodes()
+        nodes_distance = {i: {j: -1 for j in graph_nodes} for i in graph_nodes}
+        for to_node in graph_nodes:
+            node_is_checked = self.reset_check_node_by_graph_node(graph_nodes)
+            next_nodes = [(to_node, 0)]
+            node_is_checked[to_node] = True
+            while len(next_nodes):
+                next_node = next_nodes.pop(0)
+                next_id = next_node[0]
+                next_dist = next_node[1]
+                nodes_distance[to_node][next_id] = next_dist
+                for nearby_node in self.region_sink.get(next_id, []):
+                    new_distance = next_dist + 1
+                    if not node_is_checked[nearby_node]:
+                        node_is_checked[nearby_node] = True
+                        next_nodes.append((nearby_node, new_distance))
+        # for node in nodes_distance:
+        #     print(node, ":", nodes_distance[node])
+        return nodes_distance
+
+    def index_nodes_distance(self, nodes_distance):     # checked
+        indexed_nodes_distance = {}
+        for sink in nodes_distance:
+            indexed_nodes_distance[sink] = {}
+            from_nodes = nodes_distance[sink].copy()
+            all_values = [from_nodes[i] for i in from_nodes]
+            maximum = max(all_values) + 1
+            while True:
+                values = [from_nodes[i] for i in from_nodes]
+                minimum = min(values, key=lambda x: maximum if x < 0 else x)
+                if minimum < 0:
+                    break
+                indices = self.get_indices_of_dict(from_nodes, minimum)
+                indexed_nodes_distance[sink][minimum] = indices.copy()
+                for index in indices:
+                    from_nodes[index] = -1
+        print("indexed:", indexed_nodes_distance)
+        return indexed_nodes_distance
+
+    def get_indices_of_dict(self, data_dict, data):
+        indices = [key for key in data_dict if data == data_dict[key]]
+        return indices
 
     def get_regions_by_alg_4(self):
         print("alg4")
@@ -571,16 +775,19 @@ class RegionHandlerWithLogicalInput:
         return reg4
 
 
+# region_sink_graph = {4: [24],
+#                      9: [14],
+#                      10: [14],
+#                      12: [11],
+#                      14: [4]}
+# logical_handler = RegionHandlerWithLogicalInput()
+# logical_handler.handle_regions(basic_subs, region_sink_graph, basic_priorities)
 
-
+#######################################################
 
 # region_handler = RegionHandler()
 #
 # region_rpt_file = "report.rpt"
-region_sink_graph = {4: [24],
-                     9: [14],
-                     10: [14],
-                     12: [11]}
 # region_max_node_number = 32
 #
 # region_output = region_handler.handle_regions(region_rpt_file,

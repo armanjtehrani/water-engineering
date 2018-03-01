@@ -839,11 +839,10 @@ class Overlay:
             for j in range(len(self.output_map.matrix[i])):
                 input_map.map.matrix[i][j] = int(input_map.map.matrix[i][j])
                 self.output_map.matrix[i][j] = input_map.map.matrix[i][j]
-                if input_map.map.matrix[i][j] == 0:
+                if input_map.map.matrix[i][j] == 0 or \
+                    input_map.map.matrix[i][j] == input_map.map.no_data_value:
                     self.output_map.matrix[i][j] = landuse_map.map.matrix[i][j]
         return self.output_map
-
-    
 
 
 #a = Overlay().overlay_and(["gw.asc", "Roads.asc"])
@@ -1613,8 +1612,8 @@ road_builder = RoadFinder()
 road_detailed_landuse_map_name = "detailedlandusemap.asc"
 road_output_name = "road_s.asc"
 
-road_output = road_builder.get_detailed_landuse_map(road_detailed_landuse_map_name)
-road_output.to_file(road_output_name)
+# road_output = road_builder.get_detailed_landuse_map(road_detailed_landuse_map_name)
+# road_output.to_file(road_output_name)
 
 
 #   RUNOFF COEFFICIENT
