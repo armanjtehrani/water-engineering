@@ -4,7 +4,6 @@ from maps import *
 from map_loader import MapLoader
 from cost_optimization import *
 
-
 map_loader = MapLoader()
 
 
@@ -327,7 +326,9 @@ class RegionBuilder:
         for i in subs_with_inflow:
             print("id:", i)
             print("data:", subs_with_inflow[i])
-        region_maps = {i: {input_map: self.map_marge.get_map_name_by(i, input_maps[input_map]) for input_map in input_maps} for i in subs_with_inflow}
+        region_maps = {
+        i: {input_map: self.map_marge.get_map_name_by(i, input_maps[input_map]) for input_map in input_maps} for i in
+        subs_with_inflow}
         print("regions::")
         for i in region_maps:
             print("id:", i)
@@ -356,8 +357,10 @@ class RegionBuilder:
     def is_source(self, reg_inflow, source_percent):
         lateral_inflow = reg_inflow[SubConsts.LATERAL_INFLOW]
         total_inflow = reg_inflow[SubConsts.TOTAL_INFLOW]
-        is_source = float(lateral_inflow)/total_inflow * 100 >= source_percent
+        is_source = float(lateral_inflow) / total_inflow * 100 >= source_percent
         return is_source
+
+
 # a = RegionBuilder().build_subs_for_regions("watershed_cost.asc", "landuse.asc", "Final.asc", "parcel.asc", "elevation.asc", "report.rpt", 32, 15, 10, 0.5)
 # for i in a:
 #     print(i)
@@ -382,6 +385,7 @@ class Main:
         self.graph = None
         self.inp_file = None
         self.priorities = None
+        self.subs = None
 
     def init(self, water_shed_map_name,
              basic_land_use_map_name,
@@ -406,16 +410,37 @@ class Main:
         self.inp_file = inp_file
         self.priorities = priorities
 
-    def run(self, water_shed_map_name,
-            basic_land_use_map_name,
-            advanced_land_use_map_name,
-            parcel_map_name,
-            dem_map_name,
-            rpt_file, max_node_number, what_percent_to_be_source,
-            min_rain, min_flat, max_slope,
-            inp_file,
-            priorities):
+        self.graph = self.region_builder.flood_data_builder.build_graph(inp_file)
+        self.subs = self.region_builder.build_subs_for_regions(water_shed_map_name,
+                                                               basic_land_use_map_name,
+                                                               advanced_land_use_map_name,
+                                                               parcel_map_name,
+                                                               dem_map_name,
+                                                               rpt_file, max_node_number,
+                                                               what_percent_to_be_source,
+                                                               min_rain, min_flat, max_slope)
 
+    def run(self):
+        print("just run")
+
+        output_maps = self.logical_handler.handle_regions(self.subs, self.graph, self.priorities)
+        print("done:::::::::")
+        print("done:::::::::")
+        print("done:::::::::")
+        print("outputmaps:", output_maps)
+        self.region_builder.merge_maps_by_water_shed_map(self.water_shed_map_name, output_maps,
+                                                         self.basic_land_use_map_name)
+
+    def run_with_init(self, water_shed_map_name,
+                      basic_land_use_map_name,
+                      advanced_land_use_map_name,
+                      parcel_map_name,
+                      dem_map_name,
+                      rpt_file, max_node_number, what_percent_to_be_source,
+                      min_rain, min_flat, max_slope,
+                      inp_file,
+                      priorities):
+        print("run with init")
         self.init(water_shed_map_name,
                   basic_land_use_map_name,
                   advanced_land_use_map_name,
@@ -425,29 +450,25 @@ class Main:
                   min_rain, min_flat, max_slope,
                   inp_file,
                   priorities)
-        self.graph = self.region_builder.flood_data_builder.build_graph(self.inp_file)
-        subs = self.region_builder.build_subs_for_regions(water_shed_map_name,
-                                                          basic_land_use_map_name,
-                                                          advanced_land_use_map_name,
-                                                          parcel_map_name,
-                                                          dem_map_name,
-                                                          rpt_file, max_node_number, self.what_percent_to_be_source,
-                                                          min_rain, min_flat, max_slope)
-        output_maps = self.logical_handler.handle_regions(subs, self.graph, priorities)
+        output_maps = self.logical_handler.handle_regions(self.subs, self.graph, priorities)
         print("done:::::::::")
         print("done:::::::::")
         print("done:::::::::")
         print("outputmaps:", output_maps)
-        self.region_builder.merge_maps_by_water_shed_map(self.water_shed_map_name, output_maps, basic_land_use_map_name)###
+        self.region_builder.merge_maps_by_water_shed_map(self.water_shed_map_name, output_maps,
+                                                         basic_land_use_map_name)
+
 print("start:")
-Main().run("watershed_cost.asc",
-           "landuse.asc",
-           "Final.asc",
-           "parcel.asc",
-           "elevation.asc",
-           "report.rpt", 12, 60,
-           15, 10, 0.5,
-           "tmp.inp",
-           basic_priorities)
+main = Main()
+main.init("watershed_cost.asc",
+          "landuse.asc",
+          "Final.asc",
+          "parcel.asc",
+          "elevation.asc",
+          "report.rpt", 12, 60,
+          15, 10, 0.5,
+          "tmp.inp",
+          basic_priorities)
+main.run()
 # a = RptInpDataBuilder().build_graph("tmp.inp")
 # print("aaaa:", a)
