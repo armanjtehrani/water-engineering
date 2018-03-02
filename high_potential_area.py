@@ -186,6 +186,6 @@ class HighPotentialArea:
         return self.output_for_watershell
 
 #print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "1.2", {'10': ['43544', '43546']}))
-a = HighPotentialArea(hydrolic=True)
-b = a.build_output_based_on_hydrolic("watershed.asc", "report.rpt", "MAX/FULL FLOW", "32", "1.6", {'10': ['43544', '43546']})
-b.to_file("hydrolical.asc")
+#a = HighPotentialArea(hydrolic=True)
+#b = a.build_output_based_on_hydrolic("watershed.asc", "report.rpt", "MAX/FULL FLOW", "32", "1.6", {'10': ['43544', '43546']})
+#b.to_file("hydrolical.asc")
