@@ -536,20 +536,20 @@ class RegionHandlerWithLogicalInput:
 
     def handle_regions(self, subs, extra_subs, region_sink, user_priorities):
         self.init(subs, extra_subs, region_sink, user_priorities)
-        # self.regions_by_alg_1 = self.get_regions_by_alg_1()
-        # self.regions_by_alg_2 = self.get_regions_by_alg_2()
+        self.regions_by_alg_1 = self.get_regions_by_alg_1()
+        self.regions_by_alg_2 = self.get_regions_by_alg_2()
         self.regions_by_alg_3 = self.get_regions_by_alg_3()
-        # self.regions_by_alg_4 = self.get_regions_by_alg_4()
-        # alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, 1, self.priorities)
-        # alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, 2, self.priorities)
+        self.regions_by_alg_4 = self.get_regions_by_alg_4()
+        alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, 1, self.priorities)
+        alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, 2, self.priorities)
         alg3_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_3, 3, self.priorities)
-        # alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, 4, self.priorities)
+        alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, 4, self.priorities)
         # alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, self.priorities)
         # alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, self.priorities)
         # alg3_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_3, self.priorities)
         # alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, self.priorities)
-        # output = {1: alg1_maps, 2: alg2_maps, 3: alg3_maps, 4: alg4_maps}
-        output = {3: alg3_maps}
+        output = {1: alg1_maps, 2: alg2_maps, 3: alg3_maps, 4: alg4_maps}
+        # output = {3: alg3_maps}
         return output
 
     def get_regions_by_alg_1(self):
@@ -580,6 +580,8 @@ class RegionHandlerWithLogicalInput:
     def find_and_build_source_subs(self, indexed_distances_to_nodes):   # hopefully works correctly:D
         subs_for_alg3 = []
         flooded_subs = [sub for sub in self.subs if sub[SubConsts.EXTRA_VOLUME] > 0]
+        flooded_extras = [sub for sub in self.extra_subs if sub[SubConsts.EXTRA_VOLUME] > 0]
+        flooded_subs.extend(flooded_extras)
         print("flooded subs:")
         for sub in flooded_subs:
             print(sub[SubConsts.ID], ":", sub[SubConsts.EXTRA_VOLUME])
@@ -618,11 +620,15 @@ class RegionHandlerWithLogicalInput:
                 if not to_node_sources_with_dist:
                     print("no source with this distance for node!")
                     continue
-                for src_id in to_node_sources_with_dist:
+                for src_id in reversed(sorted(to_node_sources_with_dist,
+                                              key=lambda sub_id: source_nodes_volume_left.get(sub_id, 0))):
+                    print("tonode:::", to_node_sources_with_dist)
                     for sub in self.subs:
                         if sub[SubConsts.ID] == src_id:
                             src_node = sub
                             break
+                    else:
+                        src_node = {SubConsts.ID: -1, SubConsts.IS_SOURCE: False}
                     print("on source:", src_node[SubConsts.ID])
                     if not src_node[SubConsts.IS_SOURCE]:
                         print("src node is not real source!")
@@ -633,21 +639,22 @@ class RegionHandlerWithLogicalInput:
                         continue
                     if flood_left > source_nodes_volume_left[src_id]:
                         print("src not enough:(")
-                        flood_left -= source_nodes_volume_left[src_id]
+                        flooded_nodes_flooding_left[to_node] -= source_nodes_volume_left[src_id]
                         source_nodes_volume_used[src_id] += source_nodes_volume_left[src_id]
                         source_nodes_volume_left[src_id] = 0
                         print("so: src vol used:", source_nodes_volume_used[src_id])
                         print("so: src vol left:", source_nodes_volume_left[src_id])
-                        print("so: flood left:", flood_left)
+                        print("so: flood left:", flooded_nodes_flooding_left[to_node])
                     else:
                         #   flood_left <= source_nodes_volume_left
                         print("src is enough:)")
                         source_nodes_volume_left[src_id] -= flood_left
                         source_nodes_volume_used[src_id] += flood_left
-                        flood_left = 0
+                        flooded_nodes_flooding_left[to_node] = 0
                         print("so: src vol used:", source_nodes_volume_used[src_id])
                         print("so: src vol left:", source_nodes_volume_left[src_id])
-                        print("so: flood left:", flood_left)
+                        print("so: flood left:", flooded_nodes_flooding_left[to_node])
+                    flood_left = flooded_nodes_flooding_left[to_node]
         for sub_index in range(len(self.subs)):
             sub = self.subs[sub_index]
             sub_id = self.subs[sub_index][SubConsts.ID]
@@ -676,7 +683,7 @@ class RegionHandlerWithLogicalInput:
 
     def build_flooding_to_sources(self):    # checked
         nodes_distance = self.build_nodes_distance()
-        nodes_distance = self.remove_extra_regions(nodes_distance)
+        # nodes_distance = self.remove_extra_regions(nodes_distance)
         indexed_nodes_distance = self.index_nodes_distance(nodes_distance)
         indexed_distances_to_nodes = self.index_distances_to_nodes(indexed_nodes_distance)
         return nodes_distance, indexed_nodes_distance, indexed_distances_to_nodes
@@ -696,8 +703,6 @@ class RegionHandlerWithLogicalInput:
         # for node in nodes_without_extra:
         #     print(node, ":", nodes_without_extra[node])
         return nodes_without_extra
-
-
 
     def index_distances_to_nodes(self, indexed_nodes_distance):     # checked
         indexed_nodes_distance = deepcopy(indexed_nodes_distance)
@@ -752,8 +757,6 @@ class RegionHandlerWithLogicalInput:
                     if not node_is_checked[nearby_node]:
                         node_is_checked[nearby_node] = True
                         next_nodes.append((nearby_node, new_distance))
-        for node in nodes_distance:
-            print(node, ":", nodes_distance[node])
         return nodes_distance
 
     def index_nodes_distance(self, nodes_distance):     # checked
