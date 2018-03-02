@@ -1,5 +1,6 @@
 import os
 
+
 # pre =
 # ncols         1852
 # nrows         1613
@@ -50,3 +51,8 @@ class Map2Asc:
         str_data += "cellsize      "+ str(self.cellsize) + '\n'
         str_data +=  "NODATA_value  " + str(self.NODATA_VALUE) + '\n'
         return str_data
+
+    def asc2map(self,asc_name,dotmapname ):
+        os.chdir("parammaps/")
+        os.system('asc2map -a ' + asc_name +" "+  dotmapname +  " --clone CloneNuminal")
+        os.chdir("..")
