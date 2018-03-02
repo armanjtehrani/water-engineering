@@ -54,13 +54,20 @@ class Map:
         str_data += self.get_matrix_string()
         file.write(str_data)
 
+    def to_file_parammaps(self, file_name):
+        file = open('parammaps/' + file_name, 'w+')
+        str_data = ""
+        str_data += self.get_config_string()
+        str_data += self.get_matrix_string()
+        file.write(str_data)
+
     def to_file_for_merge(self, file_name):
         file = open('usermaps/' + file_name, 'w+')
         str_data = ""
         str_data += self.get_config_string()
         str_data += self.get_matrix_string()
         file.write(str_data)
-        
+
 
 class GWMap:
     def __init__(self):
@@ -111,7 +118,7 @@ class AdvancedLandUseMap:
 
     def __str__(self):
         return str('advanced land use map:\n' + str(self.map))
-    
+
 
 class LandUseMap:
     class VALUES:
@@ -190,12 +197,14 @@ class FlowAccMap:
     def __str__(self):
         return str('flow accumulator map:\n' + str(self.map))
 
+
 class ConductivityMap:
     def __init__(self):
         self.map = Map()
 
     def __str__(self):
         return str('conductivity map:\n' + str(self.map))
+
 
 class WaterShellMap:
     def __init__(self):
@@ -204,12 +213,14 @@ class WaterShellMap:
     def __str__(self):
         return str('water shell map:\n' + str(self.map))
 
+
 class BasicMap:
     def __init__(self):
         self.map = Map()
 
     def __str__(self):
         return str('basic map:\n' + str(self.map))
+
 
 class WaterShedMap:
     def __init__(self):
