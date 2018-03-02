@@ -786,8 +786,8 @@ class RegionHandlerWithLogicalInput:
 
     def get_regions_by_alg_4(self):
         print("alg4")
-        reg3 = self.get_regions_by_alg_3()
-        reg2 = self.get_regions_by_alg_2()
+        reg3 = self.regions_by_alg_3
+        reg2 = self.regions_by_alg_2
         reg4 = []
         reg4.extend(reg3)
         for i in reg2:
