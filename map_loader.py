@@ -13,15 +13,15 @@ class MapLoader:
             'cellsize': 2,
             'NODATA_value': -9999
         }
-        self.map_dir_for_ascii = "map/"
-        self.map_dir_for_dot_map = "maps/"
+        self.map_dir_for_ascii = "parammaps/"
+        self.map_dir_for_dot_map = "parammaps/"
 
     def load_dot_map(self, map_class, map_name):
         map_dir = self.map_dir_for_dot_map
         ascii_name = map_name.split('.map')[0] + 'Cr.asc'
         print('asc name:', ascii_name)
         self.my_map2asc_convertor.set_map_variables(self.configs)
-        self.my_map2asc_convertor.build_ascii_map(self.map_dir_for_ascii, map_name, ascii_name)
+        self.my_map2asc_convertor.build_ascii_map(map_dir, map_name, ascii_name)
         return self.load_map(map_class, ascii_name)
 
     def load_map(self, map_class, map_name):
@@ -33,7 +33,10 @@ class MapLoader:
         return my_map
 
     def load_file(self, map_name):
-        return open(self.map_dir_for_ascii + map_name, 'r')
+        if (len(map_name)>20):
+            return open(map_name, 'r')
+        else:
+            return open(self.map_dir_for_ascii + map_name, 'r')
 
     def build_map_from_ascii(self, ascii_file):
         map = Map()
@@ -46,18 +49,24 @@ class MapLoader:
         #
         map.matrix = []
         for i in range(map.n_rows):
-            line_str = ascii_file.readline()
+            line_str = ascii_file.readline().replace('\n', '')
             line_list = line_str.split(' ')
+            while ('' in line_list):
+                line_list.remove('')
             line_list = line_list[:len(line_list) - 1]
 
             for j in range(len(line_list)):
-                line_list[j] = float(line_list[j])
+                ans = float(line_list[j])
+
+                line_list[j] = ans
+
             if len(line_list) > map.n_cols:
                 line_list = line_list[:map.n_cols]
             elif len(line_list) < map.n_cols:
                 for j in range(map.n_cols - len(line_list)):
                     line_list.append(map.no_data_value)
             map.matrix.append(line_list)
+
         return map
 
     def set_my_map_config_by_map(self, map):
