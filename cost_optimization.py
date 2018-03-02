@@ -16,22 +16,22 @@ basic_priorities = [
     {
         'pixel_code': AdvancedLandUseMap.VALUES.RAIN_GARDEN,    # 30
         'price_per_sq_meter': 1,
-        'volume_reduction_per_sq_meter': 0.5
+        'volume_reduction_per_sq_meter': 50
     },
     {
         'pixel_code': AdvancedLandUseMap.VALUES.GREEN_ROOF,     # 40
         'price_per_sq_meter': 2,
-        'volume_reduction_per_sq_meter': 2
+        'volume_reduction_per_sq_meter': 25
     },
     {
         'pixel_code': AdvancedLandUseMap.VALUES.ROAD,
         'price_per_sq_meter': 3,
-        'volume_reduction_per_sq_meter': 2.5
+        'volume_reduction_per_sq_meter': 10
     },
     {
         'pixel_code': AdvancedLandUseMap.VALUES.RIPARIAN_ZONE,
         'price_per_sq_meter': 4,
-        'volume_reduction_per_sq_meter': 1
+        'volume_reduction_per_sq_meter': 5
     },
 ]
 
@@ -148,6 +148,9 @@ class SubConsts:
     MAX_POSSIBLE_SLOPE = "maximum_possible_slope"
     BASIC_LANDUSE_MAP_NAME = "basic_land_use_map_name"
 
+    IS_REAL_SUB = 'is_real_sub'
+    EXTRA_SUB = 'extra'
+
 
 class CostOptimizerForSub:
     def __init__(self):
@@ -262,11 +265,11 @@ class CostOptimizerForSub:
         needed_pixels = self.num_of_needed_pixels
         if needed_pixels > max_num_of_priority:
             self.add_all_priority_pixels()
-            self.extra_volume_left -= (max_num_of_priority / self.pixel_size) * self.priority[PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER]
-            self.price = (max_num_of_priority / self.pixel_size) * self.priority[PriorityConsts.PRICE_PER_SQ_METER]
+            self.extra_volume_left -= (max_num_of_priority * self.pixel_size) * self.priority[PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER]
+            self.price = (max_num_of_priority * self.pixel_size) * self.priority[PriorityConsts.PRICE_PER_SQ_METER]
             return
 
-        self.price = (needed_pixels / self.pixel_size) * self.priority[PriorityConsts.PRICE_PER_SQ_METER]
+        self.price = (needed_pixels * self.pixel_size) * self.priority[PriorityConsts.PRICE_PER_SQ_METER]
         self.extra_volume_left = 0
         if self.is_flat_roof_priority(self.priority):
             self.build_id_to_pixels_for_flat_roof_priority()
@@ -496,7 +499,7 @@ class CostOptimizer:
         #     'minimum_valuable_area_for_flat_roof': 30,
         #     'maximum_possible_slope': 0.2,
         # }
-        self.built_sub = basic_sub.copy()
+        self.built_sub = deepcopy(basic_sub)
         self.built_sub[SubConsts.BASIC_LANDUSE_MAP] = map_loader.load_map(LandUseMap, basic_sub[SubConsts.BASIC_LANDUSE_MAP])
         self.built_sub[SubConsts.ADVANCED_LANDUSE_MAP] = map_loader.load_map(AdvancedLandUseMap,
                                                                       basic_sub[SubConsts.ADVANCED_LANDUSE_MAP])
@@ -520,31 +523,33 @@ class RegionHandlerWithLogicalInput:
                         region_source[src].append(sink)
         return region_source
 
-    def init(self, subs, region_sink, user_priorities):
+    def init(self, subs, extra_subs, region_sink, user_priorities):
         self.region_source = self.build_region_source_by(region_sink)
         self.region_sink = region_sink
         self.subs = subs
+        self.extra_subs = extra_subs
         self.priorities = user_priorities
         for i in self.region_sink:
             print("sink:", i, "sources:", self.region_sink[i])
         for i in self.region_source:
             print("source:", i, "sinks:", self.region_source[i])
 
-    def handle_regions(self, subs, region_sink, user_priorities):
-        self.init(subs, region_sink, user_priorities)
-        self.regions_by_alg_1 = self.get_regions_by_alg_1()
-        self.regions_by_alg_2 = self.get_regions_by_alg_2()
+    def handle_regions(self, subs, extra_subs, region_sink, user_priorities):
+        self.init(subs, extra_subs, region_sink, user_priorities)
+        # self.regions_by_alg_1 = self.get_regions_by_alg_1()
+        # self.regions_by_alg_2 = self.get_regions_by_alg_2()
         self.regions_by_alg_3 = self.get_regions_by_alg_3()
-        self.regions_by_alg_4 = self.get_regions_by_alg_4()
-        alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, 1, self.priorities)
-        alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, 2, self.priorities)
+        # self.regions_by_alg_4 = self.get_regions_by_alg_4()
+        # alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, 1, self.priorities)
+        # alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, 2, self.priorities)
         alg3_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_3, 3, self.priorities)
-        alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, 4, self.priorities)
+        # alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, 4, self.priorities)
         # alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, self.priorities)
         # alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, self.priorities)
         # alg3_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_3, self.priorities)
         # alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, self.priorities)
-        output = {1: alg1_maps, 2: alg2_maps, 3: alg3_maps, 4: alg4_maps}
+        # output = {1: alg1_maps, 2: alg2_maps, 3: alg3_maps, 4: alg4_maps}
+        output = {3: alg3_maps}
         return output
 
     def get_regions_by_alg_1(self):
@@ -627,37 +632,46 @@ class RegionHandlerWithLogicalInput:
                         print("no vol left for src")
                         continue
                     if flood_left > source_nodes_volume_left[src_id]:
+                        print("src not enough:(")
                         flood_left -= source_nodes_volume_left[src_id]
                         source_nodes_volume_used[src_id] += source_nodes_volume_left[src_id]
                         source_nodes_volume_left[src_id] = 0
+                        print("so: src vol used:", source_nodes_volume_used[src_id])
+                        print("so: src vol left:", source_nodes_volume_left[src_id])
+                        print("so: flood left:", flood_left)
                     else:
                         #   flood_left <= source_nodes_volume_left
+                        print("src is enough:)")
                         source_nodes_volume_left[src_id] -= flood_left
                         source_nodes_volume_used[src_id] += flood_left
                         flood_left = 0
+                        print("so: src vol used:", source_nodes_volume_used[src_id])
+                        print("so: src vol left:", source_nodes_volume_left[src_id])
+                        print("so: flood left:", flood_left)
         for sub_index in range(len(self.subs)):
             sub = self.subs[sub_index]
             sub_id = self.subs[sub_index][SubConsts.ID]
             print("on sub:", sub_id)
-            if self.subs[sub_index][SubConsts.IS_SOURCE]:
+            if sub[SubConsts.IS_SOURCE]:
                 if source_nodes_volume_used[sub_id] > 0:
-                    subs_for_alg3.append(sub.copy())
+                    subs_for_alg3.append(deepcopy(sub))
                     subs_for_alg3[-1][SubConsts.EXTRA_VOLUME] = source_nodes_volume_used[sub_id]
         for i in subs_for_alg3:
             print("su", i[SubConsts.ID], ":", i[SubConsts.EXTRA_VOLUME])
         return subs_for_alg3
 
-
     def calculate_sub_max_vol_by_priorities(self, my_sub):  # guess is checked!!
         print("starting sub:", my_sub[SubConsts.ID])
         max_vol = 0
         sub_advanced = map_loader.load_map(AdvancedLandUseMap, my_sub[SubConsts.ADVANCED_LANDUSE_MAP]).map
+        cell_size = sub_advanced.cell_size
         for priority in self.priorities:
             num_of_priority = 0
             for row in sub_advanced.matrix:
                 num_of_priority += row.count(priority[PriorityConsts.PIXEL_CODE])
-            priority_vol = num_of_priority * priority[PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER]
+            priority_vol = num_of_priority * priority[PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER] * cell_size * cell_size
             max_vol += priority_vol
+            print("priority:", priority[PriorityConsts.PIXEL_CODE], ":", num_of_priority)
         return max_vol
 
     def build_flooding_to_sources(self):    # checked
@@ -686,7 +700,7 @@ class RegionHandlerWithLogicalInput:
 
 
     def index_distances_to_nodes(self, indexed_nodes_distance):     # checked
-        indexed_nodes_distance = indexed_nodes_distance.copy()
+        indexed_nodes_distance = deepcopy(indexed_nodes_distance)
 
         dists = []
         for node in indexed_nodes_distance:
@@ -700,7 +714,9 @@ class RegionHandlerWithLogicalInput:
             for node in indexed_nodes_distance:
                 if indexed_nodes_distance[node].get(dist):
                     indexed[dist][node] = indexed_nodes_distance[node][dist]
-        print("final indexed:", indexed)
+        print("final indexed:")
+        for i in indexed:
+            print(i, ":", indexed[i])
         return indexed
 
     def build_graph_nodes(self):    # checked
@@ -736,15 +752,15 @@ class RegionHandlerWithLogicalInput:
                     if not node_is_checked[nearby_node]:
                         node_is_checked[nearby_node] = True
                         next_nodes.append((nearby_node, new_distance))
-        # for node in nodes_distance:
-        #     print(node, ":", nodes_distance[node])
+        for node in nodes_distance:
+            print(node, ":", nodes_distance[node])
         return nodes_distance
 
     def index_nodes_distance(self, nodes_distance):     # checked
         indexed_nodes_distance = {}
         for sink in nodes_distance:
             indexed_nodes_distance[sink] = {}
-            from_nodes = nodes_distance[sink].copy()
+            from_nodes = deepcopy(nodes_distance[sink])
             all_values = [from_nodes[i] for i in from_nodes]
             maximum = max(all_values) + 1
             while True:
@@ -753,10 +769,12 @@ class RegionHandlerWithLogicalInput:
                 if minimum < 0:
                     break
                 indices = self.get_indices_of_dict(from_nodes, minimum)
-                indexed_nodes_distance[sink][minimum] = indices.copy()
+                indexed_nodes_distance[sink][minimum] = deepcopy(indices)
                 for index in indices:
                     from_nodes[index] = -1
-        print("indexed:", indexed_nodes_distance)
+        print("indexed:")
+        for i in indexed_nodes_distance:
+            print(i, ":", indexed_nodes_distance[i])
         return indexed_nodes_distance
 
     def get_indices_of_dict(self, data_dict, data):

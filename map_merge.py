@@ -222,6 +222,11 @@ class RptInpDataBuilder:
         rpt_nodes = self.build_flooding_data(rpt_file)
         for i in range(1, max_node + 1):
             all_nodes_with_max_number[i] = rpt_nodes.get(i, 0)
+        extra_nodes = {}
+        for rpt_node_id in rpt_nodes:
+            if rpt_node_id > max_node:
+                extra_nodes[rpt_node_id] = rpt_nodes[rpt_node_id]
+        all_nodes_with_max_number[SubConsts.EXTRA_SUB] = extra_nodes
         return all_nodes_with_max_number
 
     def build_flooding_data(self, rpt_file):
@@ -327,8 +332,9 @@ class RegionBuilder:
             print("id:", i)
             print("data:", subs_with_inflow[i])
         region_maps = {
-        i: {input_map: self.map_marge.get_map_name_by(i, input_maps[input_map]) for input_map in input_maps} for i in
-        subs_with_inflow}
+            i: {input_map: self.map_marge.get_map_name_by(i, input_maps[input_map]) for input_map in input_maps} for i
+            in
+            subs_with_inflow}
         print("regions::")
         for i in region_maps:
             print("id:", i)
@@ -342,22 +348,32 @@ class RegionBuilder:
         for id in region_maps:
             region_extra_volume = subs_with_extra_volume[id]
             region_inflow = subs_with_inflow[id]
-            sub = {'id': id, SubConsts.BASIC_LANDUSE_MAP: region_maps[id][SubConsts.BASIC_LANDUSE_MAP],
+            print("sub:::::::::::", id, "inflow:", region_inflow)
+            sub = {SubConsts.ID: id, SubConsts.BASIC_LANDUSE_MAP: region_maps[id][SubConsts.BASIC_LANDUSE_MAP],
                    SubConsts.ADVANCED_LANDUSE_MAP: region_maps[id][SubConsts.ADVANCED_LANDUSE_MAP],
                    SubConsts.PARCEL_MAP: region_maps[id][SubConsts.PARCEL_MAP],
                    SubConsts.ELEVATION_MAP: region_maps[id][SubConsts.ELEVATION_MAP],
                    SubConsts.EXTRA_VOLUME: region_extra_volume, SubConsts.INFLOW: region_inflow,
                    SubConsts.MIN_VALUABLE_AREA_FOR_RAIN_GARDEN: min_rain,
                    SubConsts.MIN_VALUABLE_AREA_FOR_FLAT_ROOF: min_flat, SubConsts.MAX_POSSIBLE_SLOPE: max_slope,
-                   SubConsts.IS_SOURCE: self.is_source(region_inflow, what_percent_to_be_source)}
+                   SubConsts.IS_SOURCE: self.is_source(region_inflow, what_percent_to_be_source),
+                   SubConsts.IS_REAL_SUB: True}
             subs.append(sub)
             print("sub:", id, "is source:", sub[SubConsts.IS_SOURCE])
-        return subs
+        extra_subs = []
+        for extra_sub in subs_with_extra_volume[SubConsts.EXTRA_SUB]:
+            sub = {SubConsts.ID: extra_sub,
+                   SubConsts.EXTRA_VOLUME: subs_with_extra_volume[SubConsts.EXTRA_SUB][extra_sub],
+                   SubConsts.IS_REAL_SUB: False,
+                   SubConsts.IS_SOURCE: False}
+            extra_subs.append(sub)
+        return subs, extra_subs
 
     def is_source(self, reg_inflow, source_percent):
         lateral_inflow = reg_inflow[SubConsts.LATERAL_INFLOW]
+
         total_inflow = reg_inflow[SubConsts.TOTAL_INFLOW]
-        is_source = float(lateral_inflow) / total_inflow * 100 >= source_percent
+        is_source = float(lateral_inflow) / float(total_inflow) >= source_percent
         return is_source
 
 
@@ -386,6 +402,7 @@ class Main:
         self.inp_file = None
         self.priorities = None
         self.subs = None
+        self.extra_subs = None
 
     def init(self, water_shed_map_name,
              basic_land_use_map_name,
@@ -411,19 +428,27 @@ class Main:
         self.priorities = priorities
 
         self.graph = self.region_builder.flood_data_builder.build_graph(inp_file)
-        self.subs = self.region_builder.build_subs_for_regions(water_shed_map_name,
-                                                               basic_land_use_map_name,
-                                                               advanced_land_use_map_name,
-                                                               parcel_map_name,
-                                                               dem_map_name,
-                                                               rpt_file, max_node_number,
-                                                               what_percent_to_be_source,
-                                                               min_rain, min_flat, max_slope)
+        print("\nmain graph:")
+        for i in self.graph:
+            print(i, ":", self.graph[i])
+        print("\n")
+        self.subs, self.extra_subs = self.region_builder.build_subs_for_regions(water_shed_map_name,
+                                                                                basic_land_use_map_name,
+                                                                                advanced_land_use_map_name,
+                                                                                parcel_map_name,
+                                                                                dem_map_name,
+                                                                                rpt_file, max_node_number,
+                                                                                what_percent_to_be_source,
+                                                                                min_rain, min_flat, max_slope)
+        print("\nsrcs:")
+        for sub in self.subs:
+            if sub[SubConsts.IS_SOURCE]:
+                print(sub[SubConsts.ID], "is source")
 
     def run(self):
         print("just run")
 
-        output_maps = self.logical_handler.handle_regions(self.subs, self.graph, self.priorities)
+        output_maps = self.logical_handler.handle_regions(self.subs, self.extra_subs, self.graph, self.priorities)
         print("done:::::::::")
         print("done:::::::::")
         print("done:::::::::")
@@ -450,13 +475,14 @@ class Main:
                   min_rain, min_flat, max_slope,
                   inp_file,
                   priorities)
-        output_maps = self.logical_handler.handle_regions(self.subs, self.graph, priorities)
+        output_maps = self.logical_handler.handle_regions(self.subs, self.extra_subs, self.graph, priorities)
         print("done:::::::::")
         print("done:::::::::")
         print("done:::::::::")
         print("outputmaps:", output_maps)
         self.region_builder.merge_maps_by_water_shed_map(self.water_shed_map_name, output_maps,
                                                          basic_land_use_map_name)
+
 
 print("start:")
 main = Main()
@@ -465,7 +491,7 @@ main.init("watershed_cost.asc",
           "Final.asc",
           "parcel.asc",
           "elevation.asc",
-          "report.rpt", 12, 60,
+          "report.rpt", 31, .6,
           15, 10, 0.5,
           "tmp.inp",
           basic_priorities)
