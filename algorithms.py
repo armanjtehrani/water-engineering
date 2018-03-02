@@ -839,9 +839,10 @@ class Overlay:
         self.build_basic_output()
         for i in range(len(self.output_map.matrix)):
             for j in range(len(self.output_map.matrix[i])):
-                input_map.map.matrix[i][j] = int(input_map.map.matrix[i][j])
-                self.output_map.matrix[i][j] = input_map.map.matrix[i][j]
-                if input_map.map.matrix[i][j] == 0:
+                input_cell = int(input_map.map.matrix[i][j])
+                if input_cell > 0:
+                    self.output_map.matrix[i][j] = input_cell
+                else:
                     self.output_map.matrix[i][j] = landuse_map.map.matrix[i][j]
         return self.output_map
 
