@@ -12,30 +12,6 @@ from copy import deepcopy
 from algorithms import *
 
 
-basic_priorities = [
-    {
-        'pixel_code': AdvancedLandUseMap.VALUES.RAIN_GARDEN,    # 30
-        'price_per_sq_meter': 1,
-        'volume_reduction_per_sq_meter': 50
-    },
-    {
-        'pixel_code': AdvancedLandUseMap.VALUES.GREEN_ROOF,     # 40
-        'price_per_sq_meter': 2,
-        'volume_reduction_per_sq_meter': 25
-    },
-    {
-        'pixel_code': AdvancedLandUseMap.VALUES.ROAD,
-        'price_per_sq_meter': 3,
-        'volume_reduction_per_sq_meter': 10
-    },
-    {
-        'pixel_code': AdvancedLandUseMap.VALUES.RIPARIAN_ZONE,
-        'price_per_sq_meter': 4,
-        'volume_reduction_per_sq_meter': 5
-    },
-]
-
-
 basic_subs = [
     # {
     #     'id': 24,
@@ -128,6 +104,30 @@ class PriorityConsts:
     PIXEL_CODE = 'pixel_code'
     PRICE_PER_SQ_METER = 'price_per_sq_meter'
     VOLUME_REDUCTION_PER_SQ_METER = 'volume_reduction_per_sq_meter'
+
+
+basic_priorities = [
+    {
+        PriorityConsts.PIXEL_CODE: AdvancedLandUseMap.VALUES.RAIN_GARDEN,    # 30
+        PriorityConsts.PRICE_PER_SQ_METER: 1,
+        PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER: 50
+    },
+    {
+        PriorityConsts.PIXEL_CODE: AdvancedLandUseMap.VALUES.GREEN_ROOF,     # 40
+        PriorityConsts.PRICE_PER_SQ_METER: 2,
+        PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER: 25
+    },
+    {
+        PriorityConsts.PIXEL_CODE: AdvancedLandUseMap.VALUES.ROAD,
+        PriorityConsts.PRICE_PER_SQ_METER: 3,
+        PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER: 10
+    },
+    {
+        PriorityConsts.PIXEL_CODE: AdvancedLandUseMap.VALUES.RIPARIAN_ZONE,
+        PriorityConsts.PRICE_PER_SQ_METER: 4,
+        PriorityConsts.VOLUME_REDUCTION_PER_SQ_METER: 5
+    },
+]
 
 
 class SubConsts:
