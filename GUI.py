@@ -5,6 +5,7 @@
 # Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
+import copy2dir
 import algorithms
 import map_loader
 import maps
@@ -33,9 +34,7 @@ from ExecuteMod import ExecuteMod
 import json
 import codecs
 
-
 import map_merge
-
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -86,9 +85,9 @@ class Ui_Dialog(object):
         self.main = main
         Dialog.setObjectName(_fromUtf8("Dialog"))
 
-        Dialog.resize(752, 512)
+        Dialog.resize(800, 600)
         self.groupBox_9 = QtGui.QGroupBox(Dialog)
-        self.groupBox_9.setGeometry(QtCore.QRect(380, 10, 361, 491))
+        self.groupBox_9.setGeometry(QtCore.QRect(380, 10, 400, 491))
         self.groupBox_9.setObjectName(_fromUtf8("groupBox_9"))
         self.btn_DefinePara = QtGui.QPushButton(self.groupBox_9)
         self.btn_DefinePara.setGeometry(QtCore.QRect(40, 22, 281, 51))
@@ -97,7 +96,7 @@ class Ui_Dialog(object):
         self.btn_RunPre.setGeometry(QtCore.QRect(40, 90, 281, 51))
         self.btn_RunPre.setObjectName(_fromUtf8("btn_RunPre"))
         self.label = QtGui.QLabel(self.groupBox_9)
-        self.label.setGeometry(QtCore.QRect(20, 190, 341, 51))
+        self.label.setGeometry(QtCore.QRect(20, 190, 370, 51))
         self.label.setObjectName(_fromUtf8("label"))
         self.le_subsrerun = QtGui.QLineEdit(self.groupBox_9)
         self.le_subsrerun.setGeometry(QtCore.QRect(270, 220, 81, 20))
@@ -106,7 +105,7 @@ class Ui_Dialog(object):
         self.btn_define.setGeometry(QtCore.QRect(30, 250, 151, 41))
         self.btn_define.setObjectName(_fromUtf8("btn_define"))
         self.groupBox_gen = QtGui.QGroupBox(self.groupBox_9)
-        self.groupBox_gen.setGeometry(QtCore.QRect(20, 310, 331, 161))
+        self.groupBox_gen.setGeometry(QtCore.QRect(20, 310, 360, 161))
         self.groupBox_gen.setObjectName(_fromUtf8("groupBox_gen"))
         self.lv_parammap = QtGui.QListView(self.groupBox_gen)
         self.lv_parammap.setGeometry(QtCore.QRect(10, 20, 171, 91))
@@ -119,11 +118,11 @@ class Ui_Dialog(object):
         self.le_SubNn.setGeometry(QtCore.QRect(200, 60, 51, 20))
         self.le_SubNn.setObjectName(_fromUtf8("le_SubN"))
         self.label_1n = QtGui.QLabel(self.groupBox_gen)
-        self.label_1n.setGeometry(QtCore.QRect(200, 20, 131, 16))
+        self.label_1n.setGeometry(QtCore.QRect(200, 20, 145, 16))
         self.label_1n.setObjectName(_fromUtf8("label_1"))
 
         self.groupBox = QtGui.QGroupBox(Dialog)
-        self.groupBox.setGeometry(QtCore.QRect(10, 10, 361, 491))
+        self.groupBox.setGeometry(QtCore.QRect(10, 10, 361, 550))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.groupBox_2 = QtGui.QGroupBox(self.groupBox)
         self.groupBox_2.setGeometry(QtCore.QRect(10, 20, 341, 41))
@@ -179,14 +178,25 @@ class Ui_Dialog(object):
         self.le_precipitation = QtGui.QLineEdit(self.groupBox_7)
         self.le_precipitation.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_precipitation.setObjectName(_fromUtf8("le_precipitation"))
+
+        self.groupBox_OpenLAI = QtGui.QGroupBox(self.groupBox)
+        self.groupBox_OpenLAI.setGeometry(QtCore.QRect(10, 260, 341, 41))
+        self.groupBox_OpenLAI.setObjectName(_fromUtf8("groupBox_OpenLAI"))
+        self.btn_OpenLAI = QtGui.QToolButton(self.groupBox_OpenLAI)
+        self.btn_OpenLAI.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.btn_OpenLAI.setObjectName(_fromUtf8("btn_OpenLAI"))
+        self.le_OpenLAI = QtGui.QLineEdit(self.groupBox_OpenLAI)
+        self.le_OpenLAI.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_OpenLAI.setObjectName(_fromUtf8("le_OpenLAI"))
+
         self.groupBox_8 = QtGui.QGroupBox(self.groupBox)
-        self.groupBox_8.setGeometry(QtCore.QRect(10, 350, 331, 131))
+        self.groupBox_8.setGeometry(QtCore.QRect(10, 400, 331, 131))
         self.groupBox_8.setObjectName(_fromUtf8("groupBox_8"))
         self.le_SubN = QtGui.QLineEdit(self.groupBox_8)
-        self.le_SubN.setGeometry(QtCore.QRect(150, 20, 51, 20))
+        self.le_SubN.setGeometry(QtCore.QRect(200, 20, 51, 20))
         self.le_SubN.setObjectName(_fromUtf8("le_SubN"))
         self.label_1 = QtGui.QLabel(self.groupBox_8)
-        self.label_1.setGeometry(QtCore.QRect(20, 20, 131, 16))
+        self.label_1.setGeometry(QtCore.QRect(20, 20, 150, 16))
         self.label_1.setObjectName(_fromUtf8("label_1"))
         self.cb_SoilMap = QtGui.QCheckBox(self.groupBox_8)
         self.cb_SoilMap.setGeometry(QtCore.QRect(30, 60, 101, 17))
@@ -201,14 +211,14 @@ class Ui_Dialog(object):
         self.btn_ShowResult.setGeometry(QtCore.QRect(230, 90, 91, 31))
         self.btn_ShowResult.setObjectName(_fromUtf8("btn_ShowResult"))
         self.label_2 = QtGui.QLabel(self.groupBox)
-        self.label_2.setGeometry(QtCore.QRect(20, 270, 141, 16))
+        self.label_2.setGeometry(QtCore.QRect(20, 320, 170, 16))
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.le_NSubs = QtGui.QLineEdit(self.groupBox)
-        self.le_NSubs.setGeometry(QtCore.QRect(180, 270, 51, 20))
+        self.le_NSubs.setGeometry(QtCore.QRect(200, 320, 51, 20))
         self.le_NSubs.setText(_fromUtf8(""))
         self.le_NSubs.setObjectName(_fromUtf8("le_NSubs"))
         self.btn_Map_Generation = QtGui.QPushButton(self.groupBox)
-        self.btn_Map_Generation.setGeometry(QtCore.QRect(30, 300, 291, 31))
+        self.btn_Map_Generation.setGeometry(QtCore.QRect(30, 350, 291, 31))
         self.btn_Map_Generation.setObjectName(_fromUtf8("btn_Map_Generation"))
         self.btn_runagain = QtGui.QPushButton(self.groupBox_9)
         self.btn_runagain.setGeometry(QtCore.QRect(190, 250, 151, 41))
@@ -246,11 +256,15 @@ class Ui_Dialog(object):
         self.tb_Soil.setText(_translate("Dialog", "...", None))
         self.groupBox_5.setTitle(_translate("Dialog", "Open Watershed ascii", None))
         self.tb_Watershed.setText(_translate("Dialog", "...", None))
-        self.groupBox_6.setTitle(_translate("Dialog", "Evaporation", None))
+        self.groupBox_6.setTitle(_translate("Dialog", "Evapotranspiration", None))
         self.btn_evaporation.setText(_translate("Dialog", "...", None))
         self.groupBox_7.setTitle(_translate("Dialog", "Precipitation", None))
         self.btn_precipitation.setText(_translate("Dialog", "...", None))
         self.groupBox_8.setTitle(_translate("Dialog", "See Results : ", None))
+        self.groupBox_OpenLAI.setTitle(_translate("Dialog", "Open LAI maps", None))
+        self.btn_OpenLAI.setText(_translate("Dialog", "...", None))
+
+
         self.label_1.setText(_translate("Dialog", "Subcatchments Number :", None))
         self.cb_SoilMap.setText(_translate("Dialog", "Soil Map", None))
         self.cb_LanduseMap.setText(_translate("Dialog", "Landuse Map", None))
@@ -523,10 +537,22 @@ class Ui_Dialog(object):
         _list_meteo = []
         if self.le_evaporation.text() != "":
             _list_meteo.append(str(self.le_evaporation.text()))
+
+            # Added by Taha
+            copy2dir.copy2dir(str(self.le_evaporation.text()),"meteo/evapotranspiration.tss")
+            # ----------------
             pass
         if self.le_precipitation.text() != "":
             _list_meteo.append(str(self.le_precipitation.text()))
+
+            # Added by Taha
+            copy2dir.copy2dir(str(self.le_precipitation.text()), "mete/precipitation.tss")
+            # ----------------
             pass
+
+        #if self.le_OpenLAI.text() != "":
+
+
         #### copy files
         dbconfig = read_config(section='config')
         if (len(_list_meteo) != 0):
@@ -600,6 +626,11 @@ class Ui_Dialog(object):
                                                 "these Subs are erroned : {} ".format(str(Message)),
                                                 QtGui.QMessageBox.Ok)
 
+    def loadLAImaps(self):
+        fname = QFileDialog.getOpenFileName(None, 'Open file',
+                                            os.getcwd())
+        self.le_OpenLAI.setText(fname)
+
     def SetUpActions(self):
         self.tb_DEM.clicked.connect(self.setLEDEM)
         self.tb_Landuse.clicked.connect(self.setLELanduse)
@@ -612,6 +643,7 @@ class Ui_Dialog(object):
         self.btn_define.clicked.connect(self.OpenUserinput)
         self.btn_runagain.clicked.connect(self.ReRunPre)
         self.btn_show_m.clicked.connect(self.listmaps)
+        self.btn_OpenLAI.clicked.connect(self.loadLAImaps)
 
         self.lv_parammap.doubleClicked.connect(self.showmap)
         self.btn_precipitation.clicked.connect(self.setLE_precipitation)
@@ -627,7 +659,8 @@ class Ui_Dialogone(object):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         self.main = main
 
-        Dialog.resize(752, 512)
+        Dialog.resize(752, 600)
+
         self.groupBox = QtGui.QGroupBox(Dialog)
         self.groupBox.setGeometry(QtCore.QRect(10, 10, 361, 281))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
@@ -692,10 +725,10 @@ class Ui_Dialogone(object):
         self.groupBox_2.setGeometry(QtCore.QRect(380, 10, 361, 491))
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.label_13 = QtGui.QLabel(self.groupBox_2)
-        self.label_13.setGeometry(QtCore.QRect(20, 30, 151, 16))
+        self.label_13.setGeometry(QtCore.QRect(20, 30, 170, 16))
         self.label_13.setObjectName(_fromUtf8("label_13"))
         self.le_NSubSee = QtGui.QLineEdit(self.groupBox_2)
-        self.le_NSubSee.setGeometry(QtCore.QRect(180, 30, 81, 20))
+        self.le_NSubSee.setGeometry(QtCore.QRect(200, 30, 81, 20))
         self.le_NSubSee.setObjectName(_fromUtf8("le_NSubSee"))
         self.btn_waterbalanec = QtGui.QPushButton(self.groupBox_2)
         self.btn_waterbalanec.setGeometry(QtCore.QRect(100, 70, 131, 31))
@@ -721,8 +754,19 @@ class Ui_Dialogone(object):
         self.btn_showmaps = QtGui.QPushButton(self.groupBox_6)
         self.btn_showmaps.setGeometry(QtCore.QRect(30, 120, 75, 23))
         self.btn_showmaps.setObjectName(_fromUtf8("btn_showmaps"))
+
+        self.groupBox_LAI = QtGui.QGroupBox(Dialog)
+        self.groupBox_LAI.setGeometry(QtCore.QRect(10, 300, 361, 100))
+        self.groupBox_LAI.setObjectName(_fromUtf8("groupBox_LAI"))
+        self.le_LAImin = QtGui.QLineEdit(self.groupBox_LAI)
+        self.le_LAImin.setGeometry(QtCore.QRect(60, 40, 113, 30))
+        self.le_LAImin.setObjectName(_fromUtf8("le_LAImin"))
+        self.btn_LAImin = QtGui.QPushButton(self.groupBox_LAI)
+        self.btn_LAImin.setGeometry(QtCore.QRect(180, 40, 100, 30))
+        self.btn_LAImin.setObjectName(_fromUtf8("btn_LAImin"))
+
         self.groupBox_3 = QtGui.QGroupBox(Dialog)
-        self.groupBox_3.setGeometry(QtCore.QRect(10, 300, 361, 191))
+        self.groupBox_3.setGeometry(QtCore.QRect(10, 400, 361, 191))
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
         self.le_timesteps = QtGui.QLineEdit(self.groupBox_3)
         self.le_timesteps.setGeometry(QtCore.QRect(130, 30, 113, 20))
@@ -781,12 +825,14 @@ class Ui_Dialogone(object):
         self.btn_showseries.setText(_translate("Dialog", "Show", None))
         self.groupBox_6.setTitle(_translate("Dialog", "Maps :", None))
         self.btn_showmaps.setText(_translate("Dialog", "Show", None))
-        self.groupBox_3.setTitle(_translate("Dialog", "Simulaton Options", None))
+        self.groupBox_3.setTitle(_translate("Dialog", "Simulation Options", None))
         self.label_11.setText(_translate("Dialog", "Number of timesteps", None))
         self.label_12.setText(_translate("Dialog", "Start Date", None))
         self.label_10.setText(_translate("Dialog", "Timesteps", None))
         self.btn_run.setText(_translate("Dialog", "Run", None))
         self.label_14.setText(_translate("Dialog", "Subs Number to run", None))
+        self.groupBox_LAI.setTitle(_translate("Dialog", "LAI min", None))
+        self.btn_LAImin.setText(_translate("Dialog", "OK", None))
 
     def definepara(self):
         Continue = True
@@ -1666,11 +1712,6 @@ class LID_Loc_Dialog(object):
         self.btn_RunPre.setGeometry(QtCore.QRect(190, 22, 130, 40))
         self.btn_RunPre.setObjectName(_fromUtf8("btn_RunPre"))
 
-
-
-
-
-
         # Search Algs
         self.groupBox_SearchAlgs = QtGui.QGroupBox(Dialog)
         self.groupBox_SearchAlgs.setGeometry(QtCore.QRect(10, 520, 361, 220))
@@ -1886,9 +1927,9 @@ class LID_Loc_Dialog(object):
         self.List_mapsFinal = QtGui.QListView(self.groupBox_ResultFinal)
         self.List_mapsFinal.setGeometry(QtCore.QRect(10, 20, 300, 91))
         self.List_mapsFinal.setObjectName(_fromUtf8("List_mapsFinal"))
-        #self.btn_List_mapsFinal = QtGui.QPushButton(self.groupBox_ResultFinal)
-        #self.btn_List_mapsFinal.setGeometry(QtCore.QRect(200, 25, 91, 80))
-        #self.btn_List_mapsFinal.setObjectName(_fromUtf8("btn_List_mapsFinal"))
+        # self.btn_List_mapsFinal = QtGui.QPushButton(self.groupBox_ResultFinal)
+        # self.btn_List_mapsFinal.setGeometry(QtCore.QRect(200, 25, 91, 80))
+        # self.btn_List_mapsFinal.setObjectName(_fromUtf8("btn_List_mapsFinal"))
 
         # ---------------------------------------------------------------------
 
@@ -1947,7 +1988,7 @@ class LID_Loc_Dialog(object):
         self.label_min_roof.setText(_translate("Dialog", "Min possible area of green roofs :", None))
         self.label_max_roof.setText(_translate("Dialog", "Max Possible elevation in pixels of Greenroof : [m]", None))
         self.btn_List_mapsS.setText(_translate("Dialog", "List\nmaps", None))
-        #self.btn_List_mapsFinal.setText(_translate("Dialog", "List\nmaps", None))
+        # self.btn_List_mapsFinal.setText(_translate("Dialog", "List\nmaps", None))
         self.btn_DefinePara.setText(_translate("Dialog", "Define parameters", None))
         self.btn_RunPre.setText(_translate("Dialog", "Run preprocessing", None))
 
@@ -1979,7 +2020,8 @@ class LID_Loc_Dialog(object):
         self.groupBox_Landuse.setTitle(_translate("Dialog", "Landuse for whole catchment", None))
         self.groupBox_Soil.setTitle(_translate("Dialog", "Soil for whole catchment", None))
         self.groupBox_Elev.setTitle(_translate("Dialog", "Elevation for whole catchment", None))
-        self.groupBox_Building_Parammap.setTitle(_translate("Dialog", "Building parameter map for whole catchment", None))
+        self.groupBox_Building_Parammap.setTitle(
+            _translate("Dialog", "Building parameter map for whole catchment", None))
 
     def setLEParcel(self):
         fname = QFileDialog.getOpenFileName(None, 'Open file',
@@ -2020,14 +2062,14 @@ class LID_Loc_Dialog(object):
 
         list_show_final_results = []
 
-        #input format for GUI : a.asc:10;b.asc:20;c.asc:30
+        # input format for GUI : a.asc:10;b.asc:20;c.asc:30
         input_prio = str(self.le_Prioritizing.text())
 
-        #list_maps = ["FinalRoad.asc", "FinalRain.asc", "FinalGreenRoof.asc", "FinalRip.asc"]
+        # list_maps = ["FinalRoad.asc", "FinalRain.asc", "FinalGreenRoof.asc", "FinalRip.asc"]
         # input format for func: [("a.asc", 10), ("b.asc", 20), ]
 
         input_prio = input_prio.split(";")
-        for i in range (len(input_prio)):
+        for i in range(len(input_prio)):
             input_prio[i] = input_prio[i].split(":")
             input_prio[i][1] = int(input_prio[i][1])
 
@@ -2048,8 +2090,6 @@ class LID_Loc_Dialog(object):
         y = pcraster.Map2Asc()
         y.asc2map("fpcl.asc", "fpcl")
 
-
-
         list_show_final_results.append("final_output.asc")
 
         model = QStringListModel()
@@ -2063,7 +2103,7 @@ class LID_Loc_Dialog(object):
         comb_Rain_list = []
         comb_Road_list = []
 
-        if self.hasHighpot :
+        if self.hasHighpot:
             comb_Rip_list.append("HighPot.asc")
             comb_Roof_list.append("HighPot.asc")
             comb_Rain_list.append("HighPot.asc")
@@ -2072,8 +2112,7 @@ class LID_Loc_Dialog(object):
         list = []
 
         if self.checkbox_depthGW == 2:
-
-            #list.append("GWFinal.asc")
+            # list.append("GWFinal.asc")
 
             DepthGW = str(self.le_Depth.text())
             print(str(self.le_GW.text()))
@@ -2083,7 +2122,7 @@ class LID_Loc_Dialog(object):
             Map_GW.to_file_parammaps("GWFinal.asc")
 
             a = pcraster.Map2Asc()
-            a.asc2map("GWFinal.asc","GWFinal")
+            a.asc2map("GWFinal.asc", "GWFinal")
 
             comb_Rain_list.append("GWFinal")
             comb_Rip_list.append("GWFinal")
@@ -2093,8 +2132,8 @@ class LID_Loc_Dialog(object):
 
             print ("gw done !")
 
-        if self.checkbox_SuitableSoil == 2 :
-            #list.append("SoilFinal.asc")
+        if self.checkbox_SuitableSoil == 2:
+            # list.append("SoilFinal.asc")
 
             SuitableSoilClass_numbers = str(self.le_SuitableSoil.text())
             SuitableSoilClass_numbers = SuitableSoilClass_numbers.split(",")
@@ -2117,8 +2156,7 @@ class LID_Loc_Dialog(object):
 
             print ("SuitableSoil done !")
 
-        if self.checkbox_width_rip == 2 :
-
+        if self.checkbox_width_rip == 2:
             WidthRip = int(str(self.le_Width_rip.text()))
 
             Riparian = algorithms.FindingRiperianZone()
@@ -2129,13 +2167,14 @@ class LID_Loc_Dialog(object):
 
             print("Rip Done!")
 
-        if self.checkbox_roof == 2 :
-            #list.append("GreenRoofFinal.asc")
+        if self.checkbox_roof == 2:
+            # list.append("GreenRoofFinal.asc")
             Min_green = int(str(self.le_min_roof.text()))
             Max_slope = float(str(self.le_max_roof.text()))
 
             Flatroof = algorithms.FlatRoofFinder()
-            Map_greenroof = Flatroof.get_flat_roofs_by_elevation_map("landuse.asc", str(self.le_Parcel.text()), "elevation.asc",
+            Map_greenroof = Flatroof.get_flat_roofs_by_elevation_map("landuse.asc", str(self.le_Parcel.text()),
+                                                                     "elevation.asc",
                                                                      Min_green, Max_slope)
 
             Map_greenroof.to_file_parammaps("GreenRoofFinal.asc")
@@ -2146,7 +2185,7 @@ class LID_Loc_Dialog(object):
 
         # RainGarden
         if self.checkbox_rain == 2:
-            #list.append("RainGarden.asc")
+            # list.append("RainGarden.asc")
             Min_rain = int(str(self.le_min_rain.text()))
 
             RainGarden = algorithms.RainGardenFinder()
@@ -2160,7 +2199,6 @@ class LID_Loc_Dialog(object):
 
         # Map road
         if self.checkbox_road == 2:
-
             road = algorithms.RoadFinder()
             Map_road = road.get_detailed_landuse_map(str(self.le_DlandUse.text()))
 
@@ -2170,8 +2208,8 @@ class LID_Loc_Dialog(object):
 
             print("Road done!")
 
-        #  New_Rain [GW & soil & Rain & HighPot]
-        #comb_Rain_list = ["GWFinal.asc", "SoilFinal.asc", "RainGarden.asc"]
+        # New_Rain [GW & soil & Rain & HighPot]
+        # comb_Rain_list = ["GWFinal.asc", "SoilFinal.asc", "RainGarden.asc"]
         final_rain = algorithms.Overlay()
         final_rain = final_rain.overlay_and(comb_Rain_list)
         final_rain.to_file_parammaps("FinalRain.asc")
@@ -2182,7 +2220,7 @@ class LID_Loc_Dialog(object):
         list.append("FinalRain")
 
         # New Road [GW & Road & HighPot]
-        #comb_Road_list = ["GWFinal.asc", "RoadFinal.asc"]
+        # comb_Road_list = ["GWFinal.asc", "RoadFinal.asc"]
         final_road = algorithms.Overlay()
         final_road = final_road.overlay_and(comb_Road_list)
         final_road.to_file_parammaps("FinalRoad.asc")
@@ -2193,7 +2231,7 @@ class LID_Loc_Dialog(object):
         list.append("FinalRoad")
 
         # New Rip [Rip & gw & soil & HighPot]
-        #comb_Rip_list = ["GWFinal.asc","SoilFinal.asc", "RiparianFinal.asc"]
+        # comb_Rip_list = ["GWFinal.asc","SoilFinal.asc", "RiparianFinal.asc"]
         final_rip = algorithms.Overlay()
         final_rip = final_rip.overlay_and(comb_Rip_list)
         final_rip.to_file_parammaps("FinalRip.asc")
@@ -2204,7 +2242,7 @@ class LID_Loc_Dialog(object):
         list.append("FinalRip")
 
         # New Roof [Roof & HighPot]
-        #comb_Roof_list = ["GreenRoofFinal.asc"]
+        # comb_Roof_list = ["GreenRoofFinal.asc"]
         final_roof = algorithms.Overlay()
         final_roof = final_roof.overlay_and(comb_Roof_list)
         final_roof.to_file_parammaps("FinalGreenRoof.asc")
@@ -2212,14 +2250,11 @@ class LID_Loc_Dialog(object):
         f = pcraster.Map2Asc()
         f.asc2map("FinalGreenRoof.asc", "FinalGreenRoof")
 
-
         list.append("FinalGreenRoof")
 
         model = QStringListModel()
         model.setStringList(list)
         self.List_mapsS.setModel(model)
-
-
 
     def listMaps(self):
 
@@ -2244,7 +2279,6 @@ class LID_Loc_Dialog(object):
             output_maps_highpot.append(Map_runoff)
 
             Map_runoff.to_file_parammaps("runoffFinal.asc")
-
 
             print("hell!")
             print(str(runoff))
@@ -2651,3 +2685,7 @@ def main():
     ui.setupUi(Dialog)
     Dialog.show()
     (app.exec_())
+
+
+if __name__ == "__main__":
+    main()
