@@ -206,14 +206,6 @@ class ConductivityMap:
         return str('conductivity map:\n' + str(self.map))
 
 
-class WaterShellMap:
-    def __init__(self):
-        self.map = Map()
-
-    def __str__(self):
-        return str('water shell map:\n' + str(self.map))
-
-
 class BasicMap:
     def __init__(self):
         self.map = Map()
@@ -227,4 +219,4 @@ class WaterShedMap:
         self.map = Map()
 
     def __str__(self):
-        return str('conductivity map:\n' + str(self.map))
+        return str('Watershed map:\n' + str(self.map))

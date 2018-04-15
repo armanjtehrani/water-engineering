@@ -394,7 +394,7 @@ class Main:
         self.dem_map_name = None
         self.rpt_file = None
         self.max_node_number = 0
-        self.what_percent_to_be_source = 0
+        self.what_percent_to_be_source = 0 # todo ask user ! <Percentage ...>
         self.min_rain = 0
         self.min_flat = 0
         self.max_slope = 0

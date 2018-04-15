@@ -1,6 +1,5 @@
 from algorithms import *
 from maps import Map
-from maps import WaterShellMap
 
 class HighPotentialArea:
     def __init__(self, hydrology=False, hydrolic=False, **runoff_landa):

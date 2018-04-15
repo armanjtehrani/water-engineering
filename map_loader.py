@@ -17,7 +17,7 @@ class MapLoader:
         self.map_dir_for_dot_map = "parammaps/"
 
     def load_dot_map(self, map_class, map_name):
-        map_dir = self.map_dir_for_dot_map
+        map_dir = map_name
         ascii_name = map_name.split('.map')[0] + 'Cr.asc'
         print('asc name:', ascii_name)
         self.my_map2asc_convertor.set_map_variables(self.configs)

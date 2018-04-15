@@ -54,5 +54,5 @@ class Map2Asc:
 
     def asc2map(self,asc_name,dotmapname ):
         os.chdir("parammaps/")
-        os.system('asc2map -a ' + asc_name +" "+  dotmapname +  " --clone CloneNuminal")
+        os.system('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneNuminal")
         os.chdir("..")
