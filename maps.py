@@ -1,3 +1,5 @@
+import os
+
 class Map:
     def __init__(self):
         self.n_cols = 0
@@ -48,11 +50,12 @@ class Map:
         return str_data
 
     def to_file(self, file_name, direc="map/"):
-        file = open(direc + file_name, 'w+')
+        path = os.path.join(direc, file_name)
+        myfile = open(path, 'w+')
         str_data = ""
         str_data += self.get_config_string()
         str_data += self.get_matrix_string()
-        file.write(str_data)
+        myfile.write(str_data)
 
     def to_file_parammaps(self, file_name):
         file = open('parammaps/' + file_name, 'w+')

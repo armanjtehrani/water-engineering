@@ -371,21 +371,34 @@ class Ui_Dialog(object):
 
             LAI_path = os.path.join(folder_path, file)
 
-            LAImap = map_loader.MapLoader()
-            #LAImap = LAImap.load_dot_map(maps.BasicMap, LAI_path)
-            LAImap = LAImap.load_map(maps.BasicMap, LAI_path)
+            LAI_map = map_loader.MapLoader()
+            # LAImap = LAImap.load_dot_map(maps.BasicMap, LAI_path)
+            LAI_map = LAI_map.load_map(maps.BasicMap, LAI_path)
 
-            LAI_for_sub = []
             sub_range = []
+            i = 1
+            while(i<40):
+                sub_range.append(str(i))
+                i += 1
 
-            #path_tmp = "C:\\tmp"
-            #list_subs = os.listdir(path_tmp)
+            path_tmp = "C:\\tmp"
+            list_subs = os.listdir(path_tmp)
+
 
             for sub in sub_range:
                 for i in range(len(watershed.map.matrix)):
                     for j in range(len(watershed.map.matrix[i])):
-                        #if watershed.map.matrix[i][j] ==
-                        pass
+                        if watershed.map.matrix[i][j] == sub:
+                            LAI_map.map.matrix[i][j] = 1
+                        elif watershed.map.matrix[i][j] == watershed.map.no_data_value:
+                            LAI_map.map.matrix[i][j] = LAI_map.map.no_data_value
+                        else :
+                            LAI_map.map.matrix[i][j] == 0
+
+                sub_path = os.path.join(path_tmp, sub, "Runner\catchment") # agha nahad ino takmil konid ! (Runner\catchment)
+
+                LAI_map.map.to_file(file, sub_path)
+
 
             #copy2dir.copy2dir(os.path.join(folder_path,file),"parammaps")
             # todo
