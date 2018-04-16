@@ -401,7 +401,7 @@ class Ui_Dialog(object):
 
 
             #copy2dir.copy2dir(os.path.join(folder_path,file),"parammaps")
-            # todo
+
             pass
 
 
@@ -2672,14 +2672,14 @@ class LID_Loc_Dialog(object):
 
         #todo create colone with code , in static
 
-        lnd = pcraster.Map2Asc()
-        lnd.asc2map("landuse.asc", "landuse_start")
+        lnd = pcraster.Map2Asc() # clone nominal
+        lnd.asc2map_forNuminal("landuse.asc", "landuse_start")
 
-        sl = pcraster.Map2Asc()
-        sl.asc2map("soil.asc", "soil_start")
+        sl = pcraster.Map2Asc() # clone nominal
+        sl.asc2map_forNuminal("soil.asc", "soil_start")
 
-        elv = pcraster.Map2Asc()
-        elv.asc2map("elevation.asc", "elevation_start")
+        elv = pcraster.Map2Asc() # clonescalar
+        elv.asc2map_forScalar("elevation.asc", "elevation_start")
 
         subprocess.Popen("runWetSpaPreprocess")
 
