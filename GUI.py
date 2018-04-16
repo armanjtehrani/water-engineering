@@ -350,6 +350,7 @@ class Ui_Dialog(object):
     def getLAImaps_from_folder(self):
         path = str(self.le_OpenLAI.text())
 
+
         l = [0]
         while (1):
             index = path.find("/", max(l), len(path) - 1)
@@ -358,11 +359,10 @@ class Ui_Dialog(object):
             else:
                 l.append(index + 1)
 
-        folder_path = path[0:max(l)-1]
+        folder_path = path[0:max(l)-1] #folder that contains LAIs
         print folder_path
 
         files_list_LAIs = os.listdir(folder_path)
-
 
         watershed = map_loader.MapLoader()
         watershed = watershed.load_map(maps.WaterShedMap, "watershed.asc")
@@ -372,7 +372,8 @@ class Ui_Dialog(object):
             LAI_path = os.path.join(folder_path, file)
 
             LAImap = map_loader.MapLoader()
-            LAImap = LAImap.load_dot_map(maps.BasicMap, LAI_path)
+            #LAImap = LAImap.load_dot_map(maps.BasicMap, LAI_path)
+            LAImap = LAImap.load_map(maps.BasicMap, LAI_path)
 
             LAI_for_sub = []
             sub_range = []
@@ -398,8 +399,7 @@ class Ui_Dialog(object):
         arcpy.CheckOutExtension('Spatial')
 
         do = True
-        if (
-                                    self.le_Landuse.text() == "" or self.le_Watershed.text() == "" or self.le_Soil.text() == "" or self.le_DEM.text() == "" or self.le_NSubs.text() == ""):
+        if (self.le_Landuse.text() == "" or self.le_Watershed.text() == "" or self.le_Soil.text() == "" or self.le_DEM.text() == "" or self.le_NSubs.text() == ""):
             choice = QtGui.QMessageBox.question(None, 'Invalid parametre',
                                                 "Please, make sure you chose all maps before generation",
                                                 QtGui.QMessageBox.Ok)
@@ -1130,14 +1130,11 @@ class Ui_Dialogone(object):
         path_tmp = "C:\\tmp"
         list_subs = os.listdir(path_tmp)
 
-        #todo just nums , path = tmp/1/runner/bin/myWe....py
-        # todo convert again to asc
-
         for sub in list_subs:
-            path_to_LAI = os.path.join(path_tmp,sub,"Runner\catchment\staticmap\LAI")
+            path_to_LAI = os.path.join(path_tmp,sub,"Runner\Bin")
             files_in_LAI = os.listdir(path_to_LAI)
             for file_name in files_in_LAI:
-                if "LAI" in file_name:
+                if "myWetSpaModel" in file_name:
                     LAI_path = os.listdir(path_to_LAI,file_name)
                     LAI_old = open(LAI_path, "r")
                     old = LAI_old.readlines()
