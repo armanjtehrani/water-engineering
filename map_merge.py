@@ -317,14 +317,16 @@ class RegionBuilder:
                                parcel_map_name,
                                dem_map_name,
                                rpt_file, max_node_number, what_percent_to_be_source,
-                               min_rain, min_flat, max_slope):
+                               min_rain, min_flat, max_slope,
+                               use_existing_region_maps):
 
         input_maps = {SubConsts.BASIC_LANDUSE_MAP: basic_land_use_map_name,
                       SubConsts.ADVANCED_LANDUSE_MAP: advanced_land_use_map_name,
                       SubConsts.PARCEL_MAP: parcel_map_name,
                       SubConsts.ELEVATION_MAP: dem_map_name}
         ####################
-        # region_maps = self.map_marge.build_maps_by_watershed_map(water_shed_map_name, input_maps)
+        if not use_existing_region_maps:
+            region_maps = self.map_marge.build_maps_by_watershed_map(water_shed_map_name, input_maps)
         ####################
         subs_with_extra_volume = self.flood_data_builder.build_flooding_data_with_max_node(rpt_file, max_node_number)
         subs_with_inflow = self.flood_data_builder.build_inflow_data_with_max_node(rpt_file, max_node_number)
@@ -412,7 +414,8 @@ class Main:
              rpt_file, max_node_number, what_percent_to_be_source,
              min_rain, min_flat, max_slope,
              inp_file,
-             priorities):
+             priorities,
+             use_existing_region_maps):
         self.water_shed_map_name = water_shed_map_name
         self.basic_land_use_map_name = basic_land_use_map_name
         self.advanced_land_use_map_name = advanced_land_use_map_name
@@ -439,7 +442,8 @@ class Main:
                                                                                 dem_map_name,
                                                                                 rpt_file, max_node_number,
                                                                                 what_percent_to_be_source,
-                                                                                min_rain, min_flat, max_slope)
+                                                                                min_rain, min_flat, max_slope,
+                                                                                use_existing_region_maps)
         print("\nsrcs:")
         for sub in self.subs:
             if sub[SubConsts.IS_SOURCE]:
@@ -464,7 +468,8 @@ class Main:
                       rpt_file, max_node_number, what_percent_to_be_source,
                       min_rain, min_flat, max_slope,
                       inp_file,
-                      priorities):
+                      priorities,
+                      use_existing_region_maps):
         print("run with init")
         self.init(water_shed_map_name,
                   basic_land_use_map_name,
@@ -474,7 +479,8 @@ class Main:
                   rpt_file, max_node_number, what_percent_to_be_source,
                   min_rain, min_flat, max_slope,
                   inp_file,
-                  priorities)
+                  priorities,
+                  use_existing_region_maps)
         output_maps = self.logical_handler.handle_regions(self.subs, self.extra_subs, self.graph, priorities)
         print("done:::::::::")
         print("done:::::::::")
@@ -494,7 +500,8 @@ main.init("watershed_cost.asc",
           "report.rpt", 31, .6,
           15, 10, 0.5,
           "tmp.inp",
-          basic_priorities)
+          basic_priorities,
+          False)
 main.run()
 # a = RptInpDataBuilder().build_graph("tmp.inp")
 # print("aaaa:", a)
