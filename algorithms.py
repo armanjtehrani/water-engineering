@@ -1661,6 +1661,8 @@ class RainGardenBuilder:
 a = RainGardenBuilder()
 advanced_landuse_map_name_for_rain_test = "alg 1 map 26.asc"
 elevation_map_name_for_rain_test = "elevation.asc"
+
+# print("starting algorithm for digging rain garden")
 # output = a.build_rain_garden_with_slope_and_max_depth(advanced_landuse_map_name_for_rain_test,
 #                                                       55, 10,
 #                                                       elevation_map_name_for_rain_test)
