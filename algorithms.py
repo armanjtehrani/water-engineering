@@ -1,4 +1,5 @@
 from math import *
+from time import time
 
 from map_loader import MapLoader
 from maps import Map
@@ -1544,8 +1545,128 @@ class UserMergeForAlgorithmsTest:
         build_files_for_user_merge(a)
 
 
+class RainGardenBuilder:
+    def __init__(self):
+        self.rain_garden_id = AdvancedLandUseMap.VALUES.RAIN_GARDEN
+        self.middle_map = None
+        self.middle_2 = None
+        self.landuse_map = None
+        self.landuse_matrix = None
+        self.pixel_size = None
+        self.slope = None
+        self.max_depth = None
+        self.max_depth_by_pixel = None
+        self.output = None
+        self.rain_garden_pixels = None
+        self.rain_garden_id = None
+        self.rain_garden_depth_to_ids = None
+
+    def build_middle_map(self):
+        self.middle_map = Map()
+        self.middle_2 = Map()
+        self.middle_map.set_config(self.landuse_map)
+        self.middle_2.set_config(self.landuse_map)
+        matrix = []
+        for i in range(self.middle_map.n_rows):
+            matrix.append([])
+            for j in range(self.middle_map.n_cols):
+                matrix[i].append(self.landuse_map.no_data_value)
+        self.middle_map.matrix = copy.deepcopy(matrix)
+        self.middle_2.matrix = matrix
+
+    def init(self, advanced_landuse_map_name,
+             slope_in_percent, max_depth,
+             elevation_map_name):
+        self.landuse_map = map_loader.load_map(AdvancedLandUseMap, advanced_landuse_map_name).map
+        self.landuse_matrix = self.landuse_map.matrix
+        self.pixel_size = self.landuse_map.cell_size
+        self.slope = (float(slope_in_percent)/100.)*self.pixel_size
+        self.max_depth = max_depth
+        self.max_depth_by_pixel = self.max_depth / self.slope
+        if self.max_depth_by_pixel != int(self.max_depth_by_pixel):
+            self.max_depth_by_pixel = int(self.max_depth_by_pixel) + 1
+        self.output = map_loader.load_map(ElevationMap, elevation_map_name).map
+        self.build_middle_map()
+        self.rain_garden_pixels = []
+        self.rain_garden_depth_to_indices = {i: [] for i in range(1, self.max_depth_by_pixel + 1)}
+
+    def build_rain_garden_with_slope_and_max_depth(self, advanced_landuse_map_name,
+                                                   slope_in_percent, max_depth,
+                                                   elevation_map_name):
+        self.init(advanced_landuse_map_name, slope_in_percent, max_depth, elevation_map_name)
+        self.find_rain_garden_pixels()
+        self.set_depth_for_rain_gardens()
+        self.build_output()
+        return self.output
+
+    def find_rain_garden_pixels(self):
+        for i in range(len(self.landuse_matrix)):
+            for j in range(len(self.landuse_matrix[i])):
+                cell = self.landuse_matrix[i][j]
+                if cell == self.rain_garden_id:
+                    self.middle_map.matrix[i][j] = 0
+                    self.rain_garden_pixels.append({"x": i, "y": j})
+
+    def set_depth_for_rain_gardens(self):
+        expected_neighbor = self.middle_map.no_data_value
+        rain_garden_level = 1
+        while len(self.rain_garden_pixels) > 0:
+            deleted_rain_gardens = []
+            for rain_garden_index in range(len(self.rain_garden_pixels)):
+                rain_garden = self.rain_garden_pixels[rain_garden_index]
+                time_to_break = False
+                i = rain_garden["x"]
+                j = rain_garden["y"]
+                # if self.middle_map.matrix[i][j] != 0:
+                #     continue
+                for x in range(i - 1, i + 2):
+                    for y in range(j - 1, j + 2):
+                        if x == i and y == j:
+                            continue
+                        if x < 0 or y < 0 or \
+                                        x >= self.middle_map.n_rows or \
+                                        y >= self.middle_map.n_cols:
+                            continue
+                        if self.middle_map.matrix[x][y] == expected_neighbor:
+                            self.middle_map.matrix[i][j] = rain_garden_level
+                            self.rain_garden_depth_to_indices[rain_garden_level].append(rain_garden)
+                            deleted_rain_gardens.append(rain_garden)
+                            time_to_break = True
+                        if time_to_break:
+                            break
+                    if time_to_break:
+                        break
+            expected_neighbor = rain_garden_level
+            if rain_garden_level < self.max_depth_by_pixel:
+                rain_garden_level += 1
+            for deleted_rain_garden in deleted_rain_gardens:
+                self.rain_garden_pixels.remove(deleted_rain_garden)
+
+    def build_output(self):
+        for depth_level in self.rain_garden_depth_to_indices:
+            if depth_level == self.max_depth_by_pixel:
+                depth = self.max_depth
+            else:
+                depth = self.slope * depth_level
+            for rain_garden_depth in self.rain_garden_depth_to_indices:
+                for rain_garden in self.rain_garden_depth_to_indices[rain_garden_depth]:
+                    i = rain_garden["x"]
+                    j = rain_garden["y"]
+                    self.output.matrix[i][j] -= depth
+
 
 # TESTS:
+
+#   DIGGING RAIN GARDEN
+a = RainGardenBuilder()
+advanced_landuse_map_name_for_rain_test = "alg 1 map 26.asc"
+elevation_map_name_for_rain_test = "elevation.asc"
+# output = a.build_rain_garden_with_slope_and_max_depth(advanced_landuse_map_name_for_rain_test,
+#                                                       55, 10,
+#                                                       elevation_map_name_for_rain_test)
+# print("done building output for rains")
+# output.to_file("rains.asc")
+# print("done building rains file")
 
 #   GW
 gw_map_builder = SuitableAreaBasedOnGW()
