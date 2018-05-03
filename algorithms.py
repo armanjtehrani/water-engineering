@@ -1558,7 +1558,6 @@ class RainGardenBuilder:
         self.max_depth_by_pixel = None
         self.output = None
         self.rain_garden_pixels = None
-        self.rain_garden_id = None
         self.rain_garden_depth_to_ids = None
 
     def build_middle_map(self):
@@ -1585,7 +1584,9 @@ class RainGardenBuilder:
         self.max_depth_by_pixel = self.max_depth / self.slope
         if self.max_depth_by_pixel != int(self.max_depth_by_pixel):
             self.max_depth_by_pixel = int(self.max_depth_by_pixel) + 1
-        self.output = map_loader.load_map(ElevationMap, elevation_map_name).map
+        elevation_map = map_loader.load_map(ElevationMap, elevation_map_name)
+        self.elev = elevation_map
+        self.output = copy.deepcopy(elevation_map.map)
         self.build_middle_map()
         self.rain_garden_pixels = []
         self.rain_garden_depth_to_indices = {i: [] for i in range(1, self.max_depth_by_pixel + 1)}
@@ -1624,8 +1625,8 @@ class RainGardenBuilder:
                         if x == i and y == j:
                             continue
                         if x < 0 or y < 0 or \
-                                        x >= self.middle_map.n_rows or \
-                                        y >= self.middle_map.n_cols:
+                                x >= len(self.middle_map.matrix) or \
+                                y >= len(self.middle_map.matrix[0]):
                             continue
                         if self.middle_map.matrix[x][y] == expected_neighbor:
                             self.middle_map.matrix[i][j] = rain_garden_level
@@ -1639,20 +1640,25 @@ class RainGardenBuilder:
             expected_neighbor = rain_garden_level
             if rain_garden_level < self.max_depth_by_pixel:
                 rain_garden_level += 1
+            # print("len::", len(self.rain_garden_pixels))
             for deleted_rain_garden in deleted_rain_gardens:
                 self.rain_garden_pixels.remove(deleted_rain_garden)
+            # print("len2::", len(self.rain_garden_pixels))
 
     def build_output(self):
         for depth_level in self.rain_garden_depth_to_indices:
+            # print("d level:", depth_level)
+            # print("rain d to in:", self.rain_garden_depth_to_indices[depth_level])
             if depth_level == self.max_depth_by_pixel:
                 depth = self.max_depth
             else:
                 depth = self.slope * depth_level
-            for rain_garden_depth in self.rain_garden_depth_to_indices:
-                for rain_garden in self.rain_garden_depth_to_indices[rain_garden_depth]:
-                    i = rain_garden["x"]
-                    j = rain_garden["y"]
-                    self.output.matrix[i][j] -= depth
+            # print("depth:", depth)
+            for rain_garden in self.rain_garden_depth_to_indices[depth_level]:
+                i = rain_garden["x"]
+                j = rain_garden["y"]
+                self.output.matrix[i][j] -= depth
+                # print("elev:", self.elev.map.matrix[i][j], "_____output:", self.output.matrix[i][j])
 
 
 # TESTS:
