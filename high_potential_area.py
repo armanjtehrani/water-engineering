@@ -229,6 +229,7 @@ class HighPotentialArea:
                                        inp_file_name,
                                        limit=1,
                                        merge_nodes=None):
+        #   merge_nodes format: {1: [1,2,3], 2: [5], 6: [6]}
         sub_dic = self.build_sub_dicts_by_inp_file(inp_file_name, limit_node, merge_nodes)
         data_list = self.hydrolic(rpt_file, link_col_name, limit_node, limit, sub_dic)
         for i in range(len(data_list)):

@@ -1591,7 +1591,7 @@ class RainGardenBuilder:
         self.rain_garden_pixels = []
         self.rain_garden_depth_to_indices = {i: [] for i in range(1, self.max_depth_by_pixel + 1)}
 
-    def build_rain_garden_with_slope_and_max_depth(self, advanced_landuse_map_name,
+    def build_rain_garden_with_slope_and_max_depth(self, advanced_landuse_map_name,     # main method
                                                    slope_in_percent, max_depth,
                                                    elevation_map_name):
         self.init(advanced_landuse_map_name, slope_in_percent, max_depth, elevation_map_name)
@@ -1672,6 +1672,7 @@ def change_soil_type_by_advanced_landuse_map(soil_map_name, advanced_landuse_map
             if cell in landuse_to_soil_type:
                 output_map.matrix[i][j] = landuse_to_soil_type[cell]
     return output_map
+
 
 # TESTS:
 

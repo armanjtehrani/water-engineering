@@ -534,21 +534,29 @@ class RegionHandlerWithLogicalInput:
         for i in self.region_source:
             print("source:", i, "sinks:", self.region_source[i])
 
-    def handle_regions(self, subs, extra_subs, region_sink, user_priorities):
+    def handle_regions(self, subs, extra_subs, region_sink, user_priorities, algorithms_to_use):
         self.init(subs, extra_subs, region_sink, user_priorities)
         self.regions_by_alg_1 = self.get_regions_by_alg_1()
         self.regions_by_alg_2 = self.get_regions_by_alg_2()
         self.regions_by_alg_3 = self.get_regions_by_alg_3()
         self.regions_by_alg_4 = self.get_regions_by_alg_4()
-        alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, 1, self.priorities)
-        alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, 2, self.priorities)
-        alg3_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_3, 3, self.priorities)
-        alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, 4, self.priorities)
+        output = {}
+        if 1 in algorithms_to_use:
+            alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, 1, self.priorities)
+            output[1] = alg1_maps
+        if 2 in algorithms_to_use:
+            alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, 2, self.priorities)
+            output[2] = alg2_maps
+        if 3 in algorithms_to_use:
+            alg3_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_3, 3, self.priorities)
+            output[3] = alg3_maps
+        if 4 in algorithms_to_use:
+            alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, 4, self.priorities)
+            output[4] = alg4_maps
         # alg1_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_1, self.priorities)
         # alg2_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_2, self.priorities)
         # alg3_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_3, self.priorities)
         # alg4_maps = self.cost_optimizer.optimize_cost_for_subs(self.regions_by_alg_4, self.priorities)
-        output = {1: alg1_maps, 2: alg2_maps, 3: alg3_maps, 4: alg4_maps}
         # output = {3: alg3_maps}
         return output
 

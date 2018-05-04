@@ -415,7 +415,8 @@ class Main:
              min_rain, min_flat, max_slope,
              inp_file,
              priorities,
-             use_existing_region_maps):
+             use_existing_region_maps,
+             algorithms_to_use):
         self.water_shed_map_name = water_shed_map_name
         self.basic_land_use_map_name = basic_land_use_map_name
         self.advanced_land_use_map_name = advanced_land_use_map_name
@@ -429,6 +430,7 @@ class Main:
         self.max_slope = max_slope
         self.inp_file = inp_file
         self.priorities = priorities
+        self.algorithms_to_use = algorithms_to_use
 
         self.graph = self.region_builder.flood_data_builder.build_graph(inp_file)
         print("\nmain graph:")
@@ -452,7 +454,11 @@ class Main:
     def run(self):
         print("just run")
 
-        output_maps = self.logical_handler.handle_regions(self.subs, self.extra_subs, self.graph, self.priorities)
+        output_maps = self.logical_handler.handle_regions(self.subs,
+                                                          self.extra_subs,
+                                                          self.graph,
+                                                          self.priorities,
+                                                          self.algorithms_to_use)
         print("done:::::::::")
         print("done:::::::::")
         print("done:::::::::")
@@ -469,7 +475,8 @@ class Main:
                       min_rain, min_flat, max_slope,
                       inp_file,
                       priorities,
-                      use_existing_region_maps):
+                      use_existing_region_maps,
+                      algorithms_to_use):
         print("run with init")
         self.init(water_shed_map_name,
                   basic_land_use_map_name,
@@ -480,8 +487,13 @@ class Main:
                   min_rain, min_flat, max_slope,
                   inp_file,
                   priorities,
-                  use_existing_region_maps)
-        output_maps = self.logical_handler.handle_regions(self.subs, self.extra_subs, self.graph, priorities)
+                  use_existing_region_maps,
+                  algorithms_to_use)
+        output_maps = self.logical_handler.handle_regions(self.subs,
+                                                          self.extra_subs,
+                                                          self.graph,
+                                                          priorities,
+                                                          self.algorithms_to_use)
         print("done:::::::::")
         print("done:::::::::")
         print("done:::::::::")
@@ -501,7 +513,7 @@ main.init("watershed_cost.asc",
           15, 10, 0.5,
           "tmp.inp",
           basic_priorities,
-          False)
+          False, [1, 2, 3])
 main.run()
 # a = RptInpDataBuilder().build_graph("tmp.inp")
 # print("aaaa:", a)
