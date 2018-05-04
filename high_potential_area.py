@@ -163,11 +163,76 @@ class HighPotentialArea:
             for j in range(self.output_for_watershell.n_cols):
                 self.output_for_watershell.matrix[i].append(self.output_for_watershell.no_data_value)
 
-    def build_output_based_on_hydrolic(self, water_shell_map_ascii_name, rpt_file, link_col_name, limit_node, limit=1, sub_dic=None):
+    def build_graph_by_inp_file(self, inp_file_name):
+        rpt = open(inp_file_name, "r")
+        while True:
+            line = rpt.readline()
+            if "[CONDUITS]" in line:
+                rpt.readline()
+                rpt.readline()
+                data_line = ""
+                while True:
+                    line = rpt.readline()
+                    if "[PUMPS]" in line:
+                        break
+                    data_line += line
+                break
+        lines = data_line.split("\n")
+        basic_node = []
+        for i in range(len(lines)):
+            basic_node.append([])
+            lines[i] = str(lines[i]).split(" ")
+            for j in lines[i]:
+                if j != '':
+                    basic_node[i].append(j)
+        graph = {}
+        for n in basic_node:
+            if len(n) == 9:
+                n[1] = int(n[1])
+                n[2] = int(n[2])
+                if graph.get(n[2]) is None:
+                    graph[n[2]] = []
+                graph[n[2]].append({"node": n[1], "edge": n[0]})
+        return graph
+
+    def build_sub_dicts_by_inp_file(self, inp_file_name, limit_node, merge_nodes=None):
+        limit_node = int(limit_node)
+        #   merge_nodes format: {1: [1,2,3], 2: [5], 6: [6]}
+        self.graph = self.build_graph_by_inp_file(inp_file_name)
+        self.main_node_to_edges = {i: [] for i in range(1, limit_node + 1)}
+        for main_node in self.main_node_to_edges:
+            self.append_new_pipes_to_main_node_from_node(main_node, main_node, limit_node)
+        if merge_nodes is None:
+            return self.main_node_to_edges
+        merge_node_to_edges = {node: [] for node in merge_nodes}
+        for new_node in merge_nodes:
+            old_nodes = merge_nodes[new_node]
+            for old_node in old_nodes:
+                merge_node_to_edges[new_node].extend(self.main_node_to_edges[old_node])
+        return merge_node_to_edges
+
+
+    def append_new_pipes_to_main_node_from_node(self, main_node, n1, limit_node):
+        if n1 <= limit_node and n1 != main_node:
+            return
+        for edge in self.graph.get(n1, []):
+            pipe = edge["edge"]
+            n2 = edge["node"]
+            if pipe not in self.main_node_to_edges[main_node]:
+                self.main_node_to_edges[main_node].append(pipe)
+            self.append_new_pipes_to_main_node_from_node(main_node, n2, limit_node)
+
+    def build_output_based_on_hydrolic(self, water_shell_map_ascii_name,
+                                       rpt_file,
+                                       link_col_name,
+                                       limit_node,
+                                       inp_file_name,
+                                       limit=1,
+                                       merge_nodes=None):
+        sub_dic = self.build_sub_dicts_by_inp_file(inp_file_name, limit_node, merge_nodes)
         data_list = self.hydrolic(rpt_file, link_col_name, limit_node, limit, sub_dic)
         for i in range(len(data_list)):
             data_list[i] = int(data_list[i])
-        print("datalist:", data_list)
         water_shed_map = map_loader.load_map(WaterShellMap, water_shell_map_ascii_name)
         water_shed_m = water_shed_map.map
         self.output_for_watershell = Map()
@@ -186,6 +251,9 @@ class HighPotentialArea:
         return self.output_for_watershell
 
 #print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "1.2", {'10': ['43544', '43546']}))
-a = HighPotentialArea(hydrolic=True)
-b = a.build_output_based_on_hydrolic("watershed.asc", "report.rpt", "MAX/FULL FLOW", "32", "1.6", {'10': ['43544', '43546']})
-b.to_file("hydrolical.asc")
+# a = HighPotentialArea(hydrolic=True)
+# b = a.build_output_based_on_hydrolic("watershed.asc", "report.rpt", "MAX/FULL FLOW", "32",  "tmp.inp", "1.6")
+# b.to_file("hydrolical.asc")
+# b = a.build_sub_dicts_by_inp_file("tmp.inp", 31,  {1:[1,2], 2:[3,4,5], 3:[8]})
+# for i in b:
+#     print("main node:", i, "__pipes:", b[i])
