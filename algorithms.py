@@ -1661,15 +1661,40 @@ class RainGardenBuilder:
                 # print("elev:", self.elev.map.matrix[i][j], "_____output:", self.output.matrix[i][j])
 
 
+def change_soil_type_by_advanced_landuse_map(soil_map_name, advanced_landuse_map_name, landuse_to_soil_type):
+    #   landuse_to_soil_type format: {20: 3, 40: 2, 30: 1}
+    soil_map = map_loader.load_map(SoilMap, soil_map_name)
+    advanced_landuse_map = map_loader.load_map(AdvancedLandUseMap, advanced_landuse_map_name)
+    output_map = copy.deepcopy(soil_map.map)
+    for i in range(len(advanced_landuse_map.map.matrix)):
+        for j in range(len(advanced_landuse_map.map.matrix[i])):
+            cell = advanced_landuse_map.map.matrix[i][j]
+            if cell in landuse_to_soil_type:
+                output_map.matrix[i][j] = landuse_to_soil_type[cell]
+    return output_map
+
 # TESTS:
 
+#   CHANGING SOIL TYPE BY ADVANCED LANDUSE MAP
+soil_map_name_for_changing_soil_type = "soil.asc"
+advanced_landuse_map_name_for_changing_soil_type = "alg 1 map 26.asc"
+landuse_to_soil_for_changing_soil_type = {30: 2, 40: 4, 50: 1}
+
+# print("starting algorithm for changing soil type")
+# output = change_soil_type_by_advanced_landuse_map(soil_map_name_for_changing_soil_type,
+#                                                   advanced_landuse_map_name_for_changing_soil_type,
+#                                                   landuse_to_soil_for_changing_soil_type)
+# print("done building output for new soil")
+# output.to_file("newsoil.asc")
+# print("done building new soil file")
+
 #   DIGGING RAIN GARDEN
-a = RainGardenBuilder()
+rain_garden_builder = RainGardenBuilder()
 advanced_landuse_map_name_for_rain_test = "alg 1 map 26.asc"
 elevation_map_name_for_rain_test = "elevation.asc"
 
 # print("starting algorithm for digging rain garden")
-# output = a.build_rain_garden_with_slope_and_max_depth(advanced_landuse_map_name_for_rain_test,
+# output = rain_garden_builder.build_rain_garden_with_slope_and_max_depth(advanced_landuse_map_name_for_rain_test,
 #                                                       55, 10,
 #                                                       elevation_map_name_for_rain_test)
 # print("done building output for rains")
