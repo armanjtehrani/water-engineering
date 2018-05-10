@@ -264,7 +264,6 @@ class Ui_Dialog(object):
         self.groupBox_OpenLAI.setTitle(_translate("Dialog", "Open LAI maps", None))
         self.btn_OpenLAI.setText(_translate("Dialog", "...", None))
 
-
         self.label_1.setText(_translate("Dialog", "Subcatchments Number :", None))
         self.cb_SoilMap.setText(_translate("Dialog", "Soil Map", None))
         self.cb_LanduseMap.setText(_translate("Dialog", "Landuse Map", None))
@@ -346,10 +345,8 @@ class Ui_Dialog(object):
         agrus = "aguila {}".format(pathss)
         subprocess.Popen(agrus)
 
-
     def getLAImaps_from_folder(self):
         path = str(self.le_OpenLAI.text())
-
 
         l = [0]
         while (1):
@@ -359,7 +356,7 @@ class Ui_Dialog(object):
             else:
                 l.append(index + 1)
 
-        folder_path = path[0:max(l)-1] #folder that contains LAIs
+        folder_path = path[0:max(l) - 1]  # folder that contains LAIs
         print folder_path
 
         files_list_LAIs = os.listdir(folder_path)
@@ -377,13 +374,12 @@ class Ui_Dialog(object):
 
             sub_range = []
             i = 1
-            while(i<40):
+            while (i < 40):
                 sub_range.append(str(i))
                 i += 1
 
             path_tmp = "C:\\tmp"
             list_subs = os.listdir(path_tmp)
-
 
             for sub in sub_range:
                 for i in range(len(watershed.map.matrix)):
@@ -392,27 +388,24 @@ class Ui_Dialog(object):
                             LAI_map.map.matrix[i][j] = 1
                         elif watershed.map.matrix[i][j] == watershed.map.no_data_value:
                             LAI_map.map.matrix[i][j] = LAI_map.map.no_data_value
-                        else :
+                        else:
                             LAI_map.map.matrix[i][j] == 0
 
-                sub_path = os.path.join(path_tmp, sub, "Runner\catchment") # agha nahad ino takmil konid ! (Runner\catchment)
+                sub_path = os.path.join(path_tmp, sub,
+                                        "Runner\catchment")  # agha nahad ino takmil konid ! (Runner\catchment)
 
                 LAI_map.map.to_file(file, sub_path)
 
-
-            #copy2dir.copy2dir(os.path.join(folder_path,file),"parammaps")
+            # copy2dir.copy2dir(os.path.join(folder_path,file),"parammaps")
 
             pass
-
-
-
-
 
     def GenerateMaps(self):
         arcpy.CheckOutExtension('Spatial')
 
         do = True
-        if (self.le_Landuse.text() == "" or self.le_Watershed.text() == "" or self.le_Soil.text() == "" or self.le_DEM.text() == "" or self.le_NSubs.text() == ""):
+        if (
+                                    self.le_Landuse.text() == "" or self.le_Watershed.text() == "" or self.le_Soil.text() == "" or self.le_DEM.text() == "" or self.le_NSubs.text() == ""):
             choice = QtGui.QMessageBox.question(None, 'Invalid parametre',
                                                 "Please, make sure you chose all maps before generation",
                                                 QtGui.QMessageBox.Ok)
@@ -533,7 +526,6 @@ class Ui_Dialog(object):
 
         self.getLAImaps_from_folder()
 
-
     def SeeSub(self):
         Continue = False
 
@@ -621,7 +613,7 @@ class Ui_Dialog(object):
             # ----------------
             pass
 
-        #if self.le_OpenLAI.text() != "":
+        # if self.le_OpenLAI.text() != "":
 
 
         #### copy files
@@ -696,7 +688,6 @@ class Ui_Dialog(object):
             choice = QtGui.QMessageBox.question(None, 'Erroned Subs',
                                                 "these Subs are erroned : {} ".format(str(Message)),
                                                 QtGui.QMessageBox.Ok)
-
 
     def SetUpActions(self):
         self.tb_DEM.clicked.connect(self.setLEDEM)
@@ -1144,11 +1135,11 @@ class Ui_Dialogone(object):
         list_subs = os.listdir(path_tmp)
 
         for sub in list_subs:
-            path_to_LAI = os.path.join(path_tmp,sub,"Runner\Bin")
+            path_to_LAI = os.path.join(path_tmp, sub, "Runner\Bin")
             files_in_LAI = os.listdir(path_to_LAI)
             for file_name in files_in_LAI:
                 if "myWetSpaModel" in file_name:
-                    LAI_path = os.listdir(path_to_LAI,file_name)
+                    LAI_path = os.listdir(path_to_LAI, file_name)
                     LAI_old = open(LAI_path, "r")
                     old = LAI_old.readlines()
                     LAI_old.close()
@@ -1708,11 +1699,11 @@ class LID_Loc_Dialog(object):
         self.main = main
         Dialog.setObjectName(_fromUtf8("Dialog"))
 
-        Dialog.resize(1600, 780)
+        Dialog.resize(1850, 780)
 
         # Input Maps
         self.groupBox_InputMaps = QtGui.QGroupBox(Dialog)
-        self.groupBox_InputMaps.setGeometry(QtCore.QRect(10, 10, 361, 310))
+        self.groupBox_InputMaps.setGeometry(QtCore.QRect(10, 10, 361, 350))
         self.groupBox_InputMaps.setObjectName(_fromUtf8("groupBox_InputMaps"))
 
         # Ground Water
@@ -1792,9 +1783,20 @@ class LID_Loc_Dialog(object):
         self.le_Elev.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_Elev.setObjectName(_fromUtf8("le_Elev"))
 
+        # inp file
+        self.groupBox_inp = QtGui.QGroupBox(self.groupBox_InputMaps)
+        self.groupBox_inp.setGeometry(QtCore.QRect(10, 300, 341, 41))
+        self.groupBox_inp.setObjectName(_fromUtf8("groupBox_inp"))
+        self.tb_inp = QtGui.QToolButton(self.groupBox_inp)
+        self.tb_inp.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_inp.setObjectName(_fromUtf8("tb_inp"))
+        self.le_inp = QtGui.QLineEdit(self.groupBox_inp)
+        self.le_inp.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_inp.setObjectName(_fromUtf8("le_inp"))
+
         # Building Parammap for whole catchment
         self.groupBox_Building_Parammap = QtGui.QGroupBox(Dialog)
-        self.groupBox_Building_Parammap.setGeometry(QtCore.QRect(10, 330, 361, 190))
+        self.groupBox_Building_Parammap.setGeometry(QtCore.QRect(10, 400, 361, 120))
         self.groupBox_Building_Parammap.setObjectName(_fromUtf8("groupBox_Building_Parammap"))
 
         self.btn_DefinePara = QtGui.QPushButton(self.groupBox_Building_Parammap)
@@ -1890,15 +1892,15 @@ class LID_Loc_Dialog(object):
         self.le_Flow.setObjectName(_fromUtf8("le_Flow"))
         self.le_Flow.setText("X")
 
-        self.label_Nodes = QtGui.QLabel(self.groupBox_High_Potential)
-        self.label_Nodes.setGeometry(QtCore.QRect(20, 200, 200, 21))
-        self.label_Nodes.setObjectName(_fromUtf8("le_Nodes"))
+        # self.label_Nodes = QtGui.QLabel(self.groupBox_High_Potential)
+        # self.label_Nodes.setGeometry(QtCore.QRect(20, 200, 200, 21))
+        # self.label_Nodes.setObjectName(_fromUtf8("le_Nodes"))
 
-        self.le_Nodes = QtGui.QLineEdit(self.groupBox_High_Potential)
-        self.le_Nodes.setGeometry(QtCore.QRect(40, 230, 300, 20))
-        self.le_Nodes.setText(_fromUtf8(""))
-        self.le_Nodes.setObjectName(_fromUtf8("le_Nodes"))
-        self.le_Nodes.setText("X")
+        # self.le_Nodes = QtGui.QLineEdit(self.groupBox_High_Potential)
+        # self.le_Nodes.setGeometry(QtCore.QRect(40, 230, 300, 20))
+        # self.le_Nodes.setText(_fromUtf8(""))
+        # self.le_Nodes.setObjectName(_fromUtf8("le_Nodes"))
+        # self.le_Nodes.setText("X")
 
         # Result Highpot
         self.groupBox_Result = QtGui.QGroupBox(self.groupBox_High_Potential)
@@ -2039,21 +2041,21 @@ class LID_Loc_Dialog(object):
         self.le_percentage_source.setValidator(QtGui.QIntValidator(0, 99999, self.le_percentage_source))
         self.le_percentage_source.setText("X")
 
+        self.cb_GenMap = QtGui.QCheckBox(self.groupBox_cost)
+        self.cb_GenMap.setGeometry(QtCore.QRect(30, 80, 200, 17))
+        self.cb_GenMap.setObjectName(_fromUtf8("cb_GenMap"))
+
         self.cb_opt1 = QtGui.QCheckBox(self.groupBox_cost)
-        self.cb_opt1.setGeometry(QtCore.QRect(30, 80, 200, 17))
+        self.cb_opt1.setGeometry(QtCore.QRect(30, 110, 200, 17))
         self.cb_opt1.setObjectName(_fromUtf8("cb_opt1"))
 
         self.cb_opt2 = QtGui.QCheckBox(self.groupBox_cost)
-        self.cb_opt2.setGeometry(QtCore.QRect(30, 110, 200, 17))
+        self.cb_opt2.setGeometry(QtCore.QRect(30, 140, 200, 17))
         self.cb_opt2.setObjectName(_fromUtf8("cb_opt2"))
 
         self.cb_opt3 = QtGui.QCheckBox(self.groupBox_cost)
-        self.cb_opt3.setGeometry(QtCore.QRect(30, 140, 200, 17))
+        self.cb_opt3.setGeometry(QtCore.QRect(30, 170, 200, 17))
         self.cb_opt3.setObjectName(_fromUtf8("cb_opt3"))
-
-        self.cb_opt4 = QtGui.QCheckBox(self.groupBox_cost)
-        self.cb_opt4.setGeometry(QtCore.QRect(30, 170, 200, 17))
-        self.cb_opt4.setObjectName(_fromUtf8("cb_opt4"))
 
         self.groupBox_ResultCost = QtGui.QGroupBox(self.groupBox_cost)
         self.groupBox_ResultCost.setGeometry(QtCore.QRect(20, 200, 320, 130))
@@ -2067,12 +2069,50 @@ class LID_Loc_Dialog(object):
         self.btn_Start_opt.setGeometry(QtCore.QRect(220, 30, 90, 70))
         self.btn_Start_opt.setObjectName(_fromUtf8("btn_Start_opt"))
 
+        # -------------------------------------------------
 
+        self.groupBox_GenElev = QtGui.QGroupBox(Dialog)
+        self.groupBox_GenElev.setGeometry(QtCore.QRect(1500, 10, 300, 200))
+        self.groupBox_GenElev.setObjectName(_fromUtf8("groupBox_GenElev"))
 
+        self.label_slopePercent = QtGui.QLabel(self.groupBox_GenElev)
+        self.label_slopePercent.setGeometry(QtCore.QRect(20, 40, 270, 21))
+        self.label_slopePercent.setObjectName(_fromUtf8("label_slopePercent"))
 
+        self.le_slopePercent = QtGui.QLineEdit(self.groupBox_GenElev)
+        self.le_slopePercent.setGeometry(QtCore.QRect(100, 40, 60, 20))
+        self.le_slopePercent.setObjectName(_fromUtf8("le_slopePercent"))
 
+        self.label_maxDepth = QtGui.QLabel(self.groupBox_GenElev)
+        self.label_maxDepth.setGeometry(QtCore.QRect(20, 80, 270, 21))
+        self.label_maxDepth.setObjectName(_fromUtf8("label_maxDepth"))
 
+        self.le_maxDepth = QtGui.QLineEdit(self.groupBox_GenElev)
+        self.le_maxDepth.setGeometry(QtCore.QRect(100, 80, 60, 20))
+        self.le_maxDepth.setObjectName(_fromUtf8("le_maxDepth"))
 
+        self.btn_GenElev = QtGui.QPushButton(self.groupBox_GenElev)
+        self.btn_GenElev.setGeometry(QtCore.QRect(100, 120, 90, 40))
+        self.btn_GenElev.setObjectName(_fromUtf8("btn_GenElev"))
+
+        # ---------------------------------------------------------------------
+
+        self.groupBox_GenSoil = QtGui.QGroupBox(Dialog)
+        self.groupBox_GenSoil.setGeometry(QtCore.QRect(1500, 220, 300, 150))
+        self.groupBox_GenSoil.setObjectName(_fromUtf8("groupBox_GenSoil"))
+
+        self.label_soilType = QtGui.QLabel(self.groupBox_GenSoil)
+        self.label_soilType.setGeometry(QtCore.QRect(20, 40, 270, 21))
+        self.label_soilType.setObjectName(_fromUtf8("label_soilType"))
+        # input format {20: 3, 40: 2, 30: 1}
+        self.le_soilType = QtGui.QLineEdit(self.groupBox_GenSoil)
+        self.le_soilType.setGeometry(QtCore.QRect(20, 65, 260, 20))
+        self.le_soilType.setObjectName(_fromUtf8("le_soilType"))
+        #self.le_soilType.setValidator(QtGui.QIntValidator(0, 99999, self.le_soilType))
+
+        self.btn_soilType = QtGui.QPushButton(self.groupBox_GenSoil)
+        self.btn_soilType.setGeometry(QtCore.QRect(100, 100, 90, 40))
+        self.btn_soilType.setObjectName(_fromUtf8("btn_soilType"))
 
 
         # ---------------------------------------------------------------------
@@ -2127,15 +2167,18 @@ class LID_Loc_Dialog(object):
         self.groupBox_Landuse.setTitle(_translate("Dialog", "Landuse for whole catchment", None))
         self.groupBox_Soil.setTitle(_translate("Dialog", "Soil for whole catchment", None))
         self.groupBox_Elev.setTitle(_translate("Dialog", "Elevation for whole catchment", None))
+        self.groupBox_inp.setTitle(_translate("Dialog", "Inp file", None))
         self.groupBox_Building_Parammap.setTitle(
             _translate("Dialog", "Building parameter map for whole catchment", None))
         self.groupBox_cost.setTitle(_translate("Dialog", "Cost Optimization", None))
+        self.groupBox_GenElev.setTitle(_translate("Dialog", "Generating Elevation", None))
+        self.groupBox_GenSoil.setTitle(_translate("Dialog", "Generating Soil", None))
 
         self.label_Lambda.setText(_translate("Dialog", "Lambda :", None))
         self.label_Runoff.setText(_translate("Dialog", "Runoff Coefficient : [-]", None))
         self.label_Number_of_subc.setText(_translate("Dialog", "Number of Subcatchments :", None))
         self.label_Flow.setText(_translate("Dialog", "Max/Full Flow Limitation :", None))
-        self.label_Nodes.setText(_translate("Dialog", "Nodes Connected to Each Outloet :", None))
+        # self.label_Nodes.setText(_translate("Dialog", "Nodes Connected to Each Outloet :", None))
         self.label_Depth.setText(_translate("Dialog", "Depth of GW table to LID : [m]", None))
         self.label_SuitableSoil.setText(_translate("Dialog", "Suitable Soil class :", None))
         self.label_Width_rip.setText(_translate("Dialog", "Width of Riparian Zone : [m]", None))
@@ -2144,6 +2187,10 @@ class LID_Loc_Dialog(object):
         self.label_min_roof.setText(_translate("Dialog", "Min possible area of green roofs :", None))
         self.label_max_roof.setText(_translate("Dialog", "Max Possible elevation in pixels of Greenroof : [m]", None))
         self.label_percentage_source.setText(_translate("Dialog", "Percentage source : ", None))
+        self.label_soilType.setText(_translate("Dialog", "Change Soil type input :", None))
+        self.label_slopePercent.setText(_translate("Dialog", "slope (%) : ", None))
+        self.label_maxDepth.setText(_translate("Dialog", "Max depth : ", None))
+
 
         self.btn_List_mapsS.setText(_translate("Dialog", "List\nmaps", None))
         self.btn_Max_pref.setText(_translate("Dialog", "Max Suitable area for prefered LIDs", None))
@@ -2151,6 +2198,8 @@ class LID_Loc_Dialog(object):
         self.btn_DefinePara.setText(_translate("Dialog", "Define parameters", None))
         self.btn_RunPre.setText(_translate("Dialog", "Run preprocessing", None))
         self.btn_Start_opt.setText(_translate("Dialog", "Start\nOptimization", None))
+        self.btn_soilType.setText(_translate("Dialog", "Start", None))
+        self.btn_GenElev.setText(_translate("Dialog", "Start", None))
 
         # self.btn_List_mapsFinal.setText(_translate("Dialog", "List\nmaps", None))
 
@@ -2161,7 +2210,7 @@ class LID_Loc_Dialog(object):
         self.tb_Landuse.setText(_translate("Dialog", "...", None))
         self.tb_Soil.setText(_translate("Dialog", "...", None))
         self.tb_Elev.setText(_translate("Dialog", "...", None))
-
+        self.tb_inp.setText(_translate("Dialog", "...", None))
 
         self.cb_alg1.setText(_translate("Dialog", "Suitable Area Based on GW", None))
         self.cb_alg2.setText(_translate("Dialog", "Suitable Soil Area", None))
@@ -2175,8 +2224,7 @@ class LID_Loc_Dialog(object):
         self.cb_opt1.setText(_translate("Dialog", "Option 1", None))
         self.cb_opt2.setText(_translate("Dialog", "Option 2", None))
         self.cb_opt3.setText(_translate("Dialog", "Option 3", None))
-        self.cb_opt4.setText(_translate("Dialog", "Option 4", None))
-
+        self.cb_GenMap.setText(_translate("Dialog", "Generating Map", None))
 
     def setLEParcel(self):
         fname = QFileDialog.getOpenFileName(None, 'Open file',
@@ -2212,6 +2260,11 @@ class LID_Loc_Dialog(object):
         fname = QFileDialog.getOpenFileName(None, 'Open file',
                                             os.getcwd(), "ascii maps (*.asc)")
         self.le_Elev.setText(fname)
+
+    def setLEInp(self):
+        fname = QFileDialog.getOpenFileName(None, 'Open file',
+                                            os.getcwd(), "ascii maps (*.asc)")
+        self.le_inp.setText(fname)
 
     def prior(self):
 
@@ -2670,15 +2723,15 @@ class LID_Loc_Dialog(object):
 
     def runpre_LID(self):
 
-        #todo create colone with code , in static
+        # todo create colone with code , in static
 
-        lnd = pcraster.Map2Asc() # clone nominal
+        lnd = pcraster.Map2Asc()  # clone nominal
         lnd.asc2map_forNuminal("landuse.asc", "landuse_start")
 
-        sl = pcraster.Map2Asc() # clone nominal
+        sl = pcraster.Map2Asc()  # clone nominal
         sl.asc2map_forNuminal("soil.asc", "soil_start")
 
-        elv = pcraster.Map2Asc() # clonescalar
+        elv = pcraster.Map2Asc()  # clonescalar
         elv.asc2map_forScalar("elevation.asc", "elevation_start")
 
         subprocess.Popen("runWetSpaPreprocess")
@@ -2691,6 +2744,8 @@ class LID_Loc_Dialog(object):
         self.tb_Landuse.clicked.connect(self.setLELanduse)
         self.tb_Soil.clicked.connect(self.setLESoil)
         self.tb_Elev.clicked.connect(self.setLEElev)
+        self.tb_inp.clicked.connect(self.setLEInp)
+
 
         self.btn_List_maps.clicked.connect(self.listMaps)
         self.btn_List_mapsS.clicked.connect(self.gen_Suitable_maps)
