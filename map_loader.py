@@ -13,12 +13,15 @@ class MapLoader:
             'cellsize': 2,
             'NODATA_value': -9999
         }
+        self.map_dir_for_ascii = "map/"
+        self.map_dir_for_dot_map = "maps/"
+
     def load_dot_map(self, map_class, map_name):
-        map_dir = "maps/"
+        map_dir = self.map_dir_for_dot_map
         ascii_name = map_name.split('.map')[0] + 'Cr.asc'
         print('asc name:', ascii_name)
         self.my_map2asc_convertor.set_map_variables(self.configs)
-        self.my_map2asc_convertor.build_ascii_map(map_dir, map_name, ascii_name)
+        self.my_map2asc_convertor.build_ascii_map(self.map_dir_for_ascii, map_name, ascii_name)
         return self.load_map(map_class, ascii_name)
 
     def load_map(self, map_class, map_name):
@@ -30,7 +33,7 @@ class MapLoader:
         return my_map
 
     def load_file(self, map_name):
-        return open('maps/' + map_name, 'r')
+        return open(self.map_dir_for_ascii + map_name, 'r')
 
     def build_map_from_ascii(self, ascii_file):
         map = Map()
