@@ -1,5 +1,6 @@
 import os
 
+
 # pre =
 # ncols         1852
 # nrows         1613
@@ -50,3 +51,24 @@ class Map2Asc:
         str_data += "cellsize      "+ str(self.cellsize) + '\n'
         str_data +=  "NODATA_value  " + str(self.NODATA_VALUE) + '\n'
         return str_data
+
+    def get_config_in_dict(self):
+        str_data = {}
+        str_data["ncols"] = str(self.ncols)
+        str_data["nrows"] = str(self.nrows)
+        str_data["xllcorner"] = str(self.xllcorner)
+        str_data["yllcorner"] = str(self.yllcorner)
+        str_data["cellsize"] = str(self.cellsize)
+        str_data["NODATA_value"] = str(self.NODATA_VALUE)
+        return str_data
+
+    def asc2map_forNuminal(self, asc_name, dotmapname):
+        os.chdir("parammaps/")
+        os.system('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneNuminal-1")
+        os.chdir("..")
+
+    def asc2map_forScalar(self, asc_name, dotmapname):
+        os.chdir("parammaps/")
+        os.system('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneScalar-1")
+        os.chdir("..")
+
