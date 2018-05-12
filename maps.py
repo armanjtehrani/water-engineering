@@ -1,5 +1,3 @@
-import os
-
 class Map:
     def __init__(self):
         self.n_cols = 0
@@ -12,7 +10,6 @@ class Map:
 
     def set_config(self, another_map):
         """
-
         :type another_map: Map
         """
         self.n_cols = another_map.n_cols
@@ -50,15 +47,7 @@ class Map:
         return str_data
 
     def to_file(self, file_name, direc="map/"):
-        path = os.path.join(direc, file_name)
-        myfile = open(path, 'w+')
-        str_data = ""
-        str_data += self.get_config_string()
-        str_data += self.get_matrix_string()
-        myfile.write(str_data)
-
-    def to_file_parammaps(self, file_name):
-        file = open('parammaps/' + file_name, 'w+')
+        file = open(direc + file_name, 'w+')
         str_data = ""
         str_data += self.get_config_string()
         str_data += self.get_matrix_string()
@@ -209,6 +198,14 @@ class ConductivityMap:
         return str('conductivity map:\n' + str(self.map))
 
 
+class WaterShellMap:
+    def __init__(self):
+        self.map = Map()
+
+    def __str__(self):
+        return str('water shell map:\n' + str(self.map))
+
+
 class BasicMap:
     def __init__(self):
         self.map = Map()
@@ -222,4 +219,4 @@ class WaterShedMap:
         self.map = Map()
 
     def __str__(self):
-        return str('Watershed map:\n' + str(self.map))
+        return str('conductivity map:\n' + str(self.map))

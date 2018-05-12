@@ -252,22 +252,9 @@ class HighPotentialArea:
         return self.output_for_watershell
 
 #print(HighPotentialArea(hydrolic=True).hydrolic("report.rpt", "MAX/FULL FLOW", "32", "1.2", {'10': ['43544', '43546']}))
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> GUI
 # a = HighPotentialArea(hydrolic=True)
 # b = a.build_output_based_on_hydrolic("watershed.asc", "report.rpt", "MAX/FULL FLOW", "32",  "tmp.inp", "1.6")
 # b.to_file("hydrolical.asc")
 # b = a.build_sub_dicts_by_inp_file("tmp.inp", 31,  {1:[1,2], 2:[3,4,5], 3:[8]})
 # for i in b:
-<<<<<<< HEAD
 #     print("main node:", i, "__pipes:", b[i])
-=======
-#a = HighPotentialArea(hydrolic=True)
-#b = a.build_output_based_on_hydrolic("watershed.asc", "report.rpt", "MAX/FULL FLOW", "32", "1.6", {'10': ['43544', '43546']})
-#b.to_file("hydrolical.asc")
->>>>>>> GUI
-=======
-#     print("main node:", i, "__pipes:", b[i])
->>>>>>> GUI
