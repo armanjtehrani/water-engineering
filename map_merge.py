@@ -502,7 +502,6 @@ class Main:
                                                          basic_land_use_map_name)
 
 
-<<<<<<< HEAD
 print("start:")
 main = Main()
 main.init("watershed_cost.asc",
@@ -516,22 +515,5 @@ main.init("watershed_cost.asc",
           basic_priorities,
           False, [1, 2, 3])
 main.run()
-=======
-# print("start:")
-# main = Main()
-# main.init("watershed_cost.asc",
-#           "landuse.asc",
-#           "Final.asc",
-#           "parcel.asc",
-#           "elevation.asc",
-#           "report.rpt", 31, .6,
-#           15, 10, 0.5,
-#           "tmp.inp",
-#           basic_priorities)
-# main.run()
-
-
-
->>>>>>> GUI
 # a = RptInpDataBuilder().build_graph("tmp.inp")
 # print("aaaa:", a)
