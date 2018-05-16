@@ -1897,15 +1897,15 @@ class LID_Loc_Dialog(object):
         self.le_Flow.setObjectName(_fromUtf8("le_Flow"))
         self.le_Flow.setText("X")
 
-        # self.label_Nodes = QtGui.QLabel(self.groupBox_High_Potential)
-        # self.label_Nodes.setGeometry(QtCore.QRect(20, 200, 200, 21))
-        # self.label_Nodes.setObjectName(_fromUtf8("le_Nodes"))
+        self.label_Nodes = QtGui.QLabel(self.groupBox_High_Potential)
+        self.label_Nodes.setGeometry(QtCore.QRect(20, 200, 200, 21))
+        self.label_Nodes.setObjectName(_fromUtf8("le_Nodes"))
 
-        # self.le_Nodes = QtGui.QLineEdit(self.groupBox_High_Potential)
-        # self.le_Nodes.setGeometry(QtCore.QRect(40, 230, 300, 20))
-        # self.le_Nodes.setText(_fromUtf8(""))
-        # self.le_Nodes.setObjectName(_fromUtf8("le_Nodes"))
-        # self.le_Nodes.setText("X")
+        self.le_Nodes = QtGui.QLineEdit(self.groupBox_High_Potential)
+        self.le_Nodes.setGeometry(QtCore.QRect(40, 230, 300, 20))
+        self.le_Nodes.setText(_fromUtf8(""))
+        self.le_Nodes.setObjectName(_fromUtf8("le_Nodes"))
+        self.le_Nodes.setText("X")
 
         # Result Highpot
         self.groupBox_Result = QtGui.QGroupBox(self.groupBox_High_Potential)
@@ -2195,6 +2195,7 @@ class LID_Loc_Dialog(object):
         self.label_soilType.setText(_translate("Dialog", "Change Soil type input :", None))
         self.label_slopePercent.setText(_translate("Dialog", "slope (%) : ", None))
         self.label_maxDepth.setText(_translate("Dialog", "Max depth : ", None))
+        self.label_Nodes.setText(_translate("Dialog", "Merge nodes : ", None))
 
 
         self.btn_List_mapsS.setText(_translate("Dialog", "List\nmaps", None))
@@ -2500,13 +2501,13 @@ class LID_Loc_Dialog(object):
         if self.checkbox_lambda == 2:
             f.append("landa.asc")
             slopeMap = map_loader.MapLoader()
-            slopeMap_obj = slopeMap.load_dot_map(maps.BasicMap, os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","slope.map"))
+            slopeMap_obj = slopeMap.load_dot_map(maps.BasicMap, os.path.join("C:/TMP/whole_catchment/Runner/catchment/staticmaps","slope.map"))
 
             conductivityMap = map_loader.MapLoader()
-            conductivityMap_obj = conductivityMap.load_dot_map(maps.BasicMap, os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","conductivity.map"))
+            conductivityMap_obj = conductivityMap.load_dot_map(maps.BasicMap, os.path.join("C:/TMP/whole_catchment/Runner/catchment/staticmaps","conductivity.map"))
 
             flowaccMap = map_loader.MapLoader()
-            flowaccMap_obj = flowaccMap.load_dot_map(maps.BasicMap, os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","flowacc.map"))
+            flowaccMap_obj = flowaccMap.load_dot_map(maps.BasicMap, os.path.join("C:/TMP/whole_catchment/Runner/catchment/staticmaps","flowacc.map"))
 
             LandaOut = algorithms.LandaEq()
             MapLanda = LandaOut.get_output_with_user_limit("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc", landa)
@@ -2522,17 +2523,15 @@ class LID_Loc_Dialog(object):
         # if  LandaEq != 0 and RunoffCoefficient != 0 :
         if self.checkbox_hydrolic == 2:
             f.append("hydrolic.asc")
-            Nodes = str(Nodes)
-            sub_dic = {}
-            sub_dic_list = Nodes.split(";")
-            for i in sub_dic_list:
-                temp = i.split(":")
-                values = temp[1].split(",")
-                sub_dic[temp[0]] = values
+            Nodes = str(Nodes)[1:len(Nodes)-1]
+            Nodes = Nodes.split(",")
+            merge_nodes = []
+            for i in Nodes:
+                merge_nodes.append(int(i))
 
             high = high_potential_area.HighPotentialArea()
-            hydrolic_outp = high.build_output_based_on_hydrolic("watershed.asc", "report.rpt", "MAX/FULL FLOW",
-                                                                NumOfSubc, Max_Full, sub_dic)
+
+            hydrolic_outp = high.build_output_based_on_hydrolic(str(self.le_Wshed.text()), "report.rpt", "MAX/FULL FLOW",NumOfSubc,str(self.le_inp.text()),Max_Full,merge_nodes)
 
             output_maps_highpot.append(hydrolic_outp)
 
@@ -2568,7 +2567,8 @@ class LID_Loc_Dialog(object):
 
     def showmapsS(self, selected):
         print("hello")
-        Sub_path = os.path.join("D:/Python_Proj/water-engineering/parammaps")
+        # Sub_path = os.path.join("D:/Python_Proj/water-engineering/parammaps")
+        Sub_path = "parammaps"
         a = (str(self.List_mapsS.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
@@ -2576,7 +2576,8 @@ class LID_Loc_Dialog(object):
 
     def showmapsFinal(self, selected):
         print("hello")
-        Sub_path = os.path.join("D:/Python_Proj/water-engineering/parammaps")
+        # Sub_path = os.path.join("D:/Python_Proj/water-engineering/parammaps")
+        Sub_path = "parammaps"
         a = (str(self.List_mapsFinal.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
@@ -2674,11 +2675,11 @@ class LID_Loc_Dialog(object):
         if self.checkbox_hydrolic != 2:
             self.le_Number_of_subc.setText("X")
             self.le_Flow.setText("X")
-            self.le_Nodes.setText("X")
+
         if self.checkbox_hydrolic == 2:
             self.le_Number_of_subc.setText("")
             self.le_Flow.setText("")
-            self.le_Nodes.setText("")
+
         print self.checkbox_hydrolic
 
     def checkbox5(self):
@@ -2732,16 +2733,18 @@ class LID_Loc_Dialog(object):
         # todo create colone with code , in static
 
         lnd = pcraster.Map2Asc()  # clone nominal
-        lnd.asc2map_forNuminal(str(self.le_Landuse.text()), os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","landuse_start.map"))
+        lnd.asc2map_forNuminal(str(self.le_Landuse.text()), os.path.join("C:\TMP\whole_catchment\Runner\catchment\staticmaps","landuse_start.map"))
 
         sl = pcraster.Map2Asc()  # clone nominal
-        sl.asc2map_forNuminal(str(self.le_Soil.text()), os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","soil_start.map"))
+        sl.asc2map_forNuminal(str(self.le_Soil.text()), os.path.join("C:\TMP\whole_catchment\Runner\catchment\staticmaps","soil_start.map"))
 
         elv = pcraster.Map2Asc()  # clonescalar
-        elv.asc2map_forScalar(str(self.le_Elev.text()), os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","elevation_start.map"))
+        elv.asc2map_forScalar(str(self.le_Elev.text()), os.path.join("C:\TMP\whole_catchment\Runner\catchment\staticmaps","elevation_start.map"))
 
         print "3 done "
-        subprocess.Popen(os.path.join("C:","TMP","whole_catchment","Runner","catchment"))
+        os.system(os.path.join("C:\TMP\whole_catchment\Runner\catchment","runWetSpaPreprocess.bat\npause"))
+        #os.system("pause")
+
         #os.system("runWetSpaPreprocess.bat")
 
     def cost_opt(self):
