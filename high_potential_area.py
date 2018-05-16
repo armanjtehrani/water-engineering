@@ -197,7 +197,7 @@ class HighPotentialArea:
 
     def build_sub_dicts_by_inp_file(self, inp_file_name, limit_node, merge_nodes=None):
         limit_node = int(limit_node)
-        #   merge_nodes format: {1: [1,2,3], 2: [5], 6: [6]}
+        #   merge_nodes format: {1: [1,2,3], 2: [5], 6: [6]} (always None)
         self.graph = self.build_graph_by_inp_file(inp_file_name)
         self.main_node_to_edges = {i: [] for i in range(1, limit_node + 1)}
         for main_node in self.main_node_to_edges:
@@ -222,6 +222,16 @@ class HighPotentialArea:
                 self.main_node_to_edges[main_node].append(pipe)
             self.append_new_pipes_to_main_node_from_node(main_node, n2, limit_node)
 
+    def build_watershed_map_based_on_merge_nodes(self, watershed_map_name, merge_nodes):
+        old_watershed = map_loader.load_map(WaterShellMap, watershed_map_name)
+        old_map = old_watershed.map
+        new_map = copy.deepcopy(old_map)
+        for i in range(len(old_map.matrix)):
+            for j in range(len(old_map.matrix[i])):
+                cell = old_map.matrix[i][j]
+                new_map.matrix[i][j] = merge_nodes[cell - 1]
+        return new_map
+
     def build_output_based_on_hydrolic(self, water_shell_map_ascii_name,
                                        rpt_file,
                                        link_col_name,
@@ -229,12 +239,13 @@ class HighPotentialArea:
                                        inp_file_name,
                                        limit=1,
                                        merge_nodes=None):
-        #   merge_nodes format: {1: [1,2,3], 2: [5], 6: [6]}
-        sub_dic = self.build_sub_dicts_by_inp_file(inp_file_name, limit_node, merge_nodes)
+        #   merge_nodes format: [1, 1, 1, 2, 3, 5, 4, 6, 7]
+        #   it means: 1 , 2 , 3 -> 1 & 4 -> 2 , 5 -> 3 , 6 -> 5 , 7 -> 4 , 8 -> 6 , 9 -> 7
+        sub_dic = self.build_sub_dicts_by_inp_file(inp_file_name, limit_node, None)
         data_list = self.hydrolic(rpt_file, link_col_name, limit_node, limit, sub_dic)
         for i in range(len(data_list)):
             data_list[i] = int(data_list[i])
-        water_shed_map = map_loader.load_map(WaterShellMap, water_shell_map_ascii_name)
+        water_shed_map = self.build_watershed_map_based_on_merge_nodes(water_shell_map_ascii_name, merge_nodes)
         water_shed_m = water_shed_map.map
         self.output_for_watershell = Map()
         self.output_for_watershell.set_config(water_shed_m)
