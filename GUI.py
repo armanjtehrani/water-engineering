@@ -2739,7 +2739,9 @@ class LID_Loc_Dialog(object):
         elv = pcraster.Map2Asc()  # clonescalar
         elv.asc2map_forScalar(str(self.le_Elev.text()), "elevation_start")
 
-        subprocess.Popen("runWetSpaPreprocess.bat")
+        print "3 done "
+        #subprocess.Popen("runWetSpaPreprocess.bat")
+        os.system("runWetSpaPreprocess.bat")
 
     def cost_opt(self):
         alg_to_use = []
