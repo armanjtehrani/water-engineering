@@ -228,8 +228,13 @@ class HighPotentialArea:
         new_map = copy.deepcopy(old_map)
         for i in range(len(old_map.matrix)):
             for j in range(len(old_map.matrix[i])):
-                cell = old_map.matrix[i][j]
-                new_map.matrix[i][j] = merge_nodes[cell - 1]
+
+                cell = int(old_map.matrix[i][j])
+                if cell > 0:
+                    new_map.matrix[i][j] = merge_nodes[cell - 1]
+
+
+
         return new_map
 
     def build_output_based_on_hydrolic(self, water_shell_map_ascii_name,
@@ -246,7 +251,8 @@ class HighPotentialArea:
         for i in range(len(data_list)):
             data_list[i] = int(data_list[i])
         water_shed_map = self.build_watershed_map_based_on_merge_nodes(water_shell_map_ascii_name, merge_nodes)
-        water_shed_m = water_shed_map.map
+        #water_shed_m = water_shed_map.map
+        water_shed_m = water_shed_map
         self.output_for_watershell = Map()
         self.output_for_watershell.set_config(water_shed_m)
         self.build_basic_output_for_watershell()

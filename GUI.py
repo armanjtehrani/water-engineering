@@ -1732,6 +1732,7 @@ class LID_Loc_Dialog(object):
         self.le_Parcel = QtGui.QLineEdit(self.groupBox_Parcel)
         self.le_Parcel.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_Parcel.setObjectName(_fromUtf8("le_Parcel"))
+        self.le_Parcel.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/parcel.asc")
 
         # Detailed Land use
         self.groupBox_DlandUse = QtGui.QGroupBox(self.groupBox_InputMaps)
@@ -1743,6 +1744,7 @@ class LID_Loc_Dialog(object):
         self.le_DlandUse = QtGui.QLineEdit(self.groupBox_DlandUse)
         self.le_DlandUse.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_DlandUse.setObjectName(_fromUtf8("le_DlandUse"))
+        self.le_DlandUse.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/detailedlandusemap.asc")
 
         # Water Shed
         self.groupBox_Wshed = QtGui.QGroupBox(self.groupBox_InputMaps)
@@ -1754,6 +1756,7 @@ class LID_Loc_Dialog(object):
         self.le_Wshed = QtGui.QLineEdit(self.groupBox_Wshed)
         self.le_Wshed.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_Wshed.setObjectName(_fromUtf8("le_Wshed"))
+        self.le_Wshed.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/watershed.asc")
 
         # landuse for whole catchment
         self.groupBox_Landuse = QtGui.QGroupBox(self.groupBox_InputMaps)
@@ -1765,6 +1768,7 @@ class LID_Loc_Dialog(object):
         self.le_Landuse = QtGui.QLineEdit(self.groupBox_Landuse)
         self.le_Landuse.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_Landuse.setObjectName(_fromUtf8("le_Landuse"))
+        self.le_Landuse.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/landuse.asc")
 
         # soil for whole catchment
         self.groupBox_Soil = QtGui.QGroupBox(self.groupBox_InputMaps)
@@ -1776,6 +1780,7 @@ class LID_Loc_Dialog(object):
         self.le_Soil = QtGui.QLineEdit(self.groupBox_Soil)
         self.le_Soil.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_Soil.setObjectName(_fromUtf8("le_Soil"))
+        self.le_Soil.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/soil.asc")
 
         # elev for whole catchment
         self.groupBox_Elev = QtGui.QGroupBox(self.groupBox_InputMaps)
@@ -1787,6 +1792,7 @@ class LID_Loc_Dialog(object):
         self.le_Elev = QtGui.QLineEdit(self.groupBox_Elev)
         self.le_Elev.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_Elev.setObjectName(_fromUtf8("le_Elev"))
+        self.le_Elev.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/elevation.asc")
 
         # inp file
         self.groupBox_inp = QtGui.QGroupBox(self.groupBox_InputMaps)
@@ -1798,10 +1804,11 @@ class LID_Loc_Dialog(object):
         self.le_inp = QtGui.QLineEdit(self.groupBox_inp)
         self.le_inp.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_inp.setObjectName(_fromUtf8("le_inp"))
+        self.le_inp.setText("C:/TMP/tmp.inp")
 
         # Building Parammap for whole catchment
         self.groupBox_Building_Parammap = QtGui.QGroupBox(Dialog)
-        self.groupBox_Building_Parammap.setGeometry(QtCore.QRect(10, 400, 361, 120))
+        self.groupBox_Building_Parammap.setGeometry(QtCore.QRect(10, 360, 361, 80))
         self.groupBox_Building_Parammap.setObjectName(_fromUtf8("groupBox_Building_Parammap"))
 
         self.btn_DefinePara = QtGui.QPushButton(self.groupBox_Building_Parammap)
@@ -1813,7 +1820,7 @@ class LID_Loc_Dialog(object):
 
         # Search Algs
         self.groupBox_SearchAlgs = QtGui.QGroupBox(Dialog)
-        self.groupBox_SearchAlgs.setGeometry(QtCore.QRect(10, 520, 361, 220))
+        self.groupBox_SearchAlgs.setGeometry(QtCore.QRect(10, 450, 361, 220))
         self.groupBox_SearchAlgs.setObjectName(_fromUtf8("groupBox_SearchAlgs"))
 
         self.cb_alg1 = QtGui.QCheckBox(self.groupBox_SearchAlgs)
@@ -2488,9 +2495,9 @@ class LID_Loc_Dialog(object):
             # runoffcoMap_obj = runoffcoMap.load_dot_map(maps.RunoffCoMap, "runoff_co.map")
 
             outrunoff = algorithms.RunoffCoefficient()
-            Map_runoff = outrunoff.get_runoff_coefficient_map("runoff_co.map", runoff)
+            Map_runoff = outrunoff.get_runoff_coefficient_map("parammaps"+"/"+"runoff_co.map", runoff)
 
-            output_maps_highpot.append(Map_runoff)
+            output_maps_highpot.append("parammpas/runoffFinal.asc")
 
             Map_runoff.to_file_parammaps("runoffFinal.asc")
 
@@ -2513,7 +2520,7 @@ class LID_Loc_Dialog(object):
             MapLanda = LandaOut.get_output_with_user_limit("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc", landa)
             #MapLanda = LandaOut.get_output_with_user_limit("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc", landa)
 
-            output_maps_highpot.append(MapLanda)
+            output_maps_highpot.append("parammaps/landa.asc")
 
             MapLanda.to_file_parammaps("landa.asc")
 
@@ -2528,14 +2535,16 @@ class LID_Loc_Dialog(object):
             merge_nodes = []
             for i in Nodes:
                 merge_nodes.append(int(i))
+            print merge_nodes
 
             high = high_potential_area.HighPotentialArea()
 
             hydrolic_outp = high.build_output_based_on_hydrolic(str(self.le_Wshed.text()), "report.rpt", "MAX/FULL FLOW",NumOfSubc,str(self.le_inp.text()),Max_Full,merge_nodes)
 
-            output_maps_highpot.append(hydrolic_outp)
+            output_maps_highpot.append("parammaps/hydrolic.asc")
 
             hydrolic_outp.to_file_parammaps("hydrolic.asc")
+
 
         if len(output_maps_highpot) == 0:
             print "Nothing to merge! plz give some maps!"
@@ -2544,7 +2553,7 @@ class LID_Loc_Dialog(object):
         else:
             f.append("Highpot.asc")
             self.HighPot = algorithms.Overlay()
-            self.HighPot = self.HighPot.overlay_and(["runoffFinal.asc", "hydrolic.asc", "landa.asc"])
+            self.HighPot = self.HighPot.overlay_and(output_maps_highpot)
 
             self.HighPot.to_file_parammaps("HighPot.asc")
             self.hasHighpot = True
@@ -2560,7 +2569,7 @@ class LID_Loc_Dialog(object):
     def showmaps(self, selected):
         print("hello")
         Sub_path = os.path.join("D:/Python_Proj/water-engineering/parammaps")
-        a = (str(self.List_maps.data(selected, 0).toString()))
+        a = (str(self.List_maps.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
         os.system(agrus)
@@ -2675,10 +2684,16 @@ class LID_Loc_Dialog(object):
         if self.checkbox_hydrolic != 2:
             self.le_Number_of_subc.setText("X")
             self.le_Flow.setText("X")
+            self.le_Nodes.setText("X")
 
         if self.checkbox_hydrolic == 2:
             self.le_Number_of_subc.setText("")
             self.le_Flow.setText("")
+            self.le_Nodes.setText("")
+
+            self.le_Number_of_subc.setText("31")
+            self.le_Flow.setText("0.8")
+            self.le_Nodes.setText("[1,2,3,2,4,5,6,7,8,9,6,1,10,11,12,13,13,14,15,16,17,18,19,15,20,21,22,23,24,25,26,27,28,29,26,30,31,26]")
 
         print self.checkbox_hydrolic
 
@@ -2705,6 +2720,8 @@ class LID_Loc_Dialog(object):
             self.le_Runoff.setText("X")
         if self.checkbox_runoff == 2:
             self.le_Runoff.setText("")
+            self.le_Runoff.setText("0.8")
+
         print self.checkbox_runoff
 
     def checkbox8(self):
@@ -2722,6 +2739,8 @@ class LID_Loc_Dialog(object):
             self.le_Lambda.setText("X")
         if self.checkbox_lambda == 2:
             self.le_Lambda.setText("")
+            self.le_Lambda.setText("3")
+
         print self.checkbox_lambda
 
     def OpenUserinput(self):

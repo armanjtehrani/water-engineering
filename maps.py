@@ -60,6 +60,13 @@ class Map:
         str_data += self.get_matrix_string()
         file.write(str_data)
 
+    def to_file_parammaps(self, file_name):
+        file = open('parammaps/' + file_name, 'w+')
+        str_data = ""
+        str_data += self.get_config_string()
+        str_data += self.get_matrix_string()
+        file.write(str_data)
+
 
 class GWMap:
     def __init__(self):
