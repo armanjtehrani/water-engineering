@@ -475,7 +475,7 @@ class Main:
                       min_rain, min_flat, max_slope,
                       inp_file,
                       priorities,
-                      use_existing_region_maps,
+                      use_existing_region_maps, # Gen
                       algorithms_to_use):
         print("run with init")
         self.init(water_shed_map_name,

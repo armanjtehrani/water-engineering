@@ -63,12 +63,12 @@ class Map2Asc:
         return str_data
 
     def asc2map_forNuminal(self, asc_name, dotmapname):
-        os.chdir("parammaps/")
+        os.chdir("staticmaps/") # in static
         os.system('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneNuminal-1")
         os.chdir("..")
 
     def asc2map_forScalar(self, asc_name, dotmapname):
-        os.chdir("parammaps/")
+        os.chdir("staticmaps/") # in static
         os.system('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneScalar-1")
         os.chdir("..")
 

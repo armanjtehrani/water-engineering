@@ -14,6 +14,8 @@ import os
 import re
 import subprocess
 import pcraster
+import cost_optimization
+import map_merge
 from distutils.dir_util import copy_tree
 from shutil import copytree
 
@@ -597,6 +599,8 @@ class Ui_Dialog(object):
         ##### Check meteo tss files and save them into a list
         _list_meteo = []
         if self.le_evaporation.text() != "":
+            # "c/TMP/1/Runner/catchment/meteo/e.tss"
+
             _list_meteo.append(str(self.le_evaporation.text()))
 
             # Added by Taha
@@ -605,6 +609,7 @@ class Ui_Dialog(object):
             # ----------------
             pass
         if self.le_precipitation.text() != "":
+            # "c/TMP/1/Runner/catchment/meteo/N.tss"
             _list_meteo.append(str(self.le_precipitation.text()))
 
             # Added by Taha
@@ -2263,7 +2268,7 @@ class LID_Loc_Dialog(object):
 
     def setLEInp(self):
         fname = QFileDialog.getOpenFileName(None, 'Open file',
-                                            os.getcwd(), "ascii maps (*.asc)")
+                                            os.getcwd(),"ascii maps (*.inp)")
         self.le_inp.setText(fname)
 
     def prior(self):
@@ -2726,15 +2731,63 @@ class LID_Loc_Dialog(object):
         # todo create colone with code , in static
 
         lnd = pcraster.Map2Asc()  # clone nominal
-        lnd.asc2map_forNuminal("landuse.asc", "landuse_start")
+        lnd.asc2map_forNuminal(str(self.le_Landuse.text()), "landuse_start")
 
         sl = pcraster.Map2Asc()  # clone nominal
-        sl.asc2map_forNuminal("soil.asc", "soil_start")
+        sl.asc2map_forNuminal(str(self.le_Soil.text()), "soil_start")
 
         elv = pcraster.Map2Asc()  # clonescalar
-        elv.asc2map_forScalar("elevation.asc", "elevation_start")
+        elv.asc2map_forScalar(str(self.le_Elev.text()), "elevation_start")
 
-        subprocess.Popen("runWetSpaPreprocess")
+        subprocess.Popen("runWetSpaPreprocess.bat")
+
+    def cost_opt(self):
+        alg_to_use = []
+        prcnt_src = str(self.le_percentage_source.text())
+
+        gen_map = self.cb_GenMap.checkState()
+        opt1 = self.cb_opt1.checkState()
+        opt2 = self.cb_opt2.checkState()
+        opt3 = self.cb_opt3.checkState()
+        if opt1 == 2 :
+            alg_to_use.append(1)
+        if opt2 == 2 :
+            alg_to_use.append(2)
+        if opt3 == 2 :
+            alg_to_use.append(3)
+
+        # print gen_map,opt1,opt2,opt3
+
+        cost = map_merge.Main()
+        cost.run_with_init(str(self.le_Wshed.text()),str(self.le_Landuse.text()),"advancedlanduse",str(self.le_Parcel.text()),str(self.le_Elev.text()),"rpt.file",str(self.le_Number_of_subc.text()),prcnt_src,str(self.le_min_rain.text()),str(self.le_min_roof.text()),"max_slope",str(self.le_inp.text()),"properties","existing?",alg_to_use)
+        # todo ask nahad : rpt position & advancedlanduse & max_slope & properties &  existing
+
+        pass
+
+    def gen_soil(self): # soil for whole !
+        # landuse_to_soil_type format: {20: 3, 40: 2, 30: 1}
+        landuse_to_soil_type = {}
+        str_type = str(self.le_soilType.text())
+        str_type = str_type.replace(" ", '')
+        a = str_type[1:len(str_type) - 1].split(",")
+        for elm in a:
+            tmp = elm.split(":")
+            landuse_to_soil_type[tmp[0]] = int(tmp[1])
+
+        # landuse_to_soil_type format ready !
+
+        soil_path = str(self.le_Soil.text())
+
+        new_soil = algorithms.change_soil_type_by_advanced_landuse_map(soil_path, "advansedlandusemap", landuse_to_soil_type)
+        # todo get real inputs from nahad "advansedlandusemap" /|\ !
+
+        # pass
+
+    def gen_elev(self):
+
+
+
+        pass
 
     def SetUpActions(self):
         self.tb_Parcel.clicked.connect(self.setLEParcel)
@@ -2752,6 +2805,8 @@ class LID_Loc_Dialog(object):
         self.btn_Max_pref.clicked.connect(self.prior)
         self.btn_DefinePara.clicked.connect(self.OpenUserinput)
         self.btn_RunPre.clicked.connect(self.runpre_LID)
+        self.btn_soilType.clicked.connect(self.gen_soil)
+        self.btn_Start_opt.clicked.connect(self.cost_opt)
 
         self.cb_alg1.clicked.connect(self.checkbox1)
         self.cb_alg2.clicked.connect(self.checkbox2)
