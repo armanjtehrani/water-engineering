@@ -2500,16 +2500,17 @@ class LID_Loc_Dialog(object):
         if self.checkbox_lambda == 2:
             f.append("landa.asc")
             slopeMap = map_loader.MapLoader()
-            slopeMap_obj = slopeMap.load_dot_map(maps.BasicMap, "slope.map")
+            slopeMap_obj = slopeMap.load_dot_map(maps.BasicMap, os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","slope.map"))
 
             conductivityMap = map_loader.MapLoader()
-            conductivityMap_obj = conductivityMap.load_dot_map(maps.BasicMap, "conductivity.map")
+            conductivityMap_obj = conductivityMap.load_dot_map(maps.BasicMap, os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","conductivity.map"))
 
             flowaccMap = map_loader.MapLoader()
-            flowaccMap_obj = flowaccMap.load_dot_map(maps.BasicMap, "flowacc.map")
+            flowaccMap_obj = flowaccMap.load_dot_map(maps.BasicMap, os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","flowacc.map"))
 
             LandaOut = algorithms.LandaEq()
             MapLanda = LandaOut.get_output_with_user_limit("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc", landa)
+            #MapLanda = LandaOut.get_output_with_user_limit("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc", landa)
 
             output_maps_highpot.append(MapLanda)
 
@@ -2731,17 +2732,17 @@ class LID_Loc_Dialog(object):
         # todo create colone with code , in static
 
         lnd = pcraster.Map2Asc()  # clone nominal
-        lnd.asc2map_forNuminal(str(self.le_Landuse.text()), "landuse_start")
+        lnd.asc2map_forNuminal(str(self.le_Landuse.text()), os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","landuse_start.map"))
 
         sl = pcraster.Map2Asc()  # clone nominal
-        sl.asc2map_forNuminal(str(self.le_Soil.text()), "soil_start")
+        sl.asc2map_forNuminal(str(self.le_Soil.text()), os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","soil_start.map"))
 
         elv = pcraster.Map2Asc()  # clonescalar
-        elv.asc2map_forScalar(str(self.le_Elev.text()), "elevation_start")
+        elv.asc2map_forScalar(str(self.le_Elev.text()), os.path.join("C:","TMP","whole_catchment","Runner","catchment","staticmaps","elevation_start.map"))
 
         print "3 done "
-        #subprocess.Popen("runWetSpaPreprocess.bat")
-        os.system("runWetSpaPreprocess.bat")
+        subprocess.Popen(os.path.join("C:","TMP","whole_catchment","Runner","catchment"))
+        #os.system("runWetSpaPreprocess.bat")
 
     def cost_opt(self):
         alg_to_use = []
