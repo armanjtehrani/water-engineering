@@ -1,6 +1,7 @@
 from algorithms import *
 from maps import Map
 from maps import WaterShellMap
+import os
 
 class HighPotentialArea:
     def __init__(self, hydrology=False, hydrolic=False, **runoff_landa):
@@ -56,6 +57,7 @@ class HighPotentialArea:
         if sub_dic is None:
             sub_dic = {}
 
+        print os.getcwd()
         rpt = open(rpt_file, "r")
 
         # ---- Find Node Flooding Summary -----

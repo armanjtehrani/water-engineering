@@ -2040,7 +2040,7 @@ class LID_Loc_Dialog(object):
         # Cost opt
 
         self.groupBox_cost = QtGui.QGroupBox(Dialog)
-        self.groupBox_cost.setGeometry(QtCore.QRect(1125, 10, 361, 430))
+        self.groupBox_cost.setGeometry(QtCore.QRect(1125, 10, 361, 350))
         self.groupBox_cost.setObjectName(_fromUtf8("groupBox_cost"))
 
         self.label_percentage_source = QtGui.QLabel(self.groupBox_cost)
@@ -2084,7 +2084,7 @@ class LID_Loc_Dialog(object):
         # -------------------------------------------------
 
         self.groupBox_GenElev = QtGui.QGroupBox(Dialog)
-        self.groupBox_GenElev.setGeometry(QtCore.QRect(1500, 10, 300, 200))
+        self.groupBox_GenElev.setGeometry(QtCore.QRect(1125, 360, 300, 170))
         self.groupBox_GenElev.setObjectName(_fromUtf8("groupBox_GenElev"))
 
         self.label_slopePercent = QtGui.QLabel(self.groupBox_GenElev)
@@ -2110,7 +2110,7 @@ class LID_Loc_Dialog(object):
         # ---------------------------------------------------------------------
 
         self.groupBox_GenSoil = QtGui.QGroupBox(Dialog)
-        self.groupBox_GenSoil.setGeometry(QtCore.QRect(1500, 220, 300, 150))
+        self.groupBox_GenSoil.setGeometry(QtCore.QRect(1125, 530, 300, 150))
         self.groupBox_GenSoil.setObjectName(_fromUtf8("groupBox_GenSoil"))
 
         self.label_soilType = QtGui.QLabel(self.groupBox_GenSoil)
@@ -2491,15 +2491,17 @@ class LID_Loc_Dialog(object):
         # runoff
         if self.checkbox_runoff == 2:
             f.append("runoffFinal.asc")
-            run_path = str(self.le_GW.text())
-            runoffcoMap = map_loader.MapLoader()
-            runoffcoMap_obj = runoffcoMap.load_dot_map(maps.RunoffCoMap, run_path)
+            path_dot_map = os.path.join("C:\\", "TMP", "whole_catchment", "Runner", "catchment", "parammaps", "runoff_co.map")
+            path_dot_map.replace("\\\\", "\\")
+            #print path
+            #runoffcoMap = map_loader.MapLoader()
+            #runoffcoMap_obj = runoffcoMap.load_dot_map(maps.RunoffCoMap, path)
 
             outrunoff = algorithms.RunoffCoefficient()
-            run_path = str(self.le_GW.text())
-            Map_runoff = outrunoff.get_runoff_coefficient_map("parammaps/runoffCr.asc", runoff_limit)
 
-            output_maps_highpot.append("parammpas/runoffFinal.asc")
+            Map_runoff = outrunoff.get_runoff_coefficient_map(path_dot_map, runoff_limit)
+
+            output_maps_highpot.append("runoffFinal.asc")
 
             Map_runoff.to_file_parammaps("runoffFinal.asc")
 
@@ -2510,19 +2512,38 @@ class LID_Loc_Dialog(object):
         if self.checkbox_lambda == 2:
             f.append("landa.asc")
             slopeMap = map_loader.MapLoader()
-            slopeMap_obj = slopeMap.load_dot_map(maps.BasicMap, "C:/TMP/whole_catchment/Runner/catchment/parammaps/slope.map")
+            path = os.path.join("C:\\","TMP","whole_catchment","Runner","catchment","parammaps","slope.map")
+            #path = path.replace("\\","\\")
+            path.replace("\\\\","\\")
+            print path
+            slopeMap_obj = slopeMap.load_dot_map(maps.BasicMap, path)
 
             conductivityMap = map_loader.MapLoader()
-            conductivityMap_obj = conductivityMap.load_dot_map(maps.BasicMap, "C:/TMP/whole_catchment/Runner/catchment/parammaps/conductivity.map")
+            path = os.path.join("C:\\","TMP","whole_catchment","Runner","catchment","parammaps","conductivity.map")
+            #path = path.replace("\\\\", "\\")
+            path.replace("\\\\", "\\")
+            print path
+            conductivityMap_obj = conductivityMap.load_dot_map(maps.BasicMap, path)
 
             flowaccMap = map_loader.MapLoader()
-            flowaccMap_obj = flowaccMap.load_dot_map(maps.BasicMap, "C:/TMP/whole_catchment/Runner/catchment/parammaps/flowacc.map")
+            path = os.path.join("C:\\","TMP","whole_catchment","Runner","catchment","parammaps","flowacc.map")
+            #path = path.replace("\\\\", "\\")
+            path.replace("\\\\", "\\")
+            print path
+            flowaccMap_obj = flowaccMap.load_dot_map(maps.BasicMap, path)
 
             LandaOut = algorithms.LandaEq()
-            MapLanda = LandaOut.get_output_with_user_limit("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc", landa)
+
+            path_flowaccCr = os.path.join("C:\\","TMP","whole_catchment","Runner","catchment","parammaps","flowaccCr.asc")
+            path_slopeCr = os.path.join("C:\\", "TMP", "whole_catchment", "Runner", "catchment", "parammaps",
+                                          "slopeCr.asc")
+            conductivityCr = os.path.join("C:\\", "TMP", "whole_catchment", "Runner", "catchment", "parammaps",
+                                          "conductivityCr.asc")
+
+            MapLanda = LandaOut.get_output_with_user_limit(path_flowaccCr, path_slopeCr, conductivityCr, landa)
             #MapLanda = LandaOut.get_output_with_user_limit("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc", landa)
 
-            output_maps_highpot.append("parammaps/landa.asc")
+            output_maps_highpot.append("landa.asc")
 
             MapLanda.to_file_parammaps("landa.asc")
 
@@ -2543,7 +2564,7 @@ class LID_Loc_Dialog(object):
 
             hydrolic_outp = high.build_output_based_on_hydrolic(str(self.le_Wshed.text()), "report.rpt", "MAX/FULL FLOW",NumOfSubc,str(self.le_inp.text()),Max_Full,merge_nodes)
 
-            output_maps_highpot.append("parammaps/hydrolic.asc")
+            output_maps_highpot.append("hydrolic.asc")
 
             hydrolic_outp.to_file_parammaps("hydrolic.asc")
 
@@ -2555,10 +2576,15 @@ class LID_Loc_Dialog(object):
         else:
             f.append("Highpot.asc")
             self.HighPot = algorithms.Overlay()
+            path_Cr = "parammaps"
+            for i in range(len(output_maps_highpot)):
+                output_maps_highpot[i] = os.path.join(path_Cr, output_maps_highpot[i])
+
             self.HighPot = self.HighPot.overlay_and(output_maps_highpot)
 
             self.HighPot.to_file_parammaps("HighPot.asc")
             self.hasHighpot = True
+
 
             print("ovelay_and done!")
 
@@ -2569,12 +2595,12 @@ class LID_Loc_Dialog(object):
         print("Highpot finish !")
 
     def showmaps(self, selected):
-        print("hello")
+        print("Show maps")
         Sub_path = "parammaps"
         a = (str(self.List_maps.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
-        subprocess.popen(agrus)
+        subprocess.Popen(agrus)
 
     def showmapsS(self, selected):
         print("hello")
@@ -2583,7 +2609,7 @@ class LID_Loc_Dialog(object):
         a = (str(self.List_mapsS.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
-        subprocess.popen(agrus)
+        subprocess.Popen(agrus)
 
     def showmapsFinal(self, selected):
         print("hello")
@@ -2592,7 +2618,7 @@ class LID_Loc_Dialog(object):
         a = (str(self.List_mapsFinal.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
-        subprocess.popen(agrus)
+        subprocess.Popen(agrus)
 
     def MaxAll_LID(self):
 
@@ -2763,10 +2789,10 @@ class LID_Loc_Dialog(object):
         elv.asc2map_forScalar(str(self.le_Elev.text()), os.path.join("C:\TMP\whole_catchment\Runner\catchment\staticmaps","elevation_start.map"))
 
         print "3 done "
-        os.system(os.path.join("C:\TMP\whole_catchment\Runner\catchment","runWetSpaPreprocess.bat\npause"))
-        #os.system("pause")
+        subprocess.Popen(os.path.join("C:\TMP\whole_catchment\Runner\catchment","runWetSpaPreprocess.bat"))
+        #subprocess.Popen("pause")
 
-        #os.system("runWetSpaPreprocess.bat")
+        #subprocess.Popen("runWetSpaPreprocess.bat")
 
     def cost_opt(self):
         alg_to_use = []

@@ -29,8 +29,10 @@ class Map2Asc:
         self.NODATA_VALUE = vars.get('NODATA_value', -9999)
 
     def build_ascii_map(self, map_dir , map_name , ascii_name):
+        cur = os.getcwd()
+        print "cur is ", cur
         os.chdir(map_dir)
-        os.system("map2asc -m -9999 " +  map_name+" " +ascii_name)
+        subprocess.popen("map2asc -m -9999 " +  map_name+" " +ascii_name)
         old_file = open(ascii_name , "r")
         map_data = old_file.read()
         map_data = map_data.replace(7*" ", " ")
@@ -41,7 +43,8 @@ class Map2Asc:
         asci_data = asci_data.replace("\n ", "\n")
         old_file.write(asci_data)
         old_file.close()
-        os.chdir("..")
+        os.chdir(cur)
+        print "cur now is ", os.getcwd()
 
     def get_config_in_str(self):
         str_data = "ncols         " + str(self.ncols) + '\n'
@@ -64,11 +67,11 @@ class Map2Asc:
 
     def asc2map_forNuminal(self, asc_name, dotmapname):
         #os.chdir("staticmaps/") # in static
-        os.system('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneNominal.map")
+        subprocess.popen('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneNominal.map")
         #os.chdir("..")
 
     def asc2map_forScalar(self, asc_name, dotmapname):
         #os.chdir("staticmaps/") # in static
-        os.system('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneScalar.map")
+        subprocess.popen('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneScalar.map")
         #os.chdir("..")
 

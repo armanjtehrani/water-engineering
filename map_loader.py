@@ -18,6 +18,19 @@ class MapLoader:
 
     def load_dot_map(self, map_class, map_name):
         map_dir = map_name
+        if "/" in map_dir :
+            a = map_dir.split("/")
+            map_dir = map_dir.replace(a[len(a)-1],"")
+            map_dir = map_dir[:len(map_dir)-1]
+        elif "\\" in map_dir:
+            a = map_dir.split("\\")
+
+            map_dir = map_dir.replace(a[len(a)-1], "")
+            map_dir = map_dir[:len(map_dir) - 1]
+        else :
+            map_dir = ""
+
+        print map_dir
         ascii_name = map_name.split('.map')[0] + 'Cr.asc'
         print('asc name:', ascii_name)
         self.my_map2asc_convertor.set_map_variables(self.configs)
@@ -33,10 +46,11 @@ class MapLoader:
         return my_map
 
     def load_file(self, map_name):
-        if (len(map_name)>20):
-            return open(map_name, 'r')
-        else:
-            return open(self.map_dir_for_ascii + map_name, 'r')
+        # if (len(map_name)>20):
+        #   return open(map_name, 'r')
+        # else:
+        #    return open(self.map_dir_for_ascii + map_name, 'r')
+        return open(map_name, 'r')
 
     def build_map_from_ascii(self, ascii_file):
         map = Map()
