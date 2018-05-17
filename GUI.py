@@ -2251,7 +2251,7 @@ class LID_Loc_Dialog(object):
 
     def setLEGW(self):
         fname = QFileDialog.getOpenFileName(None, 'Open file',
-                                            os.getcwd(), "ascii maps (*.asc)")
+                                            os.getcwd(), "")
         self.le_GW.setText(fname)
 
     def setLEWatershed(self):
@@ -2479,7 +2479,7 @@ class LID_Loc_Dialog(object):
 
     def listMaps(self):
 
-        runoff = self.le_Runoff.text()
+        runoff_limit = self.le_Runoff.text()
         landa = self.le_Lambda.text()
         NumOfSubc = self.le_Number_of_subc.text()
         Max_Full = self.le_Flow.text()
@@ -2491,30 +2491,32 @@ class LID_Loc_Dialog(object):
         # runoff
         if self.checkbox_runoff == 2:
             f.append("runoffFinal.asc")
-            # runoffcoMap = map_loader.MapLoader()
-            # runoffcoMap_obj = runoffcoMap.load_dot_map(maps.RunoffCoMap, "runoff_co.map")
+            run_path = str(self.le_GW.text())
+            runoffcoMap = map_loader.MapLoader()
+            runoffcoMap_obj = runoffcoMap.load_dot_map(maps.RunoffCoMap, run_path)
 
             outrunoff = algorithms.RunoffCoefficient()
-            Map_runoff = outrunoff.get_runoff_coefficient_map("parammaps"+"/"+"runoff_co.map", runoff)
+            run_path = str(self.le_GW.text())
+            Map_runoff = outrunoff.get_runoff_coefficient_map("parammaps/runoffCr.asc", runoff_limit)
 
             output_maps_highpot.append("parammpas/runoffFinal.asc")
 
             Map_runoff.to_file_parammaps("runoffFinal.asc")
 
             print("hell!")
-            print(str(runoff))
+            #print(str(runoff_limit))
 
         # landa
         if self.checkbox_lambda == 2:
             f.append("landa.asc")
             slopeMap = map_loader.MapLoader()
-            slopeMap_obj = slopeMap.load_dot_map(maps.BasicMap, os.path.join("C:/TMP/whole_catchment/Runner/catchment/staticmaps","slope.map"))
+            slopeMap_obj = slopeMap.load_dot_map(maps.BasicMap, "C:/TMP/whole_catchment/Runner/catchment/parammaps/slope.map")
 
             conductivityMap = map_loader.MapLoader()
-            conductivityMap_obj = conductivityMap.load_dot_map(maps.BasicMap, os.path.join("C:/TMP/whole_catchment/Runner/catchment/staticmaps","conductivity.map"))
+            conductivityMap_obj = conductivityMap.load_dot_map(maps.BasicMap, "C:/TMP/whole_catchment/Runner/catchment/parammaps/conductivity.map")
 
             flowaccMap = map_loader.MapLoader()
-            flowaccMap_obj = flowaccMap.load_dot_map(maps.BasicMap, os.path.join("C:/TMP/whole_catchment/Runner/catchment/staticmaps","flowacc.map"))
+            flowaccMap_obj = flowaccMap.load_dot_map(maps.BasicMap, "C:/TMP/whole_catchment/Runner/catchment/parammaps/flowacc.map")
 
             LandaOut = algorithms.LandaEq()
             MapLanda = LandaOut.get_output_with_user_limit("flowaccCr.asc", "slopeCr.asc", "conductivityCr.asc", landa)
@@ -2568,11 +2570,11 @@ class LID_Loc_Dialog(object):
 
     def showmaps(self, selected):
         print("hello")
-        Sub_path = os.path.join("D:/Python_Proj/water-engineering/parammaps")
+        Sub_path = "parammaps"
         a = (str(self.List_maps.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
-        os.system(agrus)
+        subprocess.popen(agrus)
 
     def showmapsS(self, selected):
         print("hello")
@@ -2581,7 +2583,7 @@ class LID_Loc_Dialog(object):
         a = (str(self.List_mapsS.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
-        os.system(agrus)
+        subprocess.popen(agrus)
 
     def showmapsFinal(self, selected):
         print("hello")
@@ -2590,7 +2592,7 @@ class LID_Loc_Dialog(object):
         a = (str(self.List_mapsFinal.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
-        os.system(agrus)
+        subprocess.popen(agrus)
 
     def MaxAll_LID(self):
 
