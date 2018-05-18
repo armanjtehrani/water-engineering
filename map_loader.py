@@ -50,12 +50,16 @@ class MapLoader:
         my_map.map = map
         return my_map
 
+
+
     def load_file(self, map_name):
         # if (len(map_name)>20):
         #   return open(map_name, 'r')
         # else:
         #    return open(self.map_dir_for_ascii + map_name, 'r')
         return open(map_name, 'r')
+
+
 
     def build_map_from_ascii(self, ascii_file):
         map = Map()

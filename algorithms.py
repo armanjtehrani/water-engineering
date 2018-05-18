@@ -1609,7 +1609,7 @@ class RainGardenBuilder:
         self.output = copy.deepcopy(elevation_map.map)
         self.build_middle_map()
         self.rain_garden_pixels = []
-        self.rain_garden_depth_to_indices = {i: [] for i in range(1, self.max_depth_by_pixel + 1)}
+        self.rain_garden_depth_to_indices = {i: [] for i in range(1, int(self.max_depth_by_pixel) + 1)}
 
     def build_rain_garden_with_slope_and_max_depth(self, advanced_landuse_map_name,  # main method
                                                    slope_in_percent, max_depth,
