@@ -303,6 +303,8 @@ class FlatRoofFinder:
         parcel = self.parcel_map.map
         for i in range(len(self.flat_roofs.matrix)):
             for j in range(len(self.flat_roofs.matrix[i])):
+                if landuse.matrix[i][j] != landuse.no_data_value:
+                    self.output.matrix[i][j] = 0
                 if landuse.matrix[i][j] != LandUseMap.VALUES.URBON_AND_BUILT_UP or \
                                 parcel.matrix[i][j] == parcel.no_data_value:
                     # if landuse.matrix[i][j] == LandUseMap.VALUES.URBON_AND_BUILT_UP or \
@@ -384,7 +386,7 @@ class FlatRoofFinder:
         # print('ed up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
 
     def calculate_valuable_flat_roofs_by_area(self):
-        minimum_pixels_to_be_useful = self.minimum_valuable_area / (self.output.cell_size ** 2)
+        minimum_pixels_to_be_useful = float(self.minimum_valuable_area) / float(self.output.cell_size ** 2)
         # print('num:', minimum_pixels_to_be_useful)
         # t = 0
         # i = 0
@@ -456,13 +458,21 @@ class RunoffCoefficient:
         self.output = Map()
 
     def get_runoff_coefficient_map(self, runoff_coefficient_dot_map, user_limit):
+        print user_limit
+        print "1 ......"
         self.runoff_coefficient_map = map_loader.load_dot_map(RunoffCoefficient, runoff_coefficient_dot_map)
+        print "2 ......"
         runoff_coefficient_map = self.runoff_coefficient_map.map
+        print "3 ......"
         self.build_basic_output()
+        print "4 ......"
+        #print(runoff_coefficient_map.matrix)
         for i in range(len(runoff_coefficient_map.matrix)):
             for j in range(len(runoff_coefficient_map.matrix[i])):
                 if runoff_coefficient_map.matrix[i][j] != runoff_coefficient_map.no_data_value:
-                    if runoff_coefficient_map.matrix[i][j] >= user_limit:
+
+                    if runoff_coefficient_map.matrix[i][j] >= float(user_limit):
+
                         self.output.matrix[i][j] = 1
                     else:
                         self.output.matrix[i][j] = 0
@@ -600,7 +610,7 @@ class RainGardenFinder:
         # print('ed up number:', self.roof_number_to_roofs[roof_number_that_should_be_deleted])
 
     def calculate_valuable_rain_gardens_by_area(self):
-        minimum_pixels_to_be_useful = self.minimum_valuable_area / (self.output.cell_size ** 2)
+        minimum_pixels_to_be_useful = float(self.minimum_valuable_area) / float((self.output.cell_size ** 2))
         # print('num:', minimum_pixels_to_be_useful)
         # t = 0
         # i = 0
@@ -629,6 +639,13 @@ class RainGardenFinder:
                 self.output.matrix[rain_garden['x']][rain_garden['y']] = key
                 # print('now output number i:', roof['x'], 'j:', roof['y'], 'is: ', self.output.matrix[roof['x']][roof['y']])
                 # os.system('pause')
+
+        for i in range(len(self.output.matrix)):
+            for j in range(len(self.output.matrix[i])):
+                if self.output.matrix[i][j] == self.output.no_data_value:
+                    if self.land_use_map.map.matrix[i][j] != self.land_use_map.map.no_data_value:
+                        self.output.matrix[i][j] = 0
+
         self.rain_garden_ids_to_pixels = tmp_ids_to_pixels
 
 
@@ -723,7 +740,7 @@ class LandaEq:
                 pixel = output.matrix[i][j]
                 if pixel == output.no_data_value:
                     continue
-                if pixel >= user_limit:
+                if pixel >= float(user_limit):
                     output.matrix[i][j] = 1
                 else:
                     output.matrix[i][j] = 0
@@ -1902,12 +1919,12 @@ road_output_name = "output.asc"
 # RUNOFF COEFFICIENT
 runoff_builder = RunoffCoefficient()
 
-runoff_map_name = "runoff.asc"
-runoff_user_limit = 12
+runoff_map_name = "parammaps\\runoff_co.map"
+runoff_user_limit = 0.8
 runoff_output_name = "output.asc"
 
-# runoff_output = runoff_builder.get_runoff_coefficient_map(runoff_map_name, runoff_user_limit)
-# runoff_output.to_file(runoff_output_name)
+#runoff_output = runoff_builder.get_runoff_coefficient_map(runoff_map_name, runoff_user_limit)
+#runoff_output.to_file_parammaps(runoff_output_name)
 
 
 # RAIN GARDEN

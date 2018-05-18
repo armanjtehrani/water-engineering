@@ -1721,6 +1721,8 @@ class LID_Loc_Dialog(object):
         self.le_GW = QtGui.QLineEdit(self.groupBox_GW)
         self.le_GW.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_GW.setObjectName(_fromUtf8("le_GW"))
+        self.le_GW.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/gw.asc")
+
 
         # Parcel
         self.groupBox_Parcel = QtGui.QGroupBox(self.groupBox_InputMaps)
@@ -1756,7 +1758,7 @@ class LID_Loc_Dialog(object):
         self.le_Wshed = QtGui.QLineEdit(self.groupBox_Wshed)
         self.le_Wshed.setGeometry(QtCore.QRect(20, 20, 281, 20))
         self.le_Wshed.setObjectName(_fromUtf8("le_Wshed"))
-        self.le_Wshed.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/watershed.asc")
+        self.le_Wshed.setText("C:/Users/nrezazad/Desktop/meteo/watershed.asc")
 
         # landuse for whole catchment
         self.groupBox_Landuse = QtGui.QGroupBox(self.groupBox_InputMaps)
@@ -1808,7 +1810,7 @@ class LID_Loc_Dialog(object):
 
         # Building Parammap for whole catchment
         self.groupBox_Building_Parammap = QtGui.QGroupBox(Dialog)
-        self.groupBox_Building_Parammap.setGeometry(QtCore.QRect(10, 360, 361, 80))
+        self.groupBox_Building_Parammap.setGeometry(QtCore.QRect(10, 360, 361, 300))
         self.groupBox_Building_Parammap.setObjectName(_fromUtf8("groupBox_Building_Parammap"))
 
         self.btn_DefinePara = QtGui.QPushButton(self.groupBox_Building_Parammap)
@@ -1818,9 +1820,29 @@ class LID_Loc_Dialog(object):
         self.btn_RunPre.setGeometry(QtCore.QRect(190, 22, 130, 40))
         self.btn_RunPre.setObjectName(_fromUtf8("btn_RunPre"))
 
+        self.groupBox_See_gen_maps = QtGui.QGroupBox(self.groupBox_Building_Parammap)
+        self.groupBox_See_gen_maps.setGeometry(QtCore.QRect(20, 310, 360, 161))
+        self.groupBox_See_gen_maps.setObjectName(_fromUtf8("groupBox_See_gen_maps"))
+        self.lv_parammapWhole = QtGui.QListView(self.groupBox_See_gen_maps)
+        self.lv_parammapWhole.setGeometry(QtCore.QRect(10, 20, 171, 91))
+        self.lv_parammapWhole.setObjectName(_fromUtf8("lv_parammapWhole"))
+        self.btn_show_maps_whole = QtGui.QPushButton(self.groupBox_See_gen_maps)
+        self.btn_show_maps_whole.setGeometry(QtCore.QRect(100, 120, 91, 31))
+        self.btn_show_maps_whole.setObjectName(_fromUtf8("btn_show_maps_whole"))
+
+        self.le_SubNn = QtGui.QLineEdit(self.groupBox_See_gen_maps)
+        self.le_SubNn.setGeometry(QtCore.QRect(200, 60, 51, 20))
+        self.le_SubNn.setObjectName(_fromUtf8("le_SubN"))
+        self.label_1n = QtGui.QLabel(self.groupBox_See_gen_maps)
+        self.label_1n.setGeometry(QtCore.QRect(200, 20, 145, 16))
+        self.label_1n.setObjectName(_fromUtf8("label_1"))
+
+
+
+
         # Search Algs
         self.groupBox_SearchAlgs = QtGui.QGroupBox(Dialog)
-        self.groupBox_SearchAlgs.setGeometry(QtCore.QRect(10, 450, 361, 220))
+        self.groupBox_SearchAlgs.setGeometry(QtCore.QRect(380, 10, 361, 220))
         self.groupBox_SearchAlgs.setObjectName(_fromUtf8("groupBox_SearchAlgs"))
 
         self.cb_alg1 = QtGui.QCheckBox(self.groupBox_SearchAlgs)
@@ -1861,7 +1883,7 @@ class LID_Loc_Dialog(object):
 
         # High Potential
         self.groupBox_High_Potential = QtGui.QGroupBox(Dialog)
-        self.groupBox_High_Potential.setGeometry(QtCore.QRect(380, 10, 361, 400))
+        self.groupBox_High_Potential.setGeometry(QtCore.QRect(380, 230, 361, 400))
         self.groupBox_High_Potential.setObjectName(_fromUtf8("groupBox_High_Potential"))
 
         self.label_Runoff = QtGui.QLabel(self.groupBox_High_Potential)
@@ -1960,7 +1982,7 @@ class LID_Loc_Dialog(object):
         self.le_Width_rip.setGeometry(QtCore.QRect(300, 120, 51, 20))
         self.le_Width_rip.setText(_fromUtf8(""))
         self.le_Width_rip.setObjectName(_fromUtf8("le_Width"))
-        self.le_Width_rip.setValidator(QtGui.QIntValidator(0, 99999, self.le_Width_rip))
+        #self.le_Width_rip.setValidator(QtGui.QIntValidator(0, 99999, self.le_Width_rip))
         self.le_Width_rip.setText("X")
 
         self.label_min_roof = QtGui.QLabel(self.groupBox_Suitable)
@@ -1971,7 +1993,7 @@ class LID_Loc_Dialog(object):
         self.le_min_roof.setGeometry(QtCore.QRect(300, 160, 51, 20))
         self.le_min_roof.setText(_fromUtf8(""))
         self.le_min_roof.setObjectName(_fromUtf8("le_min_roof"))
-        self.le_min_roof.setValidator(QtGui.QIntValidator(0, 99999, self.le_min_roof))
+        #self.le_min_roof.setValidator(QtGui.QIntValidator(0, 99999, self.le_min_roof))
         self.le_min_roof.setText("X")
 
         self.label_max_roof = QtGui.QLabel(self.groupBox_Suitable)
@@ -2286,7 +2308,7 @@ class LID_Loc_Dialog(object):
         # input format for GUI : a.asc:10;b.asc:20;c.asc:30
         input_prio = str(self.le_Prioritizing.text())
 
-        # list_maps = ["FinalRoad.asc", "FinalRain.asc", "FinalGreenRoof.asc", "FinalRip.asc"]
+        # list_maps = ["FinalPavement.asc", "FinalRainGarden.asc", "FinalGreenRoof.asc", "FinalRiparian.asc"]
         # input format for func: [("a.asc", 10), ("b.asc", 20), ]
 
         input_prio = input_prio.split(";")
@@ -2298,9 +2320,6 @@ class LID_Loc_Dialog(object):
         Final_Prioritized = Final_Prioritized.overlay_or_with_priority_3(input_prio)
 
         Final_Prioritized.to_file_parammaps("fpcl.asc")
-
-        x = pcraster.Map2Asc()
-        x.asc2map("fpcl.asc", "fpcl")
 
         list_show_final_results.append("fpcl")
 
@@ -2324,6 +2343,11 @@ class LID_Loc_Dialog(object):
         comb_Rain_list = []
         comb_Road_list = []
 
+        # check if Highpot.asc is in parammaps
+        file_in_parammaps = os.listdir("parammaps")
+        if "HighPot.asc" in file_in_parammaps :
+            self.hasHighpot = True
+
         if self.hasHighpot:
             comb_Rip_list.append("HighPot.asc")
             comb_Roof_list.append("HighPot.asc")
@@ -2336,25 +2360,23 @@ class LID_Loc_Dialog(object):
             # list.append("GWFinal.asc")
 
             DepthGW = str(self.le_Depth.text())
-            print(str(self.le_GW.text()))
+            #print(str(self.le_GW.text()))
             GW = algorithms.SuitableAreaBasedOnGW()
-            Map_GW = GW.get_suitable_areas(str(self.le_GW.text()), "elevation.asc", int(DepthGW))
+            Map_GW = GW.get_suitable_areas(str(self.le_GW.text()), str(self.le_Elev.text()), float(DepthGW))
 
             Map_GW.to_file_parammaps("GWFinal.asc")
 
-            a = pcraster.Map2Asc()
-            a.asc2map("GWFinal.asc", "GWFinal")
+            comb_Rain_list.append("GWFinal.asc")
+            comb_Rip_list.append("GWFinal.asc")
+            comb_Road_list.append("GWFinal.asc")
 
-            comb_Rain_list.append("GWFinal")
-            comb_Rip_list.append("GWFinal")
-            comb_Road_list.append("GWFinal")
-
-            list.append("GWFinal")
+            list.append("GWFinal.asc")
 
             print ("gw done !")
 
         if self.checkbox_SuitableSoil == 2:
             # list.append("SoilFinal.asc")
+            # le_SuitableSoil input must be : 21,34,676,74,...
 
             SuitableSoilClass_numbers = str(self.le_SuitableSoil.text())
             SuitableSoilClass_numbers = SuitableSoilClass_numbers.split(",")
@@ -2363,58 +2385,65 @@ class LID_Loc_Dialog(object):
                 SuitableSoilClass_numbers[i] = int(SuitableSoilClass_numbers[i])
 
             SoilArea = algorithms.SuitableSoilArea()
-            Map_Soil = SoilArea.get_suitable_areas("soil.asc", "landuse.asc", SuitableSoilClass_numbers)
+
+            Map_Soil = SoilArea.get_suitable_areas(str(self.le_Soil.text()), str(self.le_Landuse.text()), SuitableSoilClass_numbers)
 
             Map_Soil.to_file_parammaps("SoilFinal.asc")
 
-            b = pcraster.Map2Asc()
-            b.asc2map("SoilFinal.asc", "SoilFinal")
+            # b = pcraster.Map2Asc()
+            # b.asc2map("SoilFinal.asc", "SoilFinal")
 
             comb_Rain_list.append("SoilFinal.asc")
             comb_Rip_list.append("SoilFinal.asc")
+            comb_Road_list.append("SoilFinal.asc")
 
-            list.append("SoilFinal")
+            list.append("SoilFinal.asc")
 
             print ("SuitableSoil done !")
 
         if self.checkbox_width_rip == 2:
-            WidthRip = int(str(self.le_Width_rip.text()))
+            WidthRip = float(str(self.le_Width_rip.text()))
 
             Riparian = algorithms.FindingRiperianZone()
-            Map_Riparian = Riparian.get_riperian_zone("landuse.asc", WidthRip)
+            Map_Riparian = Riparian.get_riperian_zone(str(self.le_Landuse.text()), WidthRip)
+
             Map_Riparian.to_file_parammaps("RiparianFinal.asc")
 
+            list.append("RiparianFinal.asc")
             comb_Rip_list.append("RiparianFinal.asc")
 
             print("Rip Done!")
 
         if self.checkbox_roof == 2:
             # list.append("GreenRoofFinal.asc")
-            Min_green = int(str(self.le_min_roof.text()))
+            Min_green = float(str(self.le_min_roof.text()))
             Max_slope = float(str(self.le_max_roof.text()))
 
             Flatroof = algorithms.FlatRoofFinder()
-            Map_greenroof = Flatroof.get_flat_roofs_by_elevation_map("landuse.asc", str(self.le_Parcel.text()),
-                                                                     "elevation.asc",
+            Map_greenroof = Flatroof.get_flat_roofs_by_elevation_map(str(self.le_Landuse.text()), str(self.le_Parcel.text()),
+                                                                     str(self.le_Elev.text()),
                                                                      Min_green, Max_slope)
 
             Map_greenroof.to_file_parammaps("GreenRoofFinal.asc")
 
             comb_Roof_list.append("GreenRoofFinal.asc")
 
+            list.append("GreenRoofFinal.asc")
+
             print("roof done !")
 
         # RainGarden
         if self.checkbox_rain == 2:
-            # list.append("RainGarden.asc")
-            Min_rain = int(str(self.le_min_rain.text()))
+
+            Min_rain = float(str(self.le_min_rain.text()))
 
             RainGarden = algorithms.RainGardenFinder()
-            Map_RainGarden = RainGarden.get_rain_gardens("landuse.asc", Min_rain)
+            Map_RainGarden = RainGarden.get_rain_gardens(str(self.le_Landuse.text()), Min_rain)
 
-            Map_RainGarden.to_file_parammaps("RainGarden.asc")
+            Map_RainGarden.to_file_parammaps("RainGardenFinal.asc")
 
-            comb_Rain_list.append("RainGarden.asc")
+            comb_Rain_list.append("RainGardenFinal.asc")
+            list.append("RainGardenFinal.asc")
 
             print("RainGarden Done !")
 
@@ -2423,55 +2452,61 @@ class LID_Loc_Dialog(object):
             road = algorithms.RoadFinder()
             Map_road = road.get_detailed_landuse_map(str(self.le_DlandUse.text()))
 
-            Map_road.to_file_parammaps("RoadFinal.asc")
+            Map_road.to_file_parammaps("PavementFinal.asc")
 
-            comb_Road_list.append("RoadFinal.asc")
+            comb_Road_list.append("PavementFinal.asc")
+            list.append("PavementFinal.asc")
 
-            print("Road done!")
+            print("Pavement done!")
 
         # New_Rain [GW & soil & Rain & HighPot]
-        # comb_Rain_list = ["GWFinal.asc", "SoilFinal.asc", "RainGarden.asc"]
+        # comb_Rain_list = ["GWFinal.asc", "SoilFinal.asc", "RainGardenFinal.asc"]
+        path_comb_Rain_list = "parammaps"
+        for i in range(len(comb_Rain_list)):
+            comb_Rain_list[i] = os.path.join(path_comb_Rain_list, comb_Rain_list[i])
+
         final_rain = algorithms.Overlay()
         final_rain = final_rain.overlay_and(comb_Rain_list)
-        final_rain.to_file_parammaps("FinalRain.asc")
 
-        c = pcraster.Map2Asc()
-        c.asc2map("FinalRain.asc", "FinalRain")
+        final_rain.to_file_parammaps("FinalRainGarden.asc")
 
-        list.append("FinalRain")
+        list.append("FinalRainGarden.asc")
 
-        # New Road [GW & Road & HighPot]
-        # comb_Road_list = ["GWFinal.asc", "RoadFinal.asc"]
+        # New Road [GW & Road & soil & HighPot]
+        # comb_Road_list = ["GWFinal.asc", "SoilFinal.asc", "PavementFinal.asc"]
+        path_comb_Road_list = "parammaps"
+        for i in range(len(comb_Road_list)):
+            comb_Road_list[i] = os.path.join(path_comb_Road_list, comb_Road_list[i])
+
         final_road = algorithms.Overlay()
         final_road = final_road.overlay_and(comb_Road_list)
-        final_road.to_file_parammaps("FinalRoad.asc")
+        final_road.to_file_parammaps("FinalPavement.asc")
 
-        d = pcraster.Map2Asc()
-        d.asc2map("FinalRoad.asc", "FinalRoad")
-
-        list.append("FinalRoad")
+        list.append("FinalPavement.asc")
 
         # New Rip [Rip & gw & soil & HighPot]
         # comb_Rip_list = ["GWFinal.asc","SoilFinal.asc", "RiparianFinal.asc"]
+        path_comb_Rip_list = "parammaps"
+        for i in range(len(comb_Rip_list)):
+            comb_Rip_list[i] = os.path.join(path_comb_Rip_list, comb_Rip_list[i])
+
         final_rip = algorithms.Overlay()
         final_rip = final_rip.overlay_and(comb_Rip_list)
-        final_rip.to_file_parammaps("FinalRip.asc")
+        final_rip.to_file_parammaps("FinalRiparian.asc")
 
-        e = pcraster.Map2Asc()
-        e.asc2map("FinalRip.asc", "FinalRip")
-
-        list.append("FinalRip")
+        list.append("FinalRiparian.asc")
 
         # New Roof [Roof & HighPot]
         # comb_Roof_list = ["GreenRoofFinal.asc"]
+        path_comb_Roof_list = "parammaps"
+        for i in range(len(comb_Roof_list)):
+            comb_Roof_list[i] = os.path.join(path_comb_Roof_list, comb_Roof_list[i])
+
         final_roof = algorithms.Overlay()
         final_roof = final_roof.overlay_and(comb_Roof_list)
         final_roof.to_file_parammaps("FinalGreenRoof.asc")
 
-        f = pcraster.Map2Asc()
-        f.asc2map("FinalGreenRoof.asc", "FinalGreenRoof")
-
-        list.append("FinalGreenRoof")
+        list.append("FinalGreenRoof.asc")
 
         model = QStringListModel()
         model.setStringList(list)
@@ -2492,7 +2527,7 @@ class LID_Loc_Dialog(object):
         if self.checkbox_runoff == 2:
             f.append("runoffFinal.asc")
             path_dot_map = os.path.join("C:\\", "TMP", "whole_catchment", "Runner", "catchment", "parammaps", "runoff_co.map")
-            path_dot_map.replace("\\\\", "\\")
+            #path_dot_map.replace("\\\\", "\\")
             #print path
             #runoffcoMap = map_loader.MapLoader()
             #runoffcoMap_obj = runoffcoMap.load_dot_map(maps.RunoffCoMap, path)
@@ -2586,7 +2621,7 @@ class LID_Loc_Dialog(object):
             self.hasHighpot = True
 
 
-            print("ovelay_and done!")
+            print("overlay_and done!")
 
         model = QStringListModel()
         model.setStringList(f)
@@ -2685,7 +2720,11 @@ class LID_Loc_Dialog(object):
             self.le_Depth.setText("X")
         if self.checkbox_depthGW == 2:
             self.le_Depth.setText("")
+            self.le_Depth.setText("0")
+
         print self.checkbox_depthGW
+
+
 
     def checkbox2(self):
         self.checkbox_SuitableSoil = self.cb_alg2.checkState()
@@ -2694,6 +2733,8 @@ class LID_Loc_Dialog(object):
             self.le_SuitableSoil.setText("X")
         if self.checkbox_SuitableSoil == 2:
             self.le_SuitableSoil.setText("")
+            self.le_SuitableSoil.setText("3,11")
+
         print self.checkbox_SuitableSoil
 
     def checkbox3(self):
@@ -2703,6 +2744,7 @@ class LID_Loc_Dialog(object):
             self.le_Width_rip.setText("X")
         if self.checkbox_width_rip == 2:
             self.le_Width_rip.setText("")
+            self.le_Width_rip.setText("30")
 
         print self.checkbox_width_rip
 
@@ -2734,6 +2776,8 @@ class LID_Loc_Dialog(object):
         if self.checkbox_roof == 2:
             self.le_min_roof.setText("")
             self.le_max_roof.setText("")
+            self.le_min_roof.setText("10")
+            self.le_max_roof.setText("0.1")
 
         print self.checkbox_roof
 
@@ -2759,6 +2803,7 @@ class LID_Loc_Dialog(object):
             self.le_min_rain.setText("X")
         if self.checkbox_rain == 2:
             self.le_min_rain.setText("")
+            self.le_min_rain.setText("30")
         print self.checkbox_rain
 
     def checkbox9(self):

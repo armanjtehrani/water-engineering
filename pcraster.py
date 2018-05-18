@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 
 # pre =
@@ -32,7 +33,7 @@ class Map2Asc:
         cur = os.getcwd()
         print "cur is ", cur
         os.chdir(map_dir)
-        subprocess.popen("map2asc -m -9999 " +  map_name+" " +ascii_name)
+        subprocess.Popen("map2asc -m -9999 " +  map_name+" " +ascii_name)
         old_file = open(ascii_name , "r")
         map_data = old_file.read()
         map_data = map_data.replace(7*" ", " ")
@@ -67,11 +68,11 @@ class Map2Asc:
 
     def asc2map_forNuminal(self, asc_name, dotmapname):
         #os.chdir("staticmaps/") # in static
-        subprocess.popen('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneNominal.map")
+        subprocess.Popen('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneNominal.map")
         #os.chdir("..")
 
     def asc2map_forScalar(self, asc_name, dotmapname):
         #os.chdir("staticmaps/") # in static
-        subprocess.popen('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneScalar.map")
+        subprocess.Popen('asc2map -a ' + asc_name + " " + dotmapname + " --clone CloneScalar.map")
         #os.chdir("..")
 

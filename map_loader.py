@@ -32,6 +32,11 @@ class MapLoader:
 
         print map_dir
         ascii_name = map_name.split('.map')[0] + 'Cr.asc'
+        #map_name = ascii_name.replace('Cr.asc',".map")
+
+        print "map_name:",map_name
+        print "ascii_name:",ascii_name
+
         print('asc name:', ascii_name)
         self.my_map2asc_convertor.set_map_variables(self.configs)
         self.my_map2asc_convertor.build_ascii_map(map_dir, map_name, ascii_name)

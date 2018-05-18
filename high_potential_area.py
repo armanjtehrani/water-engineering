@@ -1,7 +1,7 @@
 from algorithms import *
 from maps import Map
 from maps import WaterShellMap
-import os
+#import os
 
 class HighPotentialArea:
     def __init__(self, hydrology=False, hydrolic=False, **runoff_landa):
@@ -57,7 +57,7 @@ class HighPotentialArea:
         if sub_dic is None:
             sub_dic = {}
 
-        print os.getcwd()
+        #print os.getcwd()
         rpt = open(rpt_file, "r")
 
         # ---- Find Node Flooding Summary -----
@@ -102,15 +102,7 @@ class HighPotentialArea:
             if int(Node_FS[i][0]) <= int(limit_node):
                 Nodes.append(Node_FS[i][0])
 
-        for i in sub_dic.keys():
-            if not (i in Nodes):
-                for j in sub_dic.get(i):
-                    for k in range(len(Node_FS)):
-                        if j == Node_FS[k][0]:
-                            result.append(i)
 
-        for i in Nodes:
-            result.append(i)
 
             # ---- Find Link Flow Summary ------
         check = True
@@ -150,12 +142,35 @@ class HighPotentialArea:
         for i in range(5):
             Link_FS.pop()
 
+        pipes = []
+
         if link_col_name == "MAX/FULL FLOW":
             for i in range(len(Link_FS)):
                 if len(Link_FS[i]) == 8:
                     if float(Link_FS[i][6]) >= float(limit):
                         # print (float(Link_FS[i][6]))
-                        result.append(Link_FS[i][0])
+                        pipes.append(Link_FS[i][0])
+
+        # now we have : Nodes[]    -> that has regions
+        #               pipes[]  -> that has pipes
+
+        for i in sub_dic.keys():
+            if not (str(i) in Nodes):
+                for j in sub_dic.get(i):
+                    #for k in range(len(Node_FS)):
+                    if j in pipes:
+                        result.append(i)
+
+        for i in Nodes:
+            result.append(i)
+
+        print "Nodes:", Nodes
+        print "pipes:", pipes
+        print "result:", result
+
+        result.sort()
+        result = list(set(result))
+
 
         return result
 
