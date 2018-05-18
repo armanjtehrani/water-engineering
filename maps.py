@@ -48,9 +48,10 @@ class Map:
             str_data += '\n'
         return str_data
 
-    def to_file(self, file_name, direc="map"):
-        path = os.path.join(direc,file_name)
-        file = open(path, 'w+')
+    def to_file(self, file_name, direc="map/"):
+        if direc[:len(direc)-1] in os.getcwd():
+            direc = ""
+        file = open(direc + file_name, 'w+')
         str_data = ""
         str_data += self.get_config_string()
         str_data += self.get_matrix_string()
