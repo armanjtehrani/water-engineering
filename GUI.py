@@ -1704,138 +1704,138 @@ class LID_Loc_Dialog(object):
         self.main = main
         Dialog.setObjectName(_fromUtf8("Dialog"))
 
-        Dialog.resize(1850, 780)
+        Dialog.resize(1300, 730)
 
         # Input Maps
         self.groupBox_InputMaps = QtGui.QGroupBox(Dialog)
-        self.groupBox_InputMaps.setGeometry(QtCore.QRect(10, 10, 361, 390))
+        self.groupBox_InputMaps.setGeometry(QtCore.QRect(10, 10, 300, 390))
         self.groupBox_InputMaps.setObjectName(_fromUtf8("groupBox_InputMaps"))
 
         # Ground Water
         self.groupBox_GW = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_GW.setGeometry(QtCore.QRect(10, 20, 341, 41))
+        self.groupBox_GW.setGeometry(QtCore.QRect(5, 20, 290, 41))
         self.groupBox_GW.setObjectName(_fromUtf8("groupBox_GW"))
         self.tb_GW = QtGui.QToolButton(self.groupBox_GW)
-        self.tb_GW.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_GW.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_GW.setObjectName(_fromUtf8("tb_GW"))
         self.le_GW = QtGui.QLineEdit(self.groupBox_GW)
-        self.le_GW.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_GW.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_GW.setObjectName(_fromUtf8("le_GW"))
         self.le_GW.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/gw.asc")
 
 
         # Parcel
         self.groupBox_Parcel = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_Parcel.setGeometry(QtCore.QRect(10, 60, 341, 41))
+        self.groupBox_Parcel.setGeometry(QtCore.QRect(5, 60, 290, 41))
         self.groupBox_Parcel.setObjectName(_fromUtf8("groupBox_Parcel"))
         self.tb_Parcel = QtGui.QToolButton(self.groupBox_Parcel)
-        self.tb_Parcel.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_Parcel.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_Parcel.setObjectName(_fromUtf8("tb_Parcel"))
         self.le_Parcel = QtGui.QLineEdit(self.groupBox_Parcel)
-        self.le_Parcel.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_Parcel.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_Parcel.setObjectName(_fromUtf8("le_Parcel"))
         self.le_Parcel.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/parcel.asc")
 
         # Detailed Land use
         self.groupBox_DlandUse = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_DlandUse.setGeometry(QtCore.QRect(10, 100, 341, 41))
+        self.groupBox_DlandUse.setGeometry(QtCore.QRect(5, 100, 290, 41))
         self.groupBox_DlandUse.setObjectName(_fromUtf8("groupBox_DlandUse"))
         self.tb_DlandUse = QtGui.QToolButton(self.groupBox_DlandUse)
-        self.tb_DlandUse.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_DlandUse.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_DlandUse.setObjectName(_fromUtf8("tb_DlandUse"))
         self.le_DlandUse = QtGui.QLineEdit(self.groupBox_DlandUse)
-        self.le_DlandUse.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_DlandUse.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_DlandUse.setObjectName(_fromUtf8("le_DlandUse"))
         self.le_DlandUse.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/detailedlandusemap.asc")
 
         # Water Shed
         self.groupBox_Wshed = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_Wshed.setGeometry(QtCore.QRect(10, 140, 341, 41))
+        self.groupBox_Wshed.setGeometry(QtCore.QRect(5, 140, 290, 41))
         self.groupBox_Wshed.setObjectName(_fromUtf8("groupBox_Wshed"))
         self.tb_Wshed = QtGui.QToolButton(self.groupBox_Wshed)
-        self.tb_Wshed.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_Wshed.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_Wshed.setObjectName(_fromUtf8("tb_Wshed"))
         self.le_Wshed = QtGui.QLineEdit(self.groupBox_Wshed)
-        self.le_Wshed.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_Wshed.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_Wshed.setObjectName(_fromUtf8("le_Wshed"))
         self.le_Wshed.setText("C:/Users/nrezazad/Desktop/meteo/watershed.asc")
 
         # landuse for whole catchment
         self.groupBox_Landuse = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_Landuse.setGeometry(QtCore.QRect(10, 180, 341, 41))
+        self.groupBox_Landuse.setGeometry(QtCore.QRect(5, 180, 290, 41))
         self.groupBox_Landuse.setObjectName(_fromUtf8("groupBox_Landuse"))
         self.tb_Landuse = QtGui.QToolButton(self.groupBox_Landuse)
-        self.tb_Landuse.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_Landuse.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_Landuse.setObjectName(_fromUtf8("tb_Landuse"))
         self.le_Landuse = QtGui.QLineEdit(self.groupBox_Landuse)
-        self.le_Landuse.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_Landuse.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_Landuse.setObjectName(_fromUtf8("le_Landuse"))
         self.le_Landuse.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/landuse.asc")
 
         # soil for whole catchment
         self.groupBox_Soil = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_Soil.setGeometry(QtCore.QRect(10, 220, 341, 41))
+        self.groupBox_Soil.setGeometry(QtCore.QRect(5, 220, 290, 41))
         self.groupBox_Soil.setObjectName(_fromUtf8("groupBox_Soil"))
         self.tb_Soil = QtGui.QToolButton(self.groupBox_Soil)
-        self.tb_Soil.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_Soil.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_Soil.setObjectName(_fromUtf8("tb_Soil"))
         self.le_Soil = QtGui.QLineEdit(self.groupBox_Soil)
-        self.le_Soil.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_Soil.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_Soil.setObjectName(_fromUtf8("le_Soil"))
         self.le_Soil.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/soil.asc")
 
         # elev for whole catchment
         self.groupBox_Elev = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_Elev.setGeometry(QtCore.QRect(10, 260, 341, 41))
+        self.groupBox_Elev.setGeometry(QtCore.QRect(5, 260, 290, 41))
         self.groupBox_Elev.setObjectName(_fromUtf8("groupBox_Elev"))
         self.tb_Elev = QtGui.QToolButton(self.groupBox_Elev)
-        self.tb_Elev.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_Elev.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_Elev.setObjectName(_fromUtf8("tb_Elev"))
         self.le_Elev = QtGui.QLineEdit(self.groupBox_Elev)
-        self.le_Elev.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_Elev.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_Elev.setObjectName(_fromUtf8("le_Elev"))
         self.le_Elev.setText("C:/Users/nrezazad/Desktop/watermaelbeek_38 - Copy/Runner/catchment/parammaps/elevation.asc")
 
         # inp file
         self.groupBox_inp = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_inp.setGeometry(QtCore.QRect(10, 300, 341, 41))
+        self.groupBox_inp.setGeometry(QtCore.QRect(5, 300, 290, 41))
         self.groupBox_inp.setObjectName(_fromUtf8("groupBox_inp"))
         self.tb_inp = QtGui.QToolButton(self.groupBox_inp)
-        self.tb_inp.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_inp.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_inp.setObjectName(_fromUtf8("tb_inp"))
         self.le_inp = QtGui.QLineEdit(self.groupBox_inp)
-        self.le_inp.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_inp.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_inp.setObjectName(_fromUtf8("le_inp"))
         self.le_inp.setText("C:/TMP/tmp.inp")
 
         # rpt file
 
         self.groupBox_rpt = QtGui.QGroupBox(self.groupBox_InputMaps)
-        self.groupBox_rpt.setGeometry(QtCore.QRect(10, 340, 341, 41))
+        self.groupBox_rpt.setGeometry(QtCore.QRect(5, 340, 290, 41))
         self.groupBox_rpt.setObjectName(_fromUtf8("groupBox_rpt"))
         self.tb_rpt = QtGui.QToolButton(self.groupBox_rpt)
-        self.tb_rpt.setGeometry(QtCore.QRect(310, 20, 25, 19))
+        self.tb_rpt.setGeometry(QtCore.QRect(260, 20, 25, 19))
         self.tb_rpt.setObjectName(_fromUtf8("tb_inp"))
         self.le_rpt = QtGui.QLineEdit(self.groupBox_rpt)
-        self.le_rpt.setGeometry(QtCore.QRect(20, 20, 281, 20))
+        self.le_rpt.setGeometry(QtCore.QRect(5, 20, 250, 20))
         self.le_rpt.setObjectName(_fromUtf8("le_inp"))
         self.le_rpt.setText("")
 
 
         # Building Parammap for whole catchment
         self.groupBox_Building_Parammap = QtGui.QGroupBox(Dialog)
-        self.groupBox_Building_Parammap.setGeometry(QtCore.QRect(10, 400, 361, 300))
+        self.groupBox_Building_Parammap.setGeometry(QtCore.QRect(10, 400, 300, 280))
         self.groupBox_Building_Parammap.setObjectName(_fromUtf8("groupBox_Building_Parammap"))
 
         self.btn_DefinePara = QtGui.QPushButton(self.groupBox_Building_Parammap)
-        self.btn_DefinePara.setGeometry(QtCore.QRect(40, 22, 130, 40))
+        self.btn_DefinePara.setGeometry(QtCore.QRect(5, 22, 130, 40))
         self.btn_DefinePara.setObjectName(_fromUtf8("btn_DefinePara"))
         self.btn_RunPre = QtGui.QPushButton(self.groupBox_Building_Parammap)
-        self.btn_RunPre.setGeometry(QtCore.QRect(190, 22, 130, 40))
+        self.btn_RunPre.setGeometry(QtCore.QRect(140, 22, 130, 40))
         self.btn_RunPre.setObjectName(_fromUtf8("btn_RunPre"))
 
         self.groupBox_See_gen_maps = QtGui.QGroupBox(self.groupBox_Building_Parammap)
-        self.groupBox_See_gen_maps.setGeometry(QtCore.QRect(20, 310, 360, 161))
+        self.groupBox_See_gen_maps.setGeometry(QtCore.QRect(10, 90, 280, 161))
         self.groupBox_See_gen_maps.setObjectName(_fromUtf8("groupBox_See_gen_maps"))
         self.lv_parammapWhole = QtGui.QListView(self.groupBox_See_gen_maps)
         self.lv_parammapWhole.setGeometry(QtCore.QRect(10, 20, 171, 91))
@@ -1844,19 +1844,9 @@ class LID_Loc_Dialog(object):
         self.btn_show_maps_whole.setGeometry(QtCore.QRect(100, 120, 91, 31))
         self.btn_show_maps_whole.setObjectName(_fromUtf8("btn_show_maps_whole"))
 
-        self.le_SubNn = QtGui.QLineEdit(self.groupBox_See_gen_maps)
-        self.le_SubNn.setGeometry(QtCore.QRect(200, 60, 51, 20))
-        self.le_SubNn.setObjectName(_fromUtf8("le_SubN"))
-        self.label_1n = QtGui.QLabel(self.groupBox_See_gen_maps)
-        self.label_1n.setGeometry(QtCore.QRect(200, 20, 145, 16))
-        self.label_1n.setObjectName(_fromUtf8("label_1"))
-
-
-
-
         # Search Algs
         self.groupBox_SearchAlgs = QtGui.QGroupBox(Dialog)
-        self.groupBox_SearchAlgs.setGeometry(QtCore.QRect(380, 10, 361, 220))
+        self.groupBox_SearchAlgs.setGeometry(QtCore.QRect(320, 10, 300, 220))
         self.groupBox_SearchAlgs.setObjectName(_fromUtf8("groupBox_SearchAlgs"))
 
         self.cb_alg1 = QtGui.QCheckBox(self.groupBox_SearchAlgs)
@@ -1897,7 +1887,7 @@ class LID_Loc_Dialog(object):
 
         # High Potential
         self.groupBox_High_Potential = QtGui.QGroupBox(Dialog)
-        self.groupBox_High_Potential.setGeometry(QtCore.QRect(380, 230, 361, 400))
+        self.groupBox_High_Potential.setGeometry(QtCore.QRect(320, 230, 300, 450))
         self.groupBox_High_Potential.setObjectName(_fromUtf8("groupBox_High_Potential"))
 
         self.label_Runoff = QtGui.QLabel(self.groupBox_High_Potential)
@@ -1945,26 +1935,26 @@ class LID_Loc_Dialog(object):
         self.label_Nodes.setObjectName(_fromUtf8("le_Nodes"))
 
         self.le_Nodes = QtGui.QLineEdit(self.groupBox_High_Potential)
-        self.le_Nodes.setGeometry(QtCore.QRect(40, 230, 300, 20))
+        self.le_Nodes.setGeometry(QtCore.QRect(20, 230, 270, 20))
         self.le_Nodes.setText(_fromUtf8(""))
         self.le_Nodes.setObjectName(_fromUtf8("le_Nodes"))
         self.le_Nodes.setText("X")
 
         # Result Highpot
         self.groupBox_Result = QtGui.QGroupBox(self.groupBox_High_Potential)
-        self.groupBox_Result.setGeometry(QtCore.QRect(20, 260, 320, 130))
+        self.groupBox_Result.setGeometry(QtCore.QRect(5, 260, 290, 130))
         self.groupBox_Result.setObjectName(_fromUtf8("groupBox_Result"))
 
         self.List_maps = QtGui.QListView(self.groupBox_Result)
         self.List_maps.setGeometry(QtCore.QRect(10, 20, 171, 91))
         self.List_maps.setObjectName(_fromUtf8("List_maps"))
         self.btn_List_maps = QtGui.QPushButton(self.groupBox_Result)
-        self.btn_List_maps.setGeometry(QtCore.QRect(200, 25, 91, 80))
+        self.btn_List_maps.setGeometry(QtCore.QRect(190, 25, 91, 80))
         self.btn_List_maps.setObjectName(_fromUtf8("btn_List_maps"))
 
         # Suitable Location
         self.groupBox_Suitable = QtGui.QGroupBox(Dialog)
-        self.groupBox_Suitable.setGeometry(QtCore.QRect(750, 10, 361, 430))
+        self.groupBox_Suitable.setGeometry(QtCore.QRect(630, 10, 361, 430))
         self.groupBox_Suitable.setObjectName(_fromUtf8("groupBox_Suitable"))
 
         self.label_Depth = QtGui.QLabel(self.groupBox_Suitable)
@@ -2045,7 +2035,7 @@ class LID_Loc_Dialog(object):
 
         # Max Suitable Areas
         self.groupBox_Max = QtGui.QGroupBox(Dialog)
-        self.groupBox_Max.setGeometry(QtCore.QRect(750, 450, 361, 250))
+        self.groupBox_Max.setGeometry(QtCore.QRect(630, 450, 361, 230))
         self.groupBox_Max.setObjectName(_fromUtf8("groupBox_Max"))
 
         self.label_Prioritizing = QtGui.QLabel(self.groupBox_Max)
@@ -2063,7 +2053,7 @@ class LID_Loc_Dialog(object):
 
         # Show Result Final
         self.groupBox_ResultFinal = QtGui.QGroupBox(self.groupBox_Max)
-        self.groupBox_ResultFinal.setGeometry(QtCore.QRect(20, 110, 320, 130))
+        self.groupBox_ResultFinal.setGeometry(QtCore.QRect(20, 110, 320, 115))
         self.groupBox_ResultFinal.setObjectName(_fromUtf8("groupBox_ResultFinal"))
 
         self.List_mapsFinal = QtGui.QListView(self.groupBox_ResultFinal)
@@ -2076,52 +2066,133 @@ class LID_Loc_Dialog(object):
         # Cost opt
 
         self.groupBox_cost = QtGui.QGroupBox(Dialog)
-        self.groupBox_cost.setGeometry(QtCore.QRect(1125, 10, 280, 350))
+        self.groupBox_cost.setGeometry(QtCore.QRect(1000, 10, 280, 350))
         self.groupBox_cost.setObjectName(_fromUtf8("groupBox_cost"))
 
         self.label_percentage_source = QtGui.QLabel(self.groupBox_cost)
         self.label_percentage_source.setGeometry(QtCore.QRect(20, 20, 270, 21))
         self.label_percentage_source.setObjectName(_fromUtf8("label_percentage_source"))
-
         self.le_percentage_source = QtGui.QLineEdit(self.groupBox_cost)
         self.le_percentage_source.setGeometry(QtCore.QRect(150, 20, 51, 20))
         self.le_percentage_source.setObjectName(_fromUtf8("le_percentage_source"))
-        self.le_percentage_source.setText("X")
+
+        self.label_Num_Subc_for_cost = QtGui.QLabel(self.groupBox_cost)
+        self.label_Num_Subc_for_cost.setGeometry(QtCore.QRect(20, 45, 270, 21))
+        self.label_Num_Subc_for_cost.setObjectName(_fromUtf8("label_Num_Subc_for_cost"))
+        self.le_Num_Subc_for_cost = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_Num_Subc_for_cost.setGeometry(QtCore.QRect(150, 45, 51, 20))
+        self.le_Num_Subc_for_cost.setObjectName(_fromUtf8("le_Num_Subc_for_cost"))
 
         self.cb_GenMap = QtGui.QCheckBox(self.groupBox_cost)
-        self.cb_GenMap.setGeometry(QtCore.QRect(10, 50, 200, 17))
+        self.cb_GenMap.setGeometry(QtCore.QRect(10, 70, 200, 17))
         self.cb_GenMap.setObjectName(_fromUtf8("cb_GenMap"))
 
         self.cb_opt1 = QtGui.QCheckBox(self.groupBox_cost)
-        self.cb_opt1.setGeometry(QtCore.QRect(10, 70, 200, 17))
+        self.cb_opt1.setGeometry(QtCore.QRect(10, 90, 200, 17))
         self.cb_opt1.setObjectName(_fromUtf8("cb_opt1"))
 
         self.cb_opt2 = QtGui.QCheckBox(self.groupBox_cost)
-        self.cb_opt2.setGeometry(QtCore.QRect(90, 70, 200, 17))
+        self.cb_opt2.setGeometry(QtCore.QRect(90, 90, 200, 17))
         self.cb_opt2.setObjectName(_fromUtf8("cb_opt2"))
 
         self.cb_opt3 = QtGui.QCheckBox(self.groupBox_cost)
-        self.cb_opt3.setGeometry(QtCore.QRect(170, 70, 200, 17))
+        self.cb_opt3.setGeometry(QtCore.QRect(170, 90, 200, 17))
         self.cb_opt3.setObjectName(_fromUtf8("cb_opt3"))
+
+        self.label_Rain_Garden_col = QtGui.QLabel(self.groupBox_cost)
+        self.label_Rain_Garden_col.setGeometry(QtCore.QRect(60, 110, 270, 21))
+        self.label_Rain_Garden_col.setObjectName(_fromUtf8("label_Rain_Garden_col"))
+
+        self.label_Green_Roof_col = QtGui.QLabel(self.groupBox_cost)
+        self.label_Green_Roof_col.setGeometry(QtCore.QRect(120, 110, 270, 21))
+        self.label_Green_Roof_col.setObjectName(_fromUtf8("label_Green_Roof_col"))
+
+        self.label_Road_col = QtGui.QLabel(self.groupBox_cost)
+        self.label_Road_col.setGeometry(QtCore.QRect(180, 110, 270, 21))
+        self.label_Road_col.setObjectName(_fromUtf8("label_Road_col"))
+
+        self.label_Riparian_Zone_col = QtGui.QLabel(self.groupBox_cost)
+        self.label_Riparian_Zone_col.setGeometry(QtCore.QRect(230, 110, 270, 21))
+        self.label_Riparian_Zone_col.setObjectName(_fromUtf8("label_Riparian_Zone_col"))
+
+        self.label_pixel_code_row = QtGui.QLabel(self.groupBox_cost)
+        self.label_pixel_code_row.setGeometry(QtCore.QRect(5, 130, 270, 21))
+        self.label_pixel_code_row.setObjectName(_fromUtf8("label_pixel_code_row"))
+
+        self.label_price_per_sq_row = QtGui.QLabel(self.groupBox_cost)
+        self.label_price_per_sq_row.setGeometry(QtCore.QRect(5, 150, 270, 21))
+        self.label_price_per_sq_row.setObjectName(_fromUtf8("label_price_per_sq_row"))
+
+        self.label_volume_reduction_row = QtGui.QLabel(self.groupBox_cost)
+        self.label_volume_reduction_row.setGeometry(QtCore.QRect(5, 170, 270, 21))
+        self.label_volume_reduction_row.setObjectName(_fromUtf8("label_volume_reduction_row"))
+
+        self.le_code_rain = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_code_rain.setGeometry(QtCore.QRect(60, 130, 50, 20))
+        self.le_code_rain.setObjectName(_fromUtf8("le_code_rain"))
+
+        self.le_code_Roof = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_code_Roof.setGeometry(QtCore.QRect(110, 130, 50, 20))
+        self.le_code_Roof.setObjectName(_fromUtf8("le_code_Roof"))
+
+        self.le_code_Road = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_code_Road.setGeometry(QtCore.QRect(160, 130, 50, 20))
+        self.le_code_Road.setObjectName(_fromUtf8("le_code_Road"))
+
+        self.le_code_Rip = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_code_Rip.setGeometry(QtCore.QRect(210, 130, 50, 20))
+        self.le_code_Rip.setObjectName(_fromUtf8("le_code_Rip"))
+
+        self.le_price_rain = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_price_rain.setGeometry(QtCore.QRect(60, 150, 50, 20))
+        self.le_price_rain.setObjectName(_fromUtf8("le_price_rain"))
+
+        self.le_price_Roof = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_price_Roof.setGeometry(QtCore.QRect(110, 150, 50, 20))
+        self.le_price_Roof.setObjectName(_fromUtf8("le_price_Roof"))
+
+        self.le_price_Road = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_price_Road.setGeometry(QtCore.QRect(160, 150, 50, 20))
+        self.le_price_Road.setObjectName(_fromUtf8("le_price_Road"))
+
+        self.le_price_Rip = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_price_Rip.setGeometry(QtCore.QRect(210, 150, 50, 20))
+        self.le_price_Rip.setObjectName(_fromUtf8("le_price_Rip"))
+
+        self.le_V_reduc_rain = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_V_reduc_rain.setGeometry(QtCore.QRect(60, 170, 50, 20))
+        self.le_V_reduc_rain.setObjectName(_fromUtf8("le_V_reduc_rain"))
+
+        self.le_V_reduc_Roof = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_V_reduc_Roof.setGeometry(QtCore.QRect(110, 170, 50, 20))
+        self.le_V_reduc_Roof.setObjectName(_fromUtf8("le_V_reduc_Roof"))
+
+        self.le_V_reduc_Road = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_V_reduc_Road.setGeometry(QtCore.QRect(160, 170, 50, 20))
+        self.le_V_reduc_Road.setObjectName(_fromUtf8("le_V_reduc_Road"))
+
+        self.le_V_reduc_Rip = QtGui.QLineEdit(self.groupBox_cost)
+        self.le_V_reduc_Rip.setGeometry(QtCore.QRect(210, 170, 50, 20))
+        self.le_V_reduc_Rip.setObjectName(_fromUtf8("le_V_reduc_Rip"))
 
         self.groupBox_ResultCost = QtGui.QGroupBox(self.groupBox_cost)
         self.groupBox_ResultCost.setGeometry(QtCore.QRect(20, 250, 250, 90))
         self.groupBox_ResultCost.setObjectName(_fromUtf8("groupBox_ResultCost"))
 
         self.List_mapsCost = QtGui.QListView(self.groupBox_ResultCost)
-        #self.List_mapsCost.setGeometry(QtCore.QRect(10, 20, 200, 91))
-        self.List_mapsCost.setGeometry(QtCore.QRect(5, 5, 50, 80))
+        self.List_mapsCost.setGeometry(QtCore.QRect(5, 10, 150, 70))
+        #self.List_mapsCost.setGeometry(QtCore.QRect(5, 5, 50, 80))
         self.List_mapsCost.setObjectName(_fromUtf8("List_mapsFinal"))
 
         self.btn_Start_opt = QtGui.QPushButton(self.groupBox_ResultCost)
-        #self.btn_Start_opt.setGeometry(QtCore.QRect(60, 220, 90, 70))
-        self.btn_Start_opt.setGeometry(QtCore.QRect(60, 10, 90, 70))
+        self.btn_Start_opt.setGeometry(QtCore.QRect(160, 20, 80, 50))
+        #self.btn_Start_opt.setGeometry(QtCore.QRect(60, 10, 90, 70))
         self.btn_Start_opt.setObjectName(_fromUtf8("btn_Start_opt"))
 
         # -------------------------------------------------
 
         self.groupBox_GenElev = QtGui.QGroupBox(Dialog)
-        self.groupBox_GenElev.setGeometry(QtCore.QRect(1125, 360, 300, 170))
+        self.groupBox_GenElev.setGeometry(QtCore.QRect(1000, 360, 280, 170))
         self.groupBox_GenElev.setObjectName(_fromUtf8("groupBox_GenElev"))
 
         self.label_slopePercent = QtGui.QLabel(self.groupBox_GenElev)
@@ -2142,7 +2213,7 @@ class LID_Loc_Dialog(object):
         self.label_new_landuse_for_elev.setGeometry(QtCore.QRect(20, 70, 270, 21))
         self.label_new_landuse_for_elev.setObjectName(_fromUtf8("label_new_landuse_for_elev"))
         self.le_new_landuse_for_elev = QtGui.QLineEdit(self.groupBox_GenElev)
-        self.le_new_landuse_for_elev.setGeometry(QtCore.QRect(20, 90, 260, 20))
+        self.le_new_landuse_for_elev.setGeometry(QtCore.QRect(20, 90, 250, 20))
         self.le_new_landuse_for_elev.setObjectName(_fromUtf8("le_new_landuse_for_elev"))
 
         self.btn_GenElev = QtGui.QPushButton(self.groupBox_GenElev)
@@ -2152,7 +2223,7 @@ class LID_Loc_Dialog(object):
         # ---------------------------------------------------------------------
 
         self.groupBox_GenSoil = QtGui.QGroupBox(Dialog)
-        self.groupBox_GenSoil.setGeometry(QtCore.QRect(1125, 530, 300, 150))
+        self.groupBox_GenSoil.setGeometry(QtCore.QRect(1000, 530, 280, 150))
         self.groupBox_GenSoil.setObjectName(_fromUtf8("groupBox_GenSoil"))
 
         self.label_soilType = QtGui.QLabel(self.groupBox_GenSoil)
@@ -2160,22 +2231,19 @@ class LID_Loc_Dialog(object):
         self.label_soilType.setObjectName(_fromUtf8("label_soilType"))
         # input format {20: 3, 40: 2, 30: 1}
         self.le_soilType = QtGui.QLineEdit(self.groupBox_GenSoil)
-        self.le_soilType.setGeometry(QtCore.QRect(20, 40, 260, 20))
+        self.le_soilType.setGeometry(QtCore.QRect(20, 40, 250, 20))
         self.le_soilType.setObjectName(_fromUtf8("le_soilType"))
 
         self.label_new_landuse = QtGui.QLabel(self.groupBox_GenSoil)
         self.label_new_landuse.setGeometry(QtCore.QRect(20, 60, 270, 21))
         self.label_new_landuse.setObjectName(_fromUtf8("label_new_landuse"))
         self.le_new_landuse = QtGui.QLineEdit(self.groupBox_GenSoil)
-        self.le_new_landuse.setGeometry(QtCore.QRect(20, 80, 260, 20))
+        self.le_new_landuse.setGeometry(QtCore.QRect(20, 80, 250, 20))
         self.le_new_landuse.setObjectName(_fromUtf8("le_new_landuse"))
-
-
 
         self.btn_soilType = QtGui.QPushButton(self.groupBox_GenSoil)
         self.btn_soilType.setGeometry(QtCore.QRect(100, 105, 90, 40))
         self.btn_soilType.setObjectName(_fromUtf8("btn_soilType"))
-
 
         # ---------------------------------------------------------------------
 
@@ -2236,6 +2304,7 @@ class LID_Loc_Dialog(object):
         self.groupBox_cost.setTitle(_translate("Dialog", "Cost Optimization", None))
         self.groupBox_GenElev.setTitle(_translate("Dialog", "Generating Elevation", None))
         self.groupBox_GenSoil.setTitle(_translate("Dialog", "Generating Soil", None))
+        self.groupBox_See_gen_maps.setTitle(_translate("Dialog", "See Generated Maps", None))
 
 
         self.label_Lambda.setText(_translate("Dialog", "Lambda :", None))
@@ -2251,6 +2320,19 @@ class LID_Loc_Dialog(object):
         self.label_min_roof.setText(_translate("Dialog", "Min possible area of green roofs :", None))
         self.label_max_roof.setText(_translate("Dialog", "Max Possible elevation in pixels of Greenroof : [m]", None))
         self.label_percentage_source.setText(_translate("Dialog", "Percentage source : ", None))
+        self.label_Num_Subc_for_cost.setText(_translate("Dialog", "Number of Sub :", None))
+
+        self.label_Road_col.setText(_translate("Dialog", "PP", None))
+        self.label_Rain_Garden_col.setText(_translate("Dialog", "RG", None))
+        self.label_Riparian_Zone_col.setText(_translate("Dialog", "RZ", None))
+        self.label_Green_Roof_col.setText(_translate("Dialog", "GR", None))
+        self.label_pixel_code_row.setText(_translate("Dialog", "Priority", None))
+        self.label_volume_reduction_row.setText(_translate("Dialog", "Vol rdc", None))
+        self.label_price_per_sq_row.setText(_translate("Dialog", "price", None))
+
+
+
+
         self.label_soilType.setText(_translate("Dialog", "Change Soil type input :", None))
         self.label_new_landuse.setText(_translate("Dialog", "New Landuse :", None))
         self.label_slopePercent.setText(_translate("Dialog", "slope (%) : ", None))
@@ -2268,6 +2350,7 @@ class LID_Loc_Dialog(object):
         self.btn_Start_opt.setText(_translate("Dialog", "Start\nOptimization", None))
         self.btn_soilType.setText(_translate("Dialog", "Start", None))
         self.btn_GenElev.setText(_translate("Dialog", "Start", None))
+        self.btn_show_maps_whole.setText(_translate("Dialog", "List maps", None))
 
         # self.btn_List_mapsFinal.setText(_translate("Dialog", "List\nmaps", None))
 
@@ -2669,6 +2752,23 @@ class LID_Loc_Dialog(object):
 
         print("Highpot finish !")
 
+    def listMapsCost(self):
+
+        path_to_whole = os.path.join("C:\\", "TMP", "whole_catchment", "Runner", "catchment", "parammaps")
+
+        files = os.listdir(path_to_whole)
+
+        dot_map_files = []
+
+        for any_file in files:
+            if ".map" in any_file:
+                dot_map_files.append(any_file)
+
+        model = QStringListModel()
+        model.setStringList(dot_map_files)
+        self.lv_parammapWhole.setModel(model)
+
+
     def showmaps(self, selected):
         print("Show maps")
         Sub_path = "parammaps"
@@ -2690,6 +2790,22 @@ class LID_Loc_Dialog(object):
         print("hello")
         Sub_path = "parammaps"
         a = (str(self.List_mapsFinal.model().data(selected, 0).toString()))
+        pathss = os.path.join(Sub_path, a)
+        agrus = "aguila {}".format(pathss)
+        subprocess.Popen(agrus)
+
+    def showmapsCost(self, selected):
+        print("showmapsCost")
+        Sub_path = "map"
+        a = (str(self.List_mapsCost.model().data(selected, 0).toString()))
+        pathss = os.path.join(Sub_path, a)
+        agrus = "aguila {}".format(pathss)
+        subprocess.Popen(agrus)
+
+    def showmapsWhole(self, selected):
+        print("showmapsCost")
+        Sub_path = os.path.join("C:\\", "TMP", "whole_catchment", "Runner", "catchment", "parammaps")
+        a = (str(self.lv_parammapWhole.model().data(selected, 0).toString()))
         pathss = os.path.join(Sub_path, a)
         agrus = "aguila {}".format(pathss)
         subprocess.Popen(agrus)
@@ -2762,8 +2878,6 @@ class LID_Loc_Dialog(object):
             self.le_Depth.setText("0")
 
         print self.checkbox_depthGW
-
-
 
     def checkbox2(self):
         self.checkbox_SuitableSoil = self.cb_alg2.checkState()
@@ -2879,16 +2993,22 @@ class LID_Loc_Dialog(object):
         #subprocess.Popen("runWetSpaPreprocess.bat")
 
     def cost_opt(self):
+        list_show_out = []
         alg_to_use = []
         prcnt_src = str(self.le_percentage_source.text())
+        num_subc = str(self.le_Num_Subc_for_cost.text())
 
         gen_map = self.cb_GenMap.checkState()
-        if gen_map != 0 :
+        if gen_map == 2 :
             gen_map = True
+            use_ex = False
         else :
             gen_map = False
+            use_ex = True
+
 
         print "gen_map", gen_map
+        print "use_ex",use_ex
 
         opt1 = self.cb_opt1.checkState()
         opt2 = self.cb_opt2.checkState()
@@ -2909,10 +3029,38 @@ class LID_Loc_Dialog(object):
         if opt3 != 2 and (3 in alg_to_use):
             alg_to_use.remove(3)
 
-        # print gen_map,opt1,opt2,opt3
+        # process the priorities
 
-        adv_land_use = "FanialOutput.asc"
-        num_subc = "31"  # todo get from UI
+        code_rain = int(self.le_code_rain.text())
+        code_road = int(self.le_code_Road.text())
+        code_roof = int(self.le_code_Roof.text())
+        code_rip = int(self.le_code_Rip.text())
+
+        price_rain = int(self.le_price_rain.text())
+        price_road = int(self.le_price_Road.text())
+        price_roof = int(self.le_price_Roof.text())
+        price_rip = int(self.le_price_Rip.text())
+
+        V_reduc_rain = int(self.le_V_reduc_rain.text())
+        V_reduc_road = int(self.le_V_reduc_Road.text())
+        V_reduc_roof = int(self.le_V_reduc_Roof.text())
+        V_reduc_rip = int(self.le_V_reduc_Rip.text())
+
+        dic_prio = {}
+
+        dic_prio[code_rain] = {'pixel_code': maps.AdvancedLandUseMap.VALUES.RAIN_GARDEN, 'price_per_sq_meter': price_rain, 'volume_reduction_per_sq_meter': V_reduc_rain }
+        dic_prio[code_road] ={'pixel_code': maps.AdvancedLandUseMap.VALUES.ROAD, 'price_per_sq_meter': price_road, 'volume_reduction_per_sq_meter': V_reduc_road }
+        dic_prio[code_roof] = {'pixel_code': maps.AdvancedLandUseMap.VALUES.GREEN_ROOF, 'price_per_sq_meter': price_roof, 'volume_reduction_per_sq_meter': V_reduc_roof }
+        dic_prio[code_rip] = {'pixel_code': maps.AdvancedLandUseMap.VALUES.RIPARIAN_ZONE, 'price_per_sq_meter': price_rip, 'volume_reduction_per_sq_meter': V_reduc_rip }
+
+        list_prior = []
+
+        for i in range(4):
+            list_prior.append(dic_prio[i+1])
+
+        print list_prior
+
+        # -----------------------
 
         cur = os.getcwd()
         print cur
@@ -2921,7 +3069,7 @@ class LID_Loc_Dialog(object):
 
         # copy inputs to map folder
 
-        copy2dir.copy2dir(str(self.le_Wshed.text()), os.path.join(maps_dir,"wateshed.asc"))
+        copy2dir.copy2dir(str(self.le_Wshed.text()), os.path.join(maps_dir,"watershed.asc"))
         copy2dir.copy2dir(str(self.le_Landuse.text()), os.path.join(maps_dir, "landuse.asc"))
         copy2dir.copy2dir(str(self.le_Parcel.text()), os.path.join(maps_dir, "parcel.asc"))
         copy2dir.copy2dir(str(self.le_Elev.text()), os.path.join(maps_dir, "elevation.asc"))
@@ -2931,12 +3079,23 @@ class LID_Loc_Dialog(object):
         # -----------------------
 
         cost = map_merge.Main()
-        cost.run_with_init("wateshed.asc", "landuse.asc", "FanialOutput.asc", "parcel.asc", "elevation.asc", "report.rpt",int(num_subc),float(prcnt_src),int(str(self.le_min_rain.text())),int(str(self.le_min_roof.text())),str(self.le_max_roof),"tmp.inp",cost_optimization.basic_priorities,gen_map,alg_to_use)
+        cost.run_with_init("watershed.asc", "landuse.asc", "FinalOutput.asc", "parcel.asc", "elevation.asc", "report.rpt",
+                           int(num_subc),float(prcnt_src),int(str(self.le_min_rain.text())),int(str(self.le_min_roof.text())),
+                           str(self.le_max_roof),"tmp.inp", list_prior,use_ex,alg_to_use)
 
         os.chdir(cur)
         print os.getcwd()
 
-        pass
+        if opt1 == 2:
+            list_show_out.append("alg_1_output.asc")
+        if opt2 == 2:
+            list_show_out.append("alg_2_output.asc")
+        if opt3 == 2:
+            list_show_out.append("alg_3_output.asc")
+
+        model = QStringListModel()
+        model.setStringList(list_show_out)
+        self.List_mapsCost.setModel(model)
 
     def gen_soil(self): # soil for whole !
         # landuse_to_soil_type format func: {20: 3, 40: 2, 30: 1}
@@ -2998,6 +3157,8 @@ class LID_Loc_Dialog(object):
         self.btn_soilType.clicked.connect(self.gen_soil)
         self.btn_GenElev.clicked.connect(self.gen_elev)
         self.btn_Start_opt.clicked.connect(self.cost_opt)
+        self.btn_show_maps_whole.clicked.connect(self.listMapsCost)
+
 
         self.cb_alg1.clicked.connect(self.checkbox1)
         self.cb_alg2.clicked.connect(self.checkbox2)
@@ -3012,6 +3173,10 @@ class LID_Loc_Dialog(object):
         self.List_maps.doubleClicked.connect(self.showmaps)
         self.List_mapsS.doubleClicked.connect(self.showmapsS)
         self.List_mapsFinal.doubleClicked.connect(self.showmapsFinal)
+        self.List_mapsCost.doubleClicked.connect(self.showmapsCost)
+        self.lv_parammapWhole.doubleClicked.connect(self.showmapsWhole)
+
+
 
         # self.btn_Max_all.clicked.connect(self.MaxAll_LID)
         # self.btn_Max_pref.clicked.connect(self.Max_Pref)
